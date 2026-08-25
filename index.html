@@ -883,7 +883,7 @@ function isMobileMode() {
 }
 
 const TRANSLATION_CACHE =
-    "wardPhraseMapper:v34:";
+    "wardPhraseMapper:v35:";
 
 
 /* ================================================================
@@ -2247,9 +2247,9 @@ async function translateBatchFast(
                     targetLang,
                     {
                         allowBackup,
-                        allowMyMemory:
-                            allowBackup &&
-                            backupAllowed()
+                        // Never use MyMemory for isolated phrase cards.
+                        // It often produces contextually unrelated fragments.
+                        allowMyMemory: false
                     }
                 )
         );
@@ -2624,7 +2624,8 @@ function parseEnglishPhrases(text) {
         if (
             w === "to" &&
             next &&
-            !prepositions.has(next)
+            !prepositions.has(next) &&
+            !determiners.has(next)
         ) {
 
             pushCurrent();
@@ -4817,7 +4818,7 @@ async function updatePhraseMaps() {
 
                     element.innerText =
                         result?.translation ||
-                        "";
+                        "—";
 
                 }
 
@@ -4955,8 +4956,8 @@ async function updatePhraseMaps() {
                         allowBackup:
                             backupAllowed(),
 
-                        allowMyMemory:
-                            backupAllowed()
+                        // Phrase cards use Google/Lingva only.
+                        allowMyMemory: false
                     }
                 )
                 .then(
@@ -4978,7 +4979,7 @@ async function updatePhraseMaps() {
 
                             translationElement.innerText =
                                 result?.translation ||
-                                "";
+                                "—";
 
                         }
 
@@ -5080,8 +5081,8 @@ async function updatePhraseMaps() {
                             allowBackup:
                                 backupAllowed(),
 
-                            allowMyMemory:
-                                backupAllowed()
+                            // Phrase cards use Google/Lingva only.
+                            allowMyMemory: false
                         }
                     )
             );
@@ -5123,7 +5124,7 @@ async function updatePhraseMaps() {
 
                     translationElement.innerText =
                         result.translation ||
-                        "";
+                        "—";
 
                 }
 
