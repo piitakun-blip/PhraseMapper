@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#f8fafc">
     <title>EN ➜ Target Phrase Mapper</title>
 
-    <!-- Transliteration support for Japanese Romaji & Hiragana -->
+    <!-- Client-side Japanese Transliteration Engine -->
     <script src="https://cdn.jsdelivr.net/npm/wanakana@5.3.1/wanakana.min.js"></script>
 
     <style>
@@ -277,7 +277,7 @@
 <script>
     let currentLang = 'de';
     let translationTimeout;
-    const TRANSLATION_CACHE = "wardPhraseMapper:v15:";
+    const TRANSLATION_CACHE = "wardPhraseMapper:v16:";
 
     const LANG_CONFIG = {
         de: { name: 'German', theme: 'orange-mode' },
@@ -328,7 +328,7 @@
                 return result;
             }
         } catch(e) {
-            console.warn("Primary API failed. Trying backup...");
+            console.warn("Primary API failed.");
         }
 
         if (document.getElementById("allowBackupToggle").checked) {
@@ -348,7 +348,6 @@
         return null;
     }
 
-    // High-performance single-request batch translator
     async function translateBatchFast(phrases, sourceLang, targetLang) {
         if (!phrases.length) return [];
         const delimiter = " ||| ";
@@ -393,42 +392,73 @@
         }, 300);
     }
 
-    // Comprehensive English clause, infinitive, and prepositional phrase chunker
+    // Direct Grammatical Phrase & Clause Parser
     function parseEnglishPhrases(text) {
         if (!text.trim()) return [];
 
-        const prepList = "in|on|at|to|for|with|about|against|between|into|through|during|before|after|above|below|from|up|down|off|over|under|by";
-        const conjList = "and|but|or|because|although|since|while|if|when|that|which|who";
+        const words = text.trim().split(/\s+/);
+        const prepositions = new Set(["in","on","at","to","for","with","about","against","between","into","through","during","before","after","above","below","from","up","down","off","over","under","by"]);
+        const conjunctions = new Set(["and","but","or","because","although","since","while","if","when","that","which","who",",",";"]);
 
-        // Regex capturing clauses, infinitives (to + verb), prepositional phrases, or remaining clauses
-        const regex = new RegExp(`\\b(to\\s+[a-z]+|(?:${prepList})\\s+[^,;\\s]+|(?:${conjList}))\\b`, 'gi');
+        let chunks = [];
+        let currentChunk = [];
 
-        const words = text.trim();
-        const rawTokens = words.split(regex).filter(Boolean);
-        const chunks = [];
-        let current = "";
+        for (let i = 0; i < words.length; i++) {
+            let word = words[i];
+            let cleanWord = word.toLowerCase().replace(/[^a-z]/g, '');
 
-        rawTokens.forEach(token => {
-            if (/^(and|but|or|because|although|since|while|if|when|that|which|who|,|;)$/i.test(token.trim())) {
-                if (current.trim()) chunks.push(current.trim());
-                chunks.push(token.trim());
-                current = "";
-            } else if (/^to\s+[a-z]+/i.test(token.trim())) {
-                if (current.trim()) chunks.push(current.trim());
-                chunks.push(token.trim());
-                current = "";
-            } else {
-                current += " " + token;
+            // Punctuation or Clause boundary
+            if (conjunctions.has(cleanWord) || word.includes(',') || word.includes(';')) {
+                if (currentChunk.length > 0) {
+                    chunks.push(currentChunk.join(' '));
+                    currentChunk = [];
+                }
+                currentChunk.push(word);
+                chunks.push(currentChunk.join(' '));
+                currentChunk = [];
+                continue;
             }
-        });
 
-        if (current.trim()) chunks.push(current.trim());
-        return chunks.filter(c => c.length > 0);
+            // Infinitive Start: "to verb"
+            if (cleanWord === "to" && i + 1 < words.length) {
+                if (currentChunk.length > 0) {
+                    chunks.push(currentChunk.join(' '));
+                    currentChunk = [];
+                }
+                currentChunk.push(word);
+                continue;
+            }
+
+            // Prepositional Phrase Start
+            if (prepositions.has(cleanWord) && currentChunk.length >= 2) {
+                chunks.push(currentChunk.join(' '));
+                currentChunk = [word];
+                continue;
+            }
+
+            currentChunk.push(word);
+        }
+
+        if (currentChunk.length > 0) {
+            chunks.push(currentChunk.join(' '));
+        }
+
+        return chunks.filter(c => c.trim().length > 0);
     }
 
     function parseForeignPhrases(text) {
         if (!text) return [];
-        return text.trim().split(/\s+/).filter(Boolean);
+        // Group target into syntactic chunks of 2-3 words for multi-word phrase card alignment
+        const words = text.trim().split(/\s+/);
+        const chunks = [];
+        for (let i = 0; i < words.length; i += 2) {
+            if (i + 1 < words.length) {
+                chunks.push(words[i] + " " + words[i+1]);
+            } else {
+                chunks.push(words[i]);
+            }
+        }
+        return chunks;
     }
 
     async function updatePhraseMaps() {
@@ -476,7 +506,6 @@
 
                 if (transEl) transEl.innerText = translatedForeign[i]?.translation || "";
 
-                // Client-side instant Hiragana & Romaji rendering for Japanese
                 if (currentLang === 'ja' && window.wanakana) {
                     const hiragana = wanakana.toHiragana(phrase);
                     const romaji = wanakana.toRomaji(phrase);
