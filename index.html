@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#f8fafc">
-    <title>EN ➜ Target Phrase Mapper</title>
+    <title>Phrase Mapper</title>
 
     <!-- Japanese reading / Romaji -->
     <script src="https://cdn.jsdelivr.net/npm/wanakana@5.3.1/wanakana.min.js"></script>
@@ -562,7 +562,7 @@
 <div class="container">
 
     <h1 id="mainTitle">
-        EN ➜ DE: Ward's Phrasen-Mapper
+        Phrase Mapper
     </h1>
 
 
@@ -690,7 +690,7 @@
                         id="allowBackupToggle"
                         checked
                     >
-                    Use backup if Google fails (emergency results may be less reliable)
+                    Use backup if Google fails (emergency results may be wonky)
                 </span>
             </label>
 
@@ -818,7 +818,7 @@
                 class="row-title"
                 id="foreignRowTitle"
             >
-                German Phrase Map
+                Language Phrase Map
             </div>
 
             <div
@@ -862,7 +862,7 @@ function isMobileMode() {
 }
 
 const TRANSLATION_CACHE =
-    "wardPhraseMapper:v30:";
+    "wardPhraseMapper:v31:";
 
 
 /* ================================================================
@@ -2169,7 +2169,10 @@ async function translateBatchFast(
                         sourceLang,
                         targetLang,
                         {
-                            allowBackup
+                            allowBackup,
+                            allowMyMemory:
+                                allowBackup &&
+                                backupAllowed()
                         }
                     )
             )
@@ -4532,6 +4535,9 @@ async function updatePhraseMaps() {
                     "en",
                     {
                         allowBackup:
+                            backupAllowed(),
+
+                        allowMyMemory:
                             backupAllowed()
                     }
                 )
@@ -4654,6 +4660,9 @@ async function updatePhraseMaps() {
                             "en",
                             {
                                 allowBackup:
+                                    backupAllowed(),
+
+                                allowMyMemory:
                                     backupAllowed()
                             }
                         )
@@ -5040,6 +5049,31 @@ function handleInput(lang) {
    ================================================================ */
 
 function setLanguage(lang) {
+    const languageMapTitle =
+        document.getElementById(
+            "foreignRowTitle"
+        );
+
+    if (languageMapTitle) {
+        languageMapTitle.textContent =
+            "Language Phrase Map";
+    }
+
+
+    const staticTitle =
+        document.getElementById(
+            "mainTitle"
+        );
+
+    if (staticTitle) {
+        staticTitle.textContent =
+            "Phrase Mapper";
+    }
+
+    document.title =
+        "Phrase Mapper";
+
+
 
     if (
         !LANG_CONFIG[lang]
