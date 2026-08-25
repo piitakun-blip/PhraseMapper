@@ -88,8 +88,16 @@
             font-size: 0.85rem;
             display: inline-flex;
             align-items: center;
-            gap: 0.25rem;
+            gap: 0.35rem;
             white-space: nowrap;
+        }
+
+        .flag-icon {
+            width: 18px;
+            height: 13px;
+            object-fit: cover;
+            border-radius: 2px;
+            box-shadow: 0 0 1px rgba(0,0,0,0.3);
         }
 
         .lang-btn.active.orange-mode { background-color: var(--primary-orange); color: white; }
@@ -195,13 +203,27 @@
     <div class="control-panel">
         <div class="lang-selector">
             <span>Target:</span>
-            <button class="lang-btn active orange-mode" id="btnDE" onclick="setLanguage('de')">🇩🇪 DE</button>
-            <button class="lang-btn" id="btnJA" onclick="setLanguage('ja')">🇯🇵 JA</button>
-            <button class="lang-btn" id="btnES" onclick="setLanguage('es')">🇪🇸 ES</button>
-            <button class="lang-btn" id="btnFR" onclick="setLanguage('fr')">🇫🇷 FR</button>
-            <button class="lang-btn" id="btnIT" onclick="setLanguage('it')">🇮🇹 IT</button>
-            <button class="lang-btn" id="btnRU" onclick="setLanguage('ru')">🇷🇺 RU</button>
-            <button class="lang-btn" id="btnZH" onclick="setLanguage('zh')">🇨🇳 ZH</button>
+            <button class="lang-btn active orange-mode" id="btnDE" onclick="setLanguage('de')">
+                <img src="https://flagcdn.com/de.svg" class="flag-icon" alt="DE"> DE
+            </button>
+            <button class="lang-btn" id="btnJA" onclick="setLanguage('ja')">
+                <img src="https://flagcdn.com/jp.svg" class="flag-icon" alt="JA"> JA
+            </button>
+            <button class="lang-btn" id="btnES" onclick="setLanguage('es')">
+                <img src="https://flagcdn.com/es.svg" class="flag-icon" alt="ES"> ES
+            </button>
+            <button class="lang-btn" id="btnFR" onclick="setLanguage('fr')">
+                <img src="https://flagcdn.com/fr.svg" class="flag-icon" alt="FR"> FR
+            </button>
+            <button class="lang-btn" id="btnIT" onclick="setLanguage('it')">
+                <img src="https://flagcdn.com/it.svg" class="flag-icon" alt="IT"> IT
+            </button>
+            <button class="lang-btn" id="btnRU" onclick="setLanguage('ru')">
+                <img src="https://flagcdn.com/ru.svg" class="flag-icon" alt="RU"> RU
+            </button>
+            <button class="lang-btn" id="btnZH" onclick="setLanguage('zh')">
+                <img src="https://flagcdn.com/cn.svg" class="flag-icon" alt="ZH"> ZH
+            </button>
         </div>
         <div>
             <label><input type="checkbox" id="autoTranslateToggle" checked> Auto-Translate</label>
@@ -249,16 +271,16 @@
 <script>
     let currentLang = 'de';
     let translationTimeout;
-    const TRANSLATION_CACHE = "wardPhraseMapper:v11:";
+    const TRANSLATION_CACHE = "wardPhraseMapper:v12:";
 
     const LANG_CONFIG = {
-        de: { name: 'German', label: '🇩🇪 DE', theme: 'orange-mode' },
-        ja: { name: 'Japanese', label: '🇯🇵 JA', theme: 'sakura-mode' },
-        es: { name: 'Spanish', label: '🇪🇸 ES', theme: 'sangria-mode' },
-        fr: { name: 'French', label: '🇫🇷 FR', theme: 'lavender-mode' },
-        it: { name: 'Italian', label: '🇮🇹 IT', theme: 'emerald-mode' },
-        ru: { name: 'Russian', label: '🇷🇺 RU', theme: 'crimson-mode' },
-        zh: { name: 'Chinese', label: '🇨🇳 ZH', theme: 'gold-mode' }
+        de: { name: 'German', theme: 'orange-mode' },
+        ja: { name: 'Japanese', theme: 'sakura-mode' },
+        es: { name: 'Spanish', theme: 'sangria-mode' },
+        fr: { name: 'French', theme: 'lavender-mode' },
+        it: { name: 'Italian', theme: 'emerald-mode' },
+        ru: { name: 'Russian', theme: 'crimson-mode' },
+        zh: { name: 'Chinese', theme: 'gold-mode' }
     };
 
     function speakText(inputId, langCode) {
@@ -404,12 +426,11 @@
         document.getElementById('foreignLabel').innerText = `${config.name} Sentence`;
         document.getElementById('foreignRowTitle').innerText = `${config.name} Phrase Map`;
 
-        // Update Buttons
+        // Update Active States on Buttons
         Object.keys(LANG_CONFIG).forEach(code => {
             const btn = document.getElementById('btn' + code.toUpperCase());
             if (btn) {
                 btn.className = "lang-btn";
-                btn.innerText = LANG_CONFIG[code].label;
                 if (code === lang) {
                     btn.classList.add("active", config.theme);
                 }
@@ -419,7 +440,7 @@
         handleInput('en');
     }
 
-    // Initialize labels on load
+    // Initialize state on load
     setLanguage('de');
 </script>
 </body>
