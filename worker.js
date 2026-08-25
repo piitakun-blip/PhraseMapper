@@ -4,6 +4,7 @@ const JSON_HEADERS = {
 };
 
 const AI_MODEL = "@cf/meta/llama-3.1-8b-instruct";
+const TRANSLATION_MODEL = "@cf/meta/m2m100-1.2b";
 
 function jsonResponse(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -72,6 +73,42 @@ function parseGoogleTranslation(data) {
     translit: translit.trim(),
     provider: "google",
   };
+}
+
+async function cloudflareTranslate(text, sourceLang, targetLang, env) {
+  if (!env.AI) {
+    return null;
+  }
+
+  try {
+    const result = await env.AI.run(
+      TRANSLATION_MODEL,
+      {
+        text,
+        source_lang: sourceLang,
+        target_lang: targetLang,
+      }
+    );
+
+    const translation =
+      result?.translated_text ??
+      result?.translation ??
+      result?.response ??
+      "";
+
+    if (!translation || !String(translation).trim()) {
+      return null;
+    }
+
+    return {
+      translation: String(translation).trim(),
+      translit: "",
+      provider: "cloudflare",
+    };
+  } catch (error) {
+    console.warn("Cloudflare translation failed", error);
+    return null;
+  }
 }
 
 async function googleTranslate(text, sourceLang, targetLang) {
@@ -170,7 +207,7 @@ async function myMemoryTranslate(text, sourceLang, targetLang) {
   }
 }
 
-async function handleTranslate(request) {
+async function handleTranslate(request, env) {
   let body;
   try {
     body = await readJson(request);
@@ -192,31 +229,76 @@ async function handleTranslate(request) {
     return jsonResponse({ error: "Text too long" }, 400);
   }
 
-  const google = await googleTranslate(text, sourceLang, targetLang);
-  if (google) return jsonResponse(google);
+  // Primary translation provider: Cloudflare Workers AI.
+  const cloudflare = await cloudflareTranslate(
+    text,
+    sourceLang,
+    targetLang,
+    env
+  );
 
+  if (cloudflare) {
+    return jsonResponse(cloudflare);
+  }
+
+  // First fallback: Google.
+  const google = await googleTranslate(
+    text,
+    sourceLang,
+    targetLang
+  );
+
+  if (google) {
+    return jsonResponse(google);
+  }
+
+  // Additional backup providers.
   if (allowBackup) {
-    const lingva = await lingvaTranslate(text, sourceLang, targetLang);
-    if (lingva) return jsonResponse(lingva);
+    const lingva = await lingvaTranslate(
+      text,
+      sourceLang,
+      targetLang
+    );
+
+    if (lingva) {
+      return jsonResponse(lingva);
+    }
 
     if (allowMyMemory) {
-      const memory = await myMemoryTranslate(text, sourceLang, targetLang);
-      if (memory) return jsonResponse(memory);
+      const memory = await myMemoryTranslate(
+        text,
+        sourceLang,
+        targetLang
+      );
+
+      if (memory) {
+        return jsonResponse(memory);
+      }
     }
   }
 
-  return jsonResponse({
-    translation: "",
-    translit: "",
-    provider: "unavailable",
-  }, 503);
+  return jsonResponse(
+    {
+      translation: "",
+      translit: "",
+      provider: "unavailable",
+    },
+    503
+  );
 }
 
 function buildTutorPrompt(body) {
-  const languageName = String(body?.languageName || "the selected language");
-  const englishSentence = String(body?.englishSentence || "").trim();
-  const translatedSentence = String(body?.translatedSentence || "").trim();
-  const question = String(body?.question || "").trim();
+  const languageName =
+    String(body?.languageName || "the selected language");
+
+  const englishSentence =
+    String(body?.englishSentence || "").trim();
+
+  const translatedSentence =
+    String(body?.translatedSentence || "").trim();
+
+  const question =
+    String(body?.question || "").trim();
 
   const cards = Array.isArray(body?.phraseCards)
     ? body.phraseCards.slice(0, 20)
@@ -224,10 +306,17 @@ function buildTutorPrompt(body) {
 
   const phraseText = cards
     .map((card, index) => {
-      const phrase = String(card?.phrase || "").trim();
-      const gloss = String(card?.gloss || "").trim();
-      const reading = String(card?.reading || "").trim();
-      const romaji = String(card?.romaji || "").trim();
+      const phrase =
+        String(card?.phrase || "").trim();
+
+      const gloss =
+        String(card?.gloss || "").trim();
+
+      const reading =
+        String(card?.reading || "").trim();
+
+      const romaji =
+        String(card?.romaji || "").trim();
 
       return `${index + 1}. ${phrase}` +
         (gloss ? ` — ${gloss}` : "") +
@@ -263,13 +352,21 @@ Answer the learner directly.`;
 function extractAIText(result) {
   if (!result) return "";
 
-  if (typeof result === "string") return result;
+  if (typeof result === "string") {
+    return result;
+  }
 
-  if (typeof result.response === "string") return result.response;
+  if (typeof result.response === "string") {
+    return result.response;
+  }
 
-  if (typeof result.result === "string") return result.result;
+  if (typeof result.result === "string") {
+    return result.result;
+  }
 
-  if (typeof result.output_text === "string") return result.output_text;
+  if (typeof result.output_text === "string") {
+    return result.output_text;
+  }
 
   if (Array.isArray(result)) {
     return result
@@ -283,43 +380,72 @@ function extractAIText(result) {
 
 async function handleChat(request, env) {
   if (!env.AI) {
-    return jsonResponse({
-      error: "Workers AI binding is not configured",
-    }, 503);
+    return jsonResponse(
+      {
+        error: "Workers AI binding is not configured",
+      },
+      503
+    );
   }
 
   let body;
+
   try {
     body = await readJson(request);
   } catch {
-    return jsonResponse({ error: "Invalid JSON" }, 400);
+    return jsonResponse(
+      {
+        error: "Invalid JSON",
+      },
+      400
+    );
   }
 
-  const question = String(body?.question || "").trim();
+  const question =
+    String(body?.question || "").trim();
 
   if (!question) {
-    return jsonResponse({ error: "Question is required" }, 400);
+    return jsonResponse(
+      {
+        error: "Question is required",
+      },
+      400
+    );
   }
 
   if (question.length > 2000) {
-    return jsonResponse({ error: "Question too long" }, 400);
+    return jsonResponse(
+      {
+        error: "Question too long",
+      },
+      400
+    );
   }
 
-  const prompt = buildTutorPrompt(body);
+  const prompt =
+    buildTutorPrompt(body);
 
   try {
-    const result = await env.AI.run(AI_MODEL, {
-      prompt,
-      max_tokens: 650,
-      temperature: 0.35,
-    });
+    const result =
+      await env.AI.run(
+        AI_MODEL,
+        {
+          prompt,
+          max_tokens: 650,
+          temperature: 0.35,
+        }
+      );
 
-    const answer = extractAIText(result).trim();
+    const answer =
+      extractAIText(result).trim();
 
     if (!answer) {
-      return jsonResponse({
-        error: "AI returned no text",
-      }, 502);
+      return jsonResponse(
+        {
+          error: "AI returned no text",
+        },
+        502
+      );
     }
 
     return jsonResponse({
@@ -327,49 +453,98 @@ async function handleChat(request, env) {
       model: AI_MODEL,
     });
   } catch (error) {
-    console.error("AI error", error);
+    console.error(
+      "AI error",
+      error
+    );
 
-    return jsonResponse({
-      error: "AI tutor unavailable",
-    }, 503);
+    return jsonResponse(
+      {
+        error: "AI tutor unavailable",
+      },
+      503
+    );
   }
 }
 
 export default {
   async fetch(request, env) {
-    const url = new URL(request.url);
+    const url =
+      new URL(request.url);
 
     if (request.method === "OPTIONS") {
-      return new Response(null, {
-        status: 204,
-        headers: {
-          "access-control-allow-origin": url.origin,
-          "access-control-allow-methods": "POST, OPTIONS",
-          "access-control-allow-headers": "content-type",
-        },
-      });
+      return new Response(
+        null,
+        {
+          status: 204,
+          headers: {
+            "access-control-allow-origin":
+              url.origin,
+            "access-control-allow-methods":
+              "POST, OPTIONS",
+            "access-control-allow-headers":
+              "content-type",
+          },
+        }
+      );
     }
 
-    if (url.pathname === "/api/translate") {
-      if (request.method !== "POST") {
-        return jsonResponse({ error: "Method not allowed" }, 405);
+    if (
+      url.pathname ===
+      "/api/translate"
+    ) {
+      if (
+        request.method !== "POST"
+      ) {
+        return jsonResponse(
+          {
+            error: "Method not allowed",
+          },
+          405
+        );
       }
-      return handleTranslate(request);
+
+      return handleTranslate(
+        request,
+        env
+      );
     }
 
-    if (url.pathname === "/api/chat") {
-      if (request.method !== "POST") {
-        return jsonResponse({ error: "Method not allowed" }, 405);
+    if (
+      url.pathname ===
+      "/api/chat"
+    ) {
+      if (
+        request.method !== "POST"
+      ) {
+        return jsonResponse(
+          {
+            error: "Method not allowed",
+          },
+          405
+        );
       }
-      return handleChat(request, env);
+
+      return handleChat(
+        request,
+        env
+      );
     }
 
     if (env.ASSETS) {
-      return env.ASSETS.fetch(request);
+      return env.ASSETS.fetch(
+        request
+      );
     }
 
-    return new Response("Phrase Mapper backend is running.", {
-      headers: { "content-type": "text/plain; charset=utf-8" },
-    });
+    return new Response(
+      "Phrase Mapper backend is running.",
+      {
+        headers: {
+          "content-type":
+            "text/plain; charset=utf-8",
+        },
+      }
+    );
   },
 };
