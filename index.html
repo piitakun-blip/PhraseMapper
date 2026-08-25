@@ -858,7 +858,7 @@ function isMobileMode() {
 }
 
 const TRANSLATION_CACHE =
-    "wardPhraseMapper:v23:";
+    "wardPhraseMapper:v24:";
 
 
 /* ================================================================
@@ -4073,11 +4073,35 @@ async function updatePhraseMaps() {
         foreignPhrases.length
     ) {
 
+        /*
+         * Translate target-language phrase cards INDIVIDUALLY.
+         *
+         * Batched translation can reorder words across phrase boundaries
+         * when translating into English. That caused cases such as:
+         *
+         *   Ich möchte        -> I want
+         *   mit dir           -> to go to the party
+         *   auf die Party gehen -> with you
+         *
+         * The German sentence was correct; the English glosses were simply
+         * being assigned to the wrong cards after Google reordered the batch.
+         *
+         * Individual requests preserve one-to-one card alignment.
+         * Backup translation remains disabled for phrase cards.
+         */
         const translatedForeign =
-            await translateBatchFast(
-                foreignPhrases,
-                currentLang,
-                "en"
+            await Promise.all(
+                foreignPhrases.map(
+                    phrase =>
+                        translateUnified(
+                            phrase,
+                            currentLang,
+                            "en",
+                            {
+                                allowBackup: false
+                            }
+                        )
+                )
             );
 
 
