@@ -690,7 +690,7 @@
                         id="allowBackupToggle"
                         checked
                     >
-                    Use backup if Google fails (results may be less reliable)
+                    Use backup if Google fails (proxy first; emergency backup may be less reliable)
                 </span>
             </label>
 
@@ -862,7 +862,7 @@ function isMobileMode() {
 }
 
 const TRANSLATION_CACHE =
-    "wardPhraseMapper:v27:";
+    "wardPhraseMapper:v29:";
 
 
 /* ================================================================
@@ -980,11 +980,27 @@ function setTranslationProviderStatus(provider, detail = "") {
 
     }
 
+    else if (provider === "lingva") {
+
+        status.innerText =
+            detail ||
+            "✓ Backup proxy in use — Google-quality translation";
+
+    }
+
+    else if (provider === "mymemory") {
+
+        status.innerText =
+            detail ||
+            "⚠ Emergency backup in use — results may be less reliable";
+
+    }
+
     else if (provider === "backup") {
 
         status.innerText =
             detail ||
-            "⚠ Backup translator in use — results may be less reliable";
+            "⚠ Backup translator in use";
 
     }
 
@@ -1024,6 +1040,243 @@ function backupAllowed() {
 /* ================================================================
    TRANSLATION
    ================================================================ */
+
+async function fetchJSONWithTimeout(
+    url,
+    timeoutMs = 6500,
+    externalSignal = null
+) {
+
+    const controller =
+        new AbortController();
+
+    const timeout =
+        setTimeout(
+            () => controller.abort(),
+            timeoutMs
+        );
+
+    const externalAbort =
+        () => controller.abort();
+
+    if (
+        externalSignal
+    ) {
+
+        if (
+            externalSignal.aborted
+        ) {
+
+            controller.abort();
+
+        }
+
+        else {
+
+            externalSignal.addEventListener(
+                "abort",
+                externalAbort,
+                { once: true }
+            );
+
+        }
+
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                url,
+                {
+                    signal:
+                        controller.signal,
+
+                    cache:
+                        "no-store"
+                }
+            );
+
+        if (
+            !response.ok
+        ) {
+
+            throw new Error(
+                `HTTP ${response.status}`
+            );
+
+        }
+
+        return await response.json();
+
+    }
+
+    finally {
+
+        clearTimeout(
+            timeout
+        );
+
+        if (
+            externalSignal
+        ) {
+
+            externalSignal.removeEventListener(
+                "abort",
+                externalAbort
+            );
+
+        }
+
+    }
+
+}
+
+
+async function lingvaTranslate(
+    text,
+    sourceLang,
+    targetLang,
+    signal = null
+) {
+
+    const instances = [
+        "https://translate.dr460nf1r3.org",
+        "https://lingva.garudalinux.org",
+        "https://translate.jae.fi"
+    ];
+
+    const langMap = {
+        zh: "zh-CN"
+    };
+
+    const source =
+        langMap[sourceLang] ||
+        sourceLang;
+
+    const target =
+        langMap[targetLang] ||
+        targetLang;
+
+    for (
+        const base
+        of instances
+    ) {
+
+        try {
+
+            const url =
+                `${base}/api/v1/` +
+                `${encodeURIComponent(source)}/` +
+                `${encodeURIComponent(target)}/` +
+                `${encodeURIComponent(text)}`;
+
+            const data =
+                await fetchJSONWithTimeout(
+                    url,
+                    6500,
+                    signal
+                );
+
+            const translation =
+                data?.translation;
+
+            if (
+                translation &&
+                String(translation).trim()
+            ) {
+
+                return {
+                    translation:
+                        String(translation).trim(),
+
+                    translit: "",
+
+                    provider:
+                        "lingva"
+                };
+
+            }
+
+        }
+
+        catch (
+            error
+        ) {
+
+            if (
+                error &&
+                error.name === "AbortError" &&
+                signal &&
+                signal.aborted
+            ) {
+
+                throw error;
+
+            }
+
+            console.warn(
+                "Lingva instance failed:",
+                base,
+                error
+            );
+
+        }
+
+    }
+
+    return null;
+
+}
+
+
+async function myMemoryTranslate(
+    text,
+    sourceLang,
+    targetLang,
+    signal = null
+) {
+
+    const url =
+        "https://api.mymemory.translated.net/get" +
+        "?q=" +
+        encodeURIComponent(text) +
+        "&langpair=" +
+        encodeURIComponent(sourceLang) +
+        "|" +
+        encodeURIComponent(targetLang);
+
+    const data =
+        await fetchJSONWithTimeout(
+            url,
+            8000,
+            signal
+        );
+
+    const translation =
+        data?.responseData?.translatedText;
+
+    if (
+        translation &&
+        String(translation).trim()
+    ) {
+
+        return {
+            translation:
+                String(translation).trim(),
+
+            translit: "",
+
+            provider:
+                "mymemory"
+        };
+
+    }
+
+    return null;
+
+}
+
 
 async function translateUnified(
     text,
@@ -1247,7 +1500,6 @@ async function translateUnified(
             "allowBackupToggle"
         );
 
-
     if (
         allowBackup &&
         backupToggle &&
@@ -1256,58 +1508,27 @@ async function translateUnified(
 
         try {
 
-            const url =
-                "https://api.mymemory.translated.net/get" +
-                "?q=" +
-                encodeURIComponent(text) +
-                "&langpair=" +
-                encodeURIComponent(sourceLang) +
-                "|" +
-                encodeURIComponent(targetLang);
-
-
-            const response =
-                await fetch(
-                    url,
-                    {
-                        signal,
-                        cache: "no-store"
-                    }
+            const lingva =
+                await lingvaTranslate(
+                    text,
+                    sourceLang,
+                    targetLang,
+                    signal
                 );
 
+            if (
+                lingva
+            ) {
 
-            if (response.ok) {
-
-                const data =
-                    await response.json();
-
-
-                const translation =
-                    data?.responseData?.translatedText;
-
-
-                if (
-                    translation &&
-                    translation.trim()
-                ) {
-
-                    return {
-
-                        translation:
-                            translation.trim(),
-
-                        translit: "",
-
-                        provider:
-                            "backup"
-
-                    };
-
-                }
+                return lingva;
 
             }
 
-        } catch (error) {
+        }
+
+        catch (
+            error
+        ) {
 
             if (
                 error &&
@@ -1319,14 +1540,59 @@ async function translateUnified(
             }
 
             console.warn(
-                "Backup translation failed:",
+                "Lingva backup failed:",
                 error
             );
 
         }
 
-    }
+        if (
+            options.allowMyMemory === true
+        ) {
 
+            try {
+
+                const memory =
+                    await myMemoryTranslate(
+                        text,
+                        sourceLang,
+                        targetLang,
+                        signal
+                    );
+
+                if (
+                    memory
+                ) {
+
+                    return memory;
+
+                }
+
+            }
+
+            catch (
+                error
+            ) {
+
+                if (
+                    error &&
+                    error.name === "AbortError"
+                ) {
+
+                    throw error;
+
+                }
+
+                console.warn(
+                    "MyMemory emergency backup failed:",
+                    error
+                );
+
+            }
+
+        }
+
+    }
 
     return null;
 
@@ -4086,7 +4352,8 @@ async function updatePhraseMaps() {
                     "ja",
                     "en",
                     {
-                        allowBackup: true
+                        allowBackup: true,
+                        allowMyMemory: true
                     }
                 );
 
@@ -4358,6 +4625,7 @@ function handleInput(lang) {
                                 currentLang,
                                 {
                                     allowBackup: true,
+                                    allowMyMemory: true,
                                     signal
                                 }
                             );
@@ -4373,11 +4641,21 @@ function handleInput(lang) {
 
 
                             if (
-                                result.provider === "backup"
+                                result.provider === "lingva"
                             ) {
 
                                 setTranslationProviderStatus(
-                                    "backup"
+                                    "lingva"
+                                );
+
+                            }
+
+                            else if (
+                                result.provider === "mymemory"
+                            ) {
+
+                                setTranslationProviderStatus(
+                                    "mymemory"
                                 );
 
                             }
@@ -4423,6 +4701,7 @@ function handleInput(lang) {
                                 "en",
                                 {
                                     allowBackup: true,
+                                    allowMyMemory: true,
                                     signal
                                 }
                             );
@@ -4438,11 +4717,21 @@ function handleInput(lang) {
 
 
                             if (
-                                result.provider === "backup"
+                                result.provider === "lingva"
                             ) {
 
                                 setTranslationProviderStatus(
-                                    "backup"
+                                    "lingva"
+                                );
+
+                            }
+
+                            else if (
+                                result.provider === "mymemory"
+                            ) {
+
+                                setTranslationProviderStatus(
+                                    "mymemory"
                                 );
 
                             }
