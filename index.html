@@ -686,7 +686,7 @@
                         id="allowBackupToggle"
                         checked
                     >
-                    Use backup if Google fails
+                    Use backup if Google fails (results may be less reliable)
                 </span>
             </label>
 
@@ -858,7 +858,7 @@ function isMobileMode() {
 }
 
 const TRANSLATION_CACHE =
-    "wardPhraseMapper:v24:";
+    "wardPhraseMapper:v25:";
 
 
 /* ================================================================
@@ -951,6 +951,22 @@ function speakText(inputId, langCode) {
 
     window.speechSynthesis.speak(
         utterance
+    );
+
+}
+
+
+
+function backupAllowed() {
+
+    const toggle =
+        document.getElementById(
+            "allowBackupToggle"
+        );
+
+    return !!(
+        toggle &&
+        toggle.checked
     );
 
 }
@@ -1514,7 +1530,8 @@ async function getJapaneseReading(
 async function translateBatchFast(
     phrases,
     sourceLang,
-    targetLang
+    targetLang,
+    options = {}
 ) {
 
     if (!phrases.length) {
@@ -1522,16 +1539,23 @@ async function translateBatchFast(
     }
 
 
-    /*
-     * The delimiter is deliberately unusual.
-     */
+    const allowBackup =
+        options.allowBackup === true;
 
+
+    /*
+     * Google batch translation first for efficiency.
+     * Backup is intentionally NOT used on the joined batch because
+     * backup translators can rearrange or damage the delimiter.
+     */
     const delimiter =
         " ###WARD_PHRASE### ";
 
 
     const joined =
-        phrases.join(delimiter);
+        phrases.join(
+            delimiter
+        );
 
 
     const result =
@@ -1546,83 +1570,78 @@ async function translateBatchFast(
 
 
     if (
-        !result ||
-        !result.translation
+        result &&
+        result.translation
     ) {
 
-        return phrases.map(
-            () => ({
-                translation: "",
-                translit: ""
-            })
-        );
-
-    }
-
-
-    const translations =
-        result.translation.split(
-            /\s*###WARD_PHRASE###\s*/i
-        );
-
-
-    const transliterations =
-        result.translit
-            ? result.translit.split(
+        const translations =
+            result.translation.split(
                 /\s*###WARD_PHRASE###\s*/i
-            )
-            : [];
-
-
-    /*
-     * If Google destroyed the delimiter,
-     * translate individually.
-     */
-
-    if (
-        phrases.length > 1 &&
-        translations.length !== phrases.length
-    ) {
-
-        const individual =
-            await Promise.all(
-                phrases.map(
-                    phrase =>
-                        translateUnified(
-                            phrase,
-                            sourceLang,
-                            targetLang,
-                            {
-                                allowBackup: false
-                            }
-                        )
-                )
             );
 
 
-        return individual.map(
-            result => ({
+        const transliterations =
+            result.translit
+                ? result.translit.split(
+                    /\s*###WARD_PHRASE###\s*/i
+                )
+                : [];
 
-                translation:
-                    result?.translation || "",
 
-                translit:
-                    result?.translit || ""
+        /*
+         * If Google preserved the delimiter, keep the efficient batch result.
+         */
+        if (
+            phrases.length === 1 ||
+            translations.length === phrases.length
+        ) {
 
-            })
-        );
+            return phrases.map(
+                (_, index) => ({
+
+                    translation:
+                        translations[index]?.trim() || "",
+
+                    translit:
+                        transliterations[index]?.trim() || ""
+
+                })
+            );
+
+        }
 
     }
 
 
-    return phrases.map(
-        (_, index) => ({
+    /*
+     * If Google failed OR destroyed the delimiter, translate each card
+     * individually. When the user has enabled backup, backup may now be
+     * used here too. Individual translation keeps phrase/card alignment.
+     */
+    const individual =
+        await Promise.all(
+            phrases.map(
+                phrase =>
+                    translateUnified(
+                        phrase,
+                        sourceLang,
+                        targetLang,
+                        {
+                            allowBackup
+                        }
+                    )
+            )
+        );
+
+
+    return individual.map(
+        item => ({
 
             translation:
-                translations[index]?.trim() || "",
+                item?.translation || "",
 
             translit:
-                transliterations[index]?.trim() || ""
+                item?.translit || ""
 
         })
     );
@@ -3804,7 +3823,11 @@ async function updatePhraseMaps() {
             await translateBatchFast(
                 englishPhrases,
                 "en",
-                currentLang
+                currentLang,
+                {
+                    allowBackup:
+                        backupAllowed()
+                }
             );
 
 
@@ -3966,7 +3989,8 @@ async function updatePhraseMaps() {
                     "ja",
                     "en",
                     {
-                        allowBackup: false
+                        allowBackup:
+                            backupAllowed()
                     }
                 )
                 .then(
@@ -4098,7 +4122,8 @@ async function updatePhraseMaps() {
                             currentLang,
                             "en",
                             {
-                                allowBackup: false
+                                allowBackup:
+                                    backupAllowed()
                             }
                         )
                 )
