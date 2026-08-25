@@ -862,7 +862,7 @@ function isMobileMode() {
 }
 
 const TRANSLATION_CACHE =
-    "wardPhraseMapper:v31:";
+    "wardPhraseMapper:v32:";
 
 
 /* ================================================================
@@ -873,36 +873,43 @@ const LANG_CONFIG = {
 
     de: {
         name: "German",
+        flag: "🇩🇪",
         theme: "orange-mode"
     },
 
     ja: {
         name: "Japanese",
+        flag: "🇯🇵",
         theme: "sakura-mode"
     },
 
     es: {
         name: "Spanish",
+        flag: "🇪🇸",
         theme: "sangria-mode"
     },
 
     fr: {
         name: "French",
+        flag: "🇫🇷",
         theme: "lavender-mode"
     },
 
     it: {
         name: "Italian",
+        flag: "🇮🇹",
         theme: "emerald-mode"
     },
 
     ru: {
         name: "Russian",
+        flag: "🇷🇺",
         theme: "crimson-mode"
     },
 
     zh: {
         name: "Chinese",
+        flag: "🇨🇳",
         theme: "gold-mode"
     }
 
@@ -984,7 +991,7 @@ function setTranslationProviderStatus(provider, detail = "") {
 
         status.innerText =
             detail ||
-            "✓ Backup proxy in use — Google-quality translation";
+            "✓ Backup translation in use — phrase cards will fill progressively";
 
     }
 
@@ -992,7 +999,7 @@ function setTranslationProviderStatus(provider, detail = "") {
 
         status.innerText =
             detail ||
-            "⚠ Emergency backup in use — results may be less reliable";
+            "⚠ Emergency backup in use — phrase cards may take a few seconds";
 
     }
 
@@ -2066,6 +2073,48 @@ async function getJapaneseReading(
 
 
 /* ================================================================
+   LIMITED-CONCURRENCY CARD TRANSLATION
+   ================================================================ */
+
+async function mapWithConcurrency(items, worker, limit = null) {
+    if (!items.length) return [];
+
+    const concurrency =
+        limit || (isMobileMode() ? 2 : 4);
+
+    const results = new Array(items.length);
+    let nextIndex = 0;
+
+    async function runWorker() {
+        while (true) {
+            const index = nextIndex++;
+            if (index >= items.length) return;
+
+            try {
+                results[index] =
+                    await worker(items[index], index);
+            } catch (error) {
+                console.warn(
+                    "Phrase-card translation failed:",
+                    error
+                );
+                results[index] = null;
+            }
+        }
+    }
+
+    await Promise.all(
+        Array.from(
+            { length: Math.min(concurrency, items.length) },
+            () => runWorker()
+        )
+    );
+
+    return results;
+}
+
+
+/* ================================================================
    ENGLISH PHRASE BATCH TRANSLATION
    ================================================================ */
 
@@ -2161,21 +2210,20 @@ async function translateBatchFast(
      * used here too. Individual translation keeps phrase/card alignment.
      */
     const individual =
-        await Promise.all(
-            phrases.map(
-                phrase =>
-                    translateUnified(
-                        phrase,
-                        sourceLang,
-                        targetLang,
-                        {
-                            allowBackup,
-                            allowMyMemory:
-                                allowBackup &&
-                                backupAllowed()
-                        }
-                    )
-            )
+        await mapWithConcurrency(
+            phrases,
+            phrase =>
+                translateUnified(
+                    phrase,
+                    sourceLang,
+                    targetLang,
+                    {
+                        allowBackup,
+                        allowMyMemory:
+                            allowBackup &&
+                            backupAllowed()
+                    }
+                )
         );
 
 
@@ -4651,22 +4699,21 @@ async function updatePhraseMaps() {
          * Backup translation remains disabled for phrase cards.
          */
         const translatedForeign =
-            await Promise.all(
-                foreignPhrases.map(
-                    phrase =>
-                        translateUnified(
-                            phrase,
-                            currentLang,
-                            "en",
-                            {
-                                allowBackup:
-                                    backupAllowed(),
+            await mapWithConcurrency(
+                foreignPhrases,
+                phrase =>
+                    translateUnified(
+                        phrase,
+                        currentLang,
+                        "en",
+                        {
+                            allowBackup:
+                                backupAllowed(),
 
-                                allowMyMemory:
-                                    backupAllowed()
-                            }
-                        )
-                )
+                            allowMyMemory:
+                                backupAllowed()
+                        }
+                    )
             );
 
 
@@ -5070,10 +5117,6 @@ function setLanguage(lang) {
             "Phrase Mapper";
     }
 
-    document.title =
-        "Phrase Mapper";
-
-
 
     if (
         !LANG_CONFIG[lang]
@@ -5096,10 +5139,16 @@ function setLanguage(lang) {
      * Titles.
      */
 
+    const titleText =
+        `🇺🇸 ➜ ${config.flag} Ward's Phrase Mapper`;
+
     document.getElementById(
         "mainTitle"
     ).innerText =
-        `EN ➜ ${lang.toUpperCase()}: Ward's Phrasen-Mapper`;
+        titleText;
+
+    document.title =
+        `${config.name} — Ward's Phrase Mapper`;
 
 
     document.getElementById(
