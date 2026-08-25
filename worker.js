@@ -330,7 +330,7 @@ The learner is studying ${languageName}.
 
 Answer the learner's current question about the translation below.
 
-Give a simple, useful explanation in 1–2 short paragraphs, no more than 100 words. Focus on helping the learner understand how the expression works in the target language. Explain only the language features that are important to the learner's question.
+Give a simple, useful explanation in 2-5 short sentences no more than 100 words. Focus on helping the learner understand how the expression works in the target language. Explain only the language features that are important to the learner's question.
 
 
 English sentence:
