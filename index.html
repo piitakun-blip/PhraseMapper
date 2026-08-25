@@ -252,11 +252,11 @@
 
         @media (max-width: 768px) {
             body {
-                padding: 0.65rem 0.45rem;
+                padding: 0.4rem 0.35rem;
             }
 
             .container {
-                padding: 1rem 0.75rem;
+                padding: 0.75rem 0.65rem;
                 border-radius: 10px;
             }
 
@@ -268,27 +268,37 @@
             }
 
             .control-panel {
-                padding: 0.7rem;
-                gap: 0.75rem;
-                margin-bottom: 1.2rem;
+                padding: 0.55rem;
+                gap: 0.5rem;
+                margin-bottom: 0.8rem;
                 align-items: stretch;
             }
 
             .lang-selector {
-                display: grid;
-                grid-template-columns: repeat(2, minmax(0, 1fr));
+                display: flex;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
                 width: 100%;
-                gap: 0.45rem;
+                gap: 0.4rem;
+                padding-bottom: 0.15rem;
+                scrollbar-width: none;
+            }
+
+            .lang-selector::-webkit-scrollbar {
+                display: none;
             }
 
             .lang-selector > span {
-                grid-column: 1 / -1;
+                display: none;
             }
 
             .lang-btn {
+                flex: 0 0 auto;
                 justify-content: center;
-                padding: 0.45rem 0.55rem;
-                min-width: 0;
+                padding: 0.42rem 0.65rem;
+                min-width: 64px;
+                white-space: nowrap;
             }
 
             .toggle-container {
@@ -299,8 +309,8 @@
 
             .grid-inputs {
                 grid-template-columns: 1fr;
-                gap: 1rem;
-                margin-bottom: 1.2rem;
+                gap: 0.7rem;
+                margin-bottom: 0.85rem;
             }
 
             textarea {
@@ -309,11 +319,11 @@
             }
 
             .output-section {
-                gap: 1rem;
+                gap: 0.75rem;
             }
 
             .row-container {
-                padding: 0.85rem;
+                padding: 0.65rem;
             }
 
             .word-grid {
@@ -337,8 +347,10 @@
                 font-size: 1.08rem;
             }
 
-            .lang-selector {
-                grid-template-columns: 1fr 1fr;
+            .lang-btn {
+                min-width: 58px;
+                padding-left: 0.55rem;
+                padding-right: 0.55rem;
             }
 
             .word-card {
@@ -665,10 +677,15 @@
     let translationTimeout;
     let mappingTimeout;
 
+    function isMobileMode() {
+        return window.matchMedia("(max-width: 768px)").matches;
+    }
+
     // Translation request manager
     let fullSentenceController = null;
     let mappingGeneration = 0;
-    const MAX_CONCURRENT_PHRASE_REQUESTS = 3;
+    const DESKTOP_MAX_CONCURRENT_PHRASE_REQUESTS = 3;
+    const MOBILE_MAX_CONCURRENT_PHRASE_REQUESTS = 2;
     let activePhraseRequests = 0;
     const phraseRequestQueue = [];
     const activePhraseControllers = new Set();
@@ -1051,8 +1068,12 @@
     }
 
     function pumpPhraseQueue() {
+        const maxConcurrent = isMobileMode()
+            ? MOBILE_MAX_CONCURRENT_PHRASE_REQUESTS
+            : DESKTOP_MAX_CONCURRENT_PHRASE_REQUESTS;
+
         while (
-            activePhraseRequests < MAX_CONCURRENT_PHRASE_REQUESTS &&
+            activePhraseRequests < maxConcurrent &&
             phraseRequestQueue.length > 0
         ) {
             const job = phraseRequestQueue.shift();
@@ -1154,9 +1175,14 @@
         }
     }
 
-    function scheduleMappingUpdate(delay = 750) {
+    function scheduleMappingUpdate(delay = null) {
         clearTimeout(mappingTimeout);
-        mappingTimeout = setTimeout(() => updateMapping(), delay);
+
+        const effectiveDelay = delay !== null
+            ? delay
+            : (isMobileMode() ? 1100 : 750);
+
+        mappingTimeout = setTimeout(() => updateMapping(), effectiveDelay);
     }
 
     function handleInput(lang) {
@@ -1210,7 +1236,13 @@
                 } else if (res) {
                     foreignInput.value = res.translation;
                     statusSpan.innerText = res.provider === "backup" ? "Backup translation used" : "Translation synced!";
-                    updateMapping();
+
+                    if (isMobileMode()) {
+                        clearTimeout(mappingTimeout);
+                        mappingTimeout = setTimeout(() => updateMapping(), 350);
+                    } else {
+                        updateMapping();
+                    }
                 } else {
                     statusSpan.innerText = "";
                 }
@@ -1250,7 +1282,13 @@
                 } else if (res) {
                     engInput.value = res.translation;
                     statusSpan.innerText = res.provider === "backup" ? "Backup translation used" : "Translation synced!";
-                    updateMapping();
+
+                    if (isMobileMode()) {
+                        clearTimeout(mappingTimeout);
+                        mappingTimeout = setTimeout(() => updateMapping(), 350);
+                    } else {
+                        updateMapping();
+                    }
                 } else {
                     statusSpan.innerText = "";
                 }
@@ -1718,4 +1756,3 @@
 </script>
 
 </body>
-</html>
