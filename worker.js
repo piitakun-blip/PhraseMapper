@@ -3,7 +3,7 @@ const JSON_HEADERS = {
   "cache-control": "no-store",
 };
 
-const AI_MODEL = "@cf/zai-org/glm-4.7-flash";
+const AI_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
 const TRANSLATION_MODEL = "@cf/meta/m2m100-1.2b";
 
 function jsonResponse(data, status = 200) {
