@@ -849,10 +849,16 @@ let currentLang = "de";
 
 let translationTimeout = null;
 
+let fullTranslationController = null;
+
 let updateGeneration = 0;
 
+function isMobileMode() {
+    return window.matchMedia("(max-width: 768px)").matches;
+}
+
 const TRANSLATION_CACHE =
-    "wardPhraseMapper:v20:";
+    "wardPhraseMapper:v22:";
 
 
 /* ================================================================
@@ -957,27 +963,31 @@ function speakText(inputId, langCode) {
 async function translateUnified(
     text,
     sourceLang,
-    targetLang
+    targetLang,
+    options = {}
 ) {
 
     if (!text || !text.trim()) {
 
         return {
             translation: "",
-            translit: ""
+            translit: "",
+            provider: "none"
         };
 
     }
+
+    const allowBackup =
+        options.allowBackup === true;
+
+    const signal =
+        options.signal || null;
 
 
     const cacheKey =
         TRANSLATION_CACHE +
         `${sourceLang}>${targetLang}:${text}`;
 
-
-    /* ------------------------------------------------------------
-       CACHE
-       ------------------------------------------------------------ */
 
     try {
 
@@ -988,7 +998,13 @@ async function translateUnified(
 
         if (cached) {
 
-            return JSON.parse(cached);
+            const parsed =
+                JSON.parse(cached);
+
+            return {
+                ...parsed,
+                provider: "google"
+            };
 
         }
 
@@ -1001,10 +1017,6 @@ async function translateUnified(
 
     }
 
-
-    /* ------------------------------------------------------------
-       GOOGLE
-       ------------------------------------------------------------ */
 
     try {
 
@@ -1022,7 +1034,13 @@ async function translateUnified(
 
 
         const response =
-            await fetch(url);
+            await fetch(
+                url,
+                {
+                    signal,
+                    cache: "no-store"
+                }
+            );
 
 
         if (!response.ok) {
@@ -1039,20 +1057,27 @@ async function translateUnified(
 
 
         let translation = "";
-
         let translit = "";
 
 
         if (
             data &&
-            data[0]
+            Array.isArray(data[0])
         ) {
 
             data[0].forEach(
                 segment => {
 
                     if (
-                        segment &&
+                        !Array.isArray(segment)
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    if (
                         segment[0]
                     ) {
 
@@ -1063,22 +1088,28 @@ async function translateUnified(
 
 
                     if (
-                        segment &&
-                        segment[2]
+                        !segment[0]
                     ) {
 
-                        translit +=
-                            segment[2];
+                        if (
+                            typeof segment[2] === "string" &&
+                            segment[2].trim()
+                        ) {
 
-                    }
+                            translit +=
+                                segment[2];
 
-                    else if (
-                        segment &&
-                        segment[3]
-                    ) {
+                        }
 
-                        translit +=
-                            segment[3];
+                        else if (
+                            typeof segment[3] === "string" &&
+                            segment[3].trim()
+                        ) {
+
+                            translit +=
+                                segment[3];
+
+                        }
 
                     }
 
@@ -1120,11 +1151,23 @@ async function translateUnified(
             }
 
 
-            return result;
+            return {
+                ...result,
+                provider: "google"
+            };
 
         }
 
     } catch (error) {
+
+        if (
+            error &&
+            error.name === "AbortError"
+        ) {
+
+            throw error;
+
+        }
 
         console.warn(
             "Primary translation failed:",
@@ -1134,19 +1177,16 @@ async function translateUnified(
     }
 
 
-    /* ------------------------------------------------------------
-       MYMEMORY BACKUP
-       ------------------------------------------------------------ */
-
-    const backup =
+    const backupToggle =
         document.getElementById(
             "allowBackupToggle"
         );
 
 
     if (
-        backup &&
-        backup.checked
+        allowBackup &&
+        backupToggle &&
+        backupToggle.checked
     ) {
 
         try {
@@ -1162,7 +1202,13 @@ async function translateUnified(
 
 
             const response =
-                await fetch(url);
+                await fetch(
+                    url,
+                    {
+                        signal,
+                        cache: "no-store"
+                    }
+                );
 
 
             if (response.ok) {
@@ -1175,14 +1221,20 @@ async function translateUnified(
                     data?.responseData?.translatedText;
 
 
-                if (translation) {
+                if (
+                    translation &&
+                    translation.trim()
+                ) {
 
                     return {
 
                         translation:
                             translation.trim(),
 
-                        translit: ""
+                        translit: "",
+
+                        provider:
+                            "backup"
 
                     };
 
@@ -1191,6 +1243,15 @@ async function translateUnified(
             }
 
         } catch (error) {
+
+            if (
+                error &&
+                error.name === "AbortError"
+            ) {
+
+                throw error;
+
+            }
 
             console.warn(
                 "Backup translation failed:",
@@ -1238,7 +1299,10 @@ async function translateBatchFast(
         await translateUnified(
             joined,
             sourceLang,
-            targetLang
+            targetLang,
+            {
+                allowBackup: false
+            }
         );
 
 
@@ -1288,7 +1352,10 @@ async function translateBatchFast(
                         translateUnified(
                             phrase,
                             sourceLang,
-                            targetLang
+                            targetLang,
+                            {
+                                allowBackup: false
+                            }
                         )
                 )
             );
@@ -2366,41 +2433,125 @@ function parseChinesePhrases(text) {
     const source = String(text || "").trim();
     if (!source) return [];
 
-    // First split at punctuation.
     const clauses = source
         .split(/(?<=[。！？；，、])/u)
         .map(x => x.trim())
         .filter(Boolean);
 
-    const boundaries = new Set([
-        "在","到","从","跟","和","与","给","对","把","被","因为","所以","但是",
-        "如果","然后","以后","以前","为了","关于"
-    ]);
+    const boundaries = [
+        "因为","所以","但是","如果","然后","以后","以前","为了","关于",
+        "在","到","从","跟","和","与","给","对","把","被"
+    ].sort(
+        (a, b) =>
+            b.length - a.length
+    );
 
     const result = [];
 
-    for (const clause of clauses) {
+    for (
+        const clause
+        of clauses
+    ) {
+
         let current = "";
+        let i = 0;
 
-        for (let i = 0; i < clause.length; i++) {
-            const ch = clause[i];
+        while (
+            i < clause.length
+        ) {
 
-            if (boundaries.has(ch) && current.length >= 2) {
-                result.push(current);
-                current = ch;
+            let matchedBoundary =
+                null;
+
+            for (
+                const boundary
+                of boundaries
+            ) {
+
+                if (
+                    clause.startsWith(
+                        boundary,
+                        i
+                    )
+                ) {
+
+                    matchedBoundary =
+                        boundary;
+
+                    break;
+
+                }
+
+            }
+
+
+            if (
+                matchedBoundary &&
+                current.length >= 2
+            ) {
+
+                result.push(
+                    current
+                );
+
+                current =
+                    matchedBoundary;
+
+                i +=
+                    matchedBoundary.length;
+
                 continue;
+
             }
 
-            current += ch;
 
-            // Keep cards readable without pretending this is full syntactic parsing.
-            if (current.length >= 6 && !/[A-Za-z0-9]/.test(ch)) {
-                result.push(current);
+            if (
+                matchedBoundary
+            ) {
+
+                current +=
+                    matchedBoundary;
+
+                i +=
+                    matchedBoundary.length;
+
+            }
+
+            else {
+
+                current +=
+                    clause[i];
+
+                i++;
+
+            }
+
+
+            if (
+                current.length >= 6
+            ) {
+
+                result.push(
+                    current
+                );
+
                 current = "";
+
             }
+
         }
 
-        if (current) result.push(current);
+
+        if (
+            current
+        ) {
+
+            result.push(
+                current
+            );
+
+        }
+
     }
 
     return result.filter(Boolean);
@@ -3520,7 +3671,10 @@ async function updatePhraseMaps() {
                 translateUnified(
                     phrase,
                     "ja",
-                    "ja"
+                    "ja",
+                    {
+                        allowBackup: false
+                    }
                 )
                 .then(
                     readingResult => {
@@ -3535,7 +3689,7 @@ async function updatePhraseMaps() {
                         }
 
                         let romaji =
-                            readingResult?.transliteration ||
+                            readingResult?.translit ||
                             "";
 
                         let hiragana =
@@ -3623,7 +3777,10 @@ async function updatePhraseMaps() {
                 translateUnified(
                     phrase,
                     "ja",
-                    "en"
+                    "en",
+                    {
+                        allowBackup: false
+                    }
                 )
                 .then(
                     result => {
@@ -3667,7 +3824,10 @@ async function updatePhraseMaps() {
                 await translateUnified(
                     foreignText,
                     "ja",
-                    "en"
+                    "en",
+                    {
+                        allowBackup: true
+                    }
                 );
 
 
@@ -3805,7 +3965,10 @@ async function updatePhraseMaps() {
             await translateUnified(
                 foreignText,
                 currentLang,
-                "en"
+                "en",
+                {
+                    allowBackup: true
+                }
             );
 
 
@@ -3860,6 +4023,24 @@ function handleInput(lang) {
     );
 
 
+    if (
+        fullTranslationController
+    ) {
+
+        fullTranslationController.abort();
+
+        fullTranslationController =
+            null;
+
+    }
+
+
+    const delay =
+        isMobileMode()
+            ? 900
+            : 500;
+
+
     translationTimeout =
         setTimeout(
             async () => {
@@ -3882,84 +4063,154 @@ function handleInput(lang) {
                     );
 
 
-                /*
-                 * ENGLISH → TARGET
-                 */
-
-                if (
-                    lang === "en" &&
-                    auto &&
-                    englishInput.value.trim()
-                ) {
-
-                    setStatus(
-                        "Translating..."
-                    );
+                fullTranslationController =
+                    new AbortController();
 
 
-                    const result =
-                        await translateUnified(
-                            englishInput.value.trim(),
-                            "en",
-                            currentLang
+                const signal =
+                    fullTranslationController.signal;
+
+
+                try {
+
+                    if (
+                        lang === "en" &&
+                        auto &&
+                        englishInput.value.trim()
+                    ) {
+
+                        setStatus(
+                            "Translating..."
                         );
 
 
-                    if (
-                        result
+                        const result =
+                            await translateUnified(
+                                englishInput.value.trim(),
+                                "en",
+                                currentLang,
+                                {
+                                    allowBackup: true,
+                                    signal
+                                }
+                            );
+
+
+                        if (
+                            result &&
+                            !signal.aborted
+                        ) {
+
+                            foreignInput.value =
+                                result.translation;
+
+
+                            if (
+                                result.provider === "backup"
+                            ) {
+
+                                setStatus(
+                                    "Backup translation used"
+                                );
+
+                            }
+
+                        }
+
+                    }
+
+
+                    else if (
+                        lang === "foreign" &&
+                        auto &&
+                        foreignInput.value.trim()
                     ) {
 
-                        foreignInput.value =
-                            result.translation;
+                        setStatus(
+                            "Translating..."
+                        );
+
+
+                        const result =
+                            await translateUnified(
+                                foreignInput.value.trim(),
+                                currentLang,
+                                "en",
+                                {
+                                    allowBackup: true,
+                                    signal
+                                }
+                            );
+
+
+                        if (
+                            result &&
+                            !signal.aborted
+                        ) {
+
+                            englishInput.value =
+                                result.translation;
+
+
+                            if (
+                                result.provider === "backup"
+                            ) {
+
+                                setStatus(
+                                    "Backup translation used"
+                                );
+
+                            }
+
+                        }
+
+                    }
+
+
+                    if (
+                        !signal.aborted
+                    ) {
+
+                        await updatePhraseMaps();
 
                     }
 
                 }
 
-
-                /*
-                 * TARGET → ENGLISH
-                 */
-
-                else if (
-                    lang === "foreign" &&
-                    auto &&
-                    foreignInput.value.trim()
+                catch (
+                    error
                 ) {
 
-                    setStatus(
-                        "Translating..."
-                    );
-
-
-                    const result =
-                        await translateUnified(
-                            foreignInput.value.trim(),
-                            currentLang,
-                            "en"
-                        );
-
-
                     if (
-                        result
+                        !error ||
+                        error.name !== "AbortError"
                     ) {
 
-                        englishInput.value =
-                            result.translation;
+                        console.error(
+                            "Input translation error:",
+                            error
+                        );
 
                     }
 
                 }
 
+                finally {
 
-                /*
-                 * Update everything.
-                 */
+                    if (
+                        fullTranslationController &&
+                        fullTranslationController.signal === signal
+                    ) {
 
-                await updatePhraseMaps();
+                        fullTranslationController =
+                            null;
+
+                    }
+
+                }
 
             },
-            350
+            delay
         );
 
 }
