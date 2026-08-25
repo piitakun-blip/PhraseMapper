@@ -330,7 +330,7 @@ The learner is studying ${languageName}.
 
 Answer the learner's current question about the translation below.
 
-Give a simple, useful explanation in 2-5 short sentences no more than 100 words. Focus on helping the learner understand how the expression works in the target language. Explain only the language features that are important to the learner's question.
+Give a simple, useful explanation in 2-5 short sentences no more than 100 words total. Focus on helping the learner understand how the expression works in the target language. Explain only the language features that are important to the learner's question.
 
 
 English sentence:
@@ -426,14 +426,25 @@ async function handleChat(request, env) {
 
   try {
     const result =
-      await env.AI.run(
-        AI_MODEL,
+  await env.AI.run(
+    AI_MODEL,
+    {
+      messages: [
         {
-          prompt,
-          max_tokens: 180,
-          temperature: 0.35,
+          role: "system",
+          content: "You are a concise, accurate language tutor for an English-speaking learner. Answer only the learner's current question. Give a practical explanation in 2 to 4 short sentences. Use plain English and explain grammar terms simply when needed."
+        },
+        {
+          role: "user",
+          content: prompt
         }
-      );
+      ],
+      max_tokens: 180,
+      temperature: 0.2,
+      repetition_penalty: 1.15,
+      frequency_penalty: 0.3
+    }
+  );
 
     const answer =
       extractAIText(result).trim();
