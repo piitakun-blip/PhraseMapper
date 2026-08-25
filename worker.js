@@ -3,7 +3,7 @@ const JSON_HEADERS = {
   "cache-control": "no-store",
 };
 
-const AI_MODEL = "@cf/meta/llama-3.1-8b-instruct";
+const AI_MODEL = "@cf/meta/llama-3.1-8b-instruct-fast";
 const TRANSLATION_MODEL = "@cf/meta/m2m100-1.2b";
 
 function jsonResponse(data, status = 200) {
