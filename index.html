@@ -852,7 +852,7 @@ let translationTimeout = null;
 let updateGeneration = 0;
 
 const TRANSLATION_CACHE =
-    "wardPhraseMapper:v19:";
+    "wardPhraseMapper:v20:";
 
 
 /* ================================================================
@@ -3511,49 +3511,108 @@ async function updatePhraseMaps() {
                 }
 
 
-                if (
-                    window.wanakana
-                ) {
+                /*
+                 * Japanese reading:
+                 * wanakana can romanize kana, but it cannot determine the
+                 * pronunciation of kanji. Ask Google's Japanese endpoint for
+                 * transliteration first; use wanakana only as a kana fallback.
+                 */
+                translateUnified(
+                    phrase,
+                    "ja",
+                    "ja"
+                )
+                .then(
+                    readingResult => {
 
-                    const hiragana =
-                        wanakana.toHiragana(
-                            phrase
-                        );
+                        if (
+                            generation !==
+                            updateGeneration
+                        ) {
 
+                            return;
 
-                    const romaji =
-                        wanakana.toRomaji(
-                            phrase
-                        );
+                        }
 
+                        let romaji =
+                            readingResult?.transliteration ||
+                            "";
 
-                    if (
-                        readingElement
-                    ) {
+                        let hiragana =
+                            "";
 
-                        /*
-                         * Only show Hiragana when it differs
-                         * from the original.
-                         */
+                        if (
+                            window.wanakana
+                        ) {
 
-                        readingElement.innerText =
-                            hiragana !== phrase
-                                ? hiragana
-                                : "";
+                            if (
+                                romaji
+                            ) {
+
+                                hiragana =
+                                    wanakana.toHiragana(
+                                        romaji
+                                    );
+
+                            }
+
+                            else {
+
+                                /*
+                                 * Kana-only fallback. Do not pretend wanakana
+                                 * can infer a kanji reading.
+                                 */
+                                const containsKanji =
+                                    /[一-龯々〆ヵヶ]/u.test(
+                                        phrase
+                                    );
+
+                                if (
+                                    !containsKanji
+                                ) {
+
+                                    hiragana =
+                                        wanakana.toHiragana(
+                                            phrase
+                                        );
+
+                                    romaji =
+                                        wanakana.toRomaji(
+                                            hiragana
+                                        );
+
+                                }
+
+                            }
+
+                        }
+
+                        if (
+                            readingElement
+                        ) {
+
+                            readingElement.innerText =
+                                hiragana &&
+                                hiragana !== phrase
+                                    ? hiragana
+                                    : "";
+
+                        }
+
+                        if (
+                            romajiElement
+                        ) {
+
+                            romajiElement.innerText =
+                                romaji;
+
+                        }
 
                     }
-
-
-                    if (
-                        romajiElement
-                    ) {
-
-                        romajiElement.innerText =
-                            romaji;
-
-                    }
-
-                }
+                )
+                .catch(
+                    () => {}
+                );
 
 
                 /*
