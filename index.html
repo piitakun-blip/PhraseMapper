@@ -161,6 +161,21 @@
             background-color: #e2e8f0;
         }
 
+        .backup-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            font-size: 0.82rem;
+            color: #64748b;
+            margin-top: 0.35rem;
+        }
+
+        .backup-option input {
+            width: 16px;
+            height: 16px;
+        }
+
         .toggle-container {
             display: flex;
             align-items: center;
@@ -633,6 +648,10 @@
                 <span class="slider"></span>
             </label>
         </div>
+        <div class="backup-option">
+            <label for="allowBackupToggle">Use backup translator if Google fails</label>
+            <input type="checkbox" id="allowBackupToggle" checked>
+        </div>
     </div>
 
     <div class="grid-inputs">
@@ -874,7 +893,7 @@
     // - Phrase-card requests are deduplicated and limited to 3 at a time.
     // - Stale phrase requests are cancelled when the sentence changes.
     // - Only successful Google results are cached.
-    const TRANSLATION_CACHE_PREFIX = "wardPhraseMapper:v6:";
+    const TRANSLATION_CACHE_PREFIX = "wardPhraseMapper:v7:";
 
     function getTranslationKey(text, sourceLang, targetLang) {
         return sourceLang + ">" + targetLang + ":" + text.trim();
@@ -997,6 +1016,7 @@
         const allowBackup = options.allowBackup === true;
         const signal = options.signal || null;
 
+        // Always prefer a successful cached Google translation.
         const cached = getCachedTranslation(text, sourceLang, targetLang);
         if (cached && cached.translation) {
             return {
@@ -1006,14 +1026,33 @@
             };
         }
 
-        for (let attempt = 0; attempt < 2; attempt++) {
+        // Google gets three spaced attempts before any backup is considered.
+        const retryDelays = [0, 1200, 2800];
+
+        for (let attempt = 0; attempt < retryDelays.length; attempt++) {
             if (signal && signal.aborted) {
                 throw new DOMException("Aborted", "AbortError");
+            }
+
+            if (retryDelays[attempt] > 0) {
+                await new Promise((resolve, reject) => {
+                    const timer = setTimeout(resolve, retryDelays[attempt]);
+
+                    if (signal) {
+                        const onAbort = () => {
+                            clearTimeout(timer);
+                            signal.removeEventListener("abort", onAbort);
+                            reject(new DOMException("Aborted", "AbortError"));
+                        };
+                        signal.addEventListener("abort", onAbort, { once: true });
+                    }
+                });
             }
 
             try {
                 const result = await googleTranslate(text, sourceLang, targetLang, signal);
 
+                // Cache Google results only.
                 setCachedTranslation(text, sourceLang, targetLang, {
                     translation: result.translation,
                     transliteration: result.transliteration
@@ -1024,27 +1063,14 @@
                 if (e && e.name === "AbortError") throw e;
 
                 console.warn(`Google translation attempt ${attempt + 1} failed:`, e);
-
-                if (attempt === 0) {
-                    await new Promise((resolve, reject) => {
-                        const timer = setTimeout(resolve, 650);
-
-                        if (signal) {
-                            const onAbort = () => {
-                                clearTimeout(timer);
-                                reject(new DOMException("Aborted", "AbortError"));
-                            };
-                            signal.addEventListener("abort", onAbort, { once: true });
-                        }
-                    });
-                }
             }
         }
 
-        // Backup is intentionally limited to complete-sentence translation.
+        // Backup is intentionally delayed and limited to whole-sentence translation.
         if (allowBackup) {
             try {
-                return await backupTranslate(text, sourceLang, targetLang, signal);
+                const result = await backupTranslate(text, sourceLang, targetLang, signal);
+                return result;
             } catch (e) {
                 if (e && e.name === "AbortError") throw e;
                 console.error("Backup translation failed:", e);
@@ -1158,6 +1184,11 @@
         return promise;
     }
 
+    function backupAllowed() {
+        const toggle = document.getElementById("allowBackupToggle");
+        return toggle ? toggle.checked : true;
+    }
+
     function handleToggleChange() {
         const checked = document.getElementById("autoTranslateToggle").checked;
         const statusSpan = document.getElementById("translationStatus");
@@ -1222,7 +1253,7 @@
                 let res;
                 try {
                     res = await translateText(text, 'en', currentLang, {
-                        allowBackup: true,
+                        allowBackup: backupAllowed(),
                         signal: fullSentenceController.signal
                     });
                 } catch (e) {
@@ -1235,7 +1266,7 @@
                     statusSpan.innerText = navigator.onLine ? "⚠️ Translation unavailable right now. Please try again." : "⚠️ Your device appears to be offline.";
                 } else if (res) {
                     foreignInput.value = res.translation;
-                    statusSpan.innerText = res.provider === "backup" ? "Backup translation used" : "Translation synced!";
+                    statusSpan.innerText = res.provider === "backup" ? "Backup translation used (Google unavailable)" : "Translation synced!";
 
                     if (isMobileMode()) {
                         clearTimeout(mappingTimeout);
@@ -1268,7 +1299,7 @@
                 let res;
                 try {
                     res = await translateText(text, currentLang, 'en', {
-                        allowBackup: true,
+                        allowBackup: backupAllowed(),
                         signal: fullSentenceController.signal
                     });
                 } catch (e) {
@@ -1281,7 +1312,7 @@
                     statusSpan.innerText = navigator.onLine ? "⚠️ Translation unavailable right now. Please try again." : "⚠️ Your device appears to be offline.";
                 } else if (res) {
                     engInput.value = res.translation;
-                    statusSpan.innerText = res.provider === "backup" ? "Backup translation used" : "Translation synced!";
+                    statusSpan.innerText = res.provider === "backup" ? "Backup translation used (Google unavailable)" : "Translation synced!";
 
                     if (isMobileMode()) {
                         clearTimeout(mappingTimeout);
@@ -1756,3 +1787,4 @@
 </script>
 
 </body>
+</html>
