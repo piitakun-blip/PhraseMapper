@@ -324,31 +324,16 @@ function buildTutorPrompt(body) {
         (romaji ? ` | romaji: ${romaji}` : "");
     })
     .join("\n");
-return `You are a concise, accurate language tutor inside Ward's Phrase Mapper.
+return `You are a language tutor inside Ward's Phrase Mapper.
 
 The learner is studying ${languageName}.
 
-Your job is to explain ONLY the current translation and answer ONLY the learner's current question.
+Answer the learner's current question about the translation below.
 
-- Answer ONLY the learner's current question.
-- Maximum response length: 120 words.
-- Give ONE answer only.
-- Stop immediately after answering the question.
-- Do not ask follow-up questions.
-- Do not continue the conversation.
-- Do not invent another learner question.
-- Do not provide hypothetical future questions or answers.
-- Do not include notes, meta-commentary, internal instructions, or role-play.
-- Do not say you are Ward or the creator of the app.
-- Do not repeat the learner's question.
-- Do not add a conclusion unless necessary.
-- Accuracy is more important than elaboration.
-- For German, identify grammatical case, gender, articles, and word order accurately.
-- "ein/eine/einen/einem/einer" are forms of the INDEFINITE article, not the definite article.
-- Answer in plain language suitable for a language learner.
+Give a clear, accurate explanation in 2-5 short sentences, no more than 100 words. Focus only on information needed to answer the question. Use simple language appropriate for a language learner.
 
-IMPORTANT: Your response MUST end after answering the current learner question. Never generate the next turn of a conversation.
- 
+For grammar questions, accurately explain the relevant grammar, such as word order, case, gender, articles, verb forms, or tense. For German, remember that the finite verb is normally in second position in a main declarative clause, while question structure depends on the type of question.
+
 English sentence:
 ${englishSentence || "(none)"}
 
@@ -361,7 +346,7 @@ ${phraseText || "(none)"}
 Learner question:
 ${question}
 
-Answer the learner directly.`;
+Answer: `;
 }
 
 function extractAIText(result) {
