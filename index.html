@@ -192,7 +192,9 @@
         .word-card.foreign-card.gold-mode { background-color: var(--gold-light); border-color: var(--primary-gold); }
 
         .phrase-text { font-size: 1.05rem; font-weight: 600; }
-        .phrase-translation { font-size: 0.8rem; font-style: italic; opacity: 0.85; margin-top: 0.2rem; }
+        .phrase-reading { font-size: 0.75rem; font-weight: 500; color: #64748b; margin-top: 0.1rem; }
+        .phrase-romaji { font-size: 0.72rem; font-style: italic; color: #475569; }
+        .phrase-translation { font-size: 0.8rem; font-style: italic; opacity: 0.85; margin-top: 0.25rem; }
     </style>
 </head>
 <body>
@@ -271,7 +273,7 @@
 <script>
     let currentLang = 'de';
     let translationTimeout;
-    const TRANSLATION_CACHE = "wardPhraseMapper:v12:";
+    const TRANSLATION_CACHE = "wardPhraseMapper:v13:";
 
     const LANG_CONFIG = {
         de: { name: 'German', theme: 'orange-mode' },
@@ -293,23 +295,31 @@
     }
 
     async function translateUnified(text, sourceLang, targetLang) {
-        if (!text.trim()) return { translation: "" };
+        if (!text.trim()) return { translation: "", translit: "" };
 
         const cacheKey = TRANSLATION_CACHE + `${sourceLang}>${targetLang}:${text}`;
         const cached = localStorage.getItem(cacheKey);
         if (cached) return JSON.parse(cached);
 
         try {
-            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=` + encodeURIComponent(text);
+            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&dt=rm&q=` + encodeURIComponent(text);
             const resp = await fetch(url);
             if (!resp.ok) throw new Error("Google throttled");
             const data = await resp.json();
+            
             let trans = "";
+            let translit = "";
+
             if (data && data[0]) {
-                data[0].forEach(seg => { if (seg[0]) trans += seg[0]; });
+                data[0].forEach(seg => {
+                    if (seg[0]) trans += seg[0];
+                    if (seg[2]) translit += seg[2];
+                    else if (seg[3]) translit += seg[3];
+                });
             }
+
             if (trans.trim()) {
-                const result = { translation: trans.trim() };
+                const result = { translation: trans.trim(), translit: translit.trim() };
                 localStorage.setItem(cacheKey, JSON.stringify(result));
                 return result;
             }
@@ -324,7 +334,7 @@
                 if (resp.ok) {
                     const data = await resp.json();
                     if (data?.responseData?.translatedText) {
-                        return { translation: data.responseData.translatedText.trim() };
+                        return { translation: data.responseData.translatedText.trim(), translit: "" };
                     }
                 }
             } catch(e) {
@@ -336,12 +346,8 @@
 
     async function translatePhraseBatch(phrases, sourceLang, targetLang) {
         if (!phrases.length) return [];
-        const combined = phrases.join("\n");
-        const res = await translateUnified(combined, sourceLang, targetLang);
-        if (res && res.translation) {
-            return res.translation.split("\n");
-        }
-        return new Array(phrases.length).fill("");
+        const results = await Promise.all(phrases.map(p => translateUnified(p, sourceLang, targetLang)));
+        return results.map(r => r || { translation: "", translit: "" });
     }
 
     function handleInput(lang) {
@@ -396,23 +402,47 @@
         foreignGrid.innerHTML = foreignPhrases.map((p, i) => `
             <div class="word-card foreign-card ${config.theme}">
                 <div class="phrase-text">${p}</div>
+                <div class="phrase-reading" id="for-r-${i}"></div>
+                <div class="phrase-romaji" id="for-rom-${i}"></div>
                 <div class="phrase-translation" id="for-p-${i}">...</div>
             </div>
         `).join("");
 
         if (engPhrases.length) {
             const translatedEng = await translatePhraseBatch(engPhrases, 'en', currentLang);
-            translatedEng.forEach((t, i) => {
+            translatedEng.forEach((res, i) => {
                 const el = document.getElementById(`eng-p-${i}`);
-                if (el) el.innerText = t || "";
+                if (el) el.innerText = res.translation || "";
             });
         }
 
         if (foreignPhrases.length) {
             const translatedForeign = await translatePhraseBatch(foreignPhrases, currentLang, 'en');
-            translatedForeign.forEach((t, i) => {
-                const el = document.getElementById(`for-p-${i}`);
-                if (el) el.innerText = t || "";
+            
+            // Fetch transliterated readings (Hiragana/Romaji/Pinyin) for non-Latin languages
+            let readings = [];
+            if (['ja', 'zh', 'ru'].includes(currentLang)) {
+                readings = await translatePhraseBatch(foreignPhrases, currentLang, currentLang);
+            }
+
+            foreignPhrases.forEach((_, i) => {
+                const transEl = document.getElementById(`for-p-${i}`);
+                const readEl = document.getElementById(`for-r-${i}`);
+                const romEl = document.getElementById(`for-rom-${i}`);
+
+                if (transEl) transEl.innerText = translatedForeign[i]?.translation || "";
+
+                if (readings[i]?.translit) {
+                    const translitText = readings[i].translit;
+                    if (currentLang === 'ja') {
+                        // Display Katakana/Hiragana reading & Romaji split
+                        readEl.innerText = translitText;
+                    } else if (currentLang === 'zh') {
+                        readEl.innerText = translitText; // Pinyin
+                    } else if (currentLang === 'ru') {
+                        romEl.innerText = translitText; // Latin Transliteration
+                    }
+                }
             });
         }
     }
