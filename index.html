@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#f8fafc">
-    <title>EN ➜ DE: Ward's Phrasen-Mapper</title>
+    <title>EN ➜ Target Phrase Mapper</title>
     <style>
         :root {
             --bg-color: #f8fafc;
@@ -50,7 +50,7 @@
 
         h1 {
             margin-top: 0;
-            font-size: 1.85rem;
+            font-size: 1.6rem;
             color: #0f172a;
             border-bottom: 2px solid var(--border-color);
             padding-bottom: 0.75rem;
@@ -74,21 +74,22 @@
             display: flex;
             align-items: center;
             flex-wrap: wrap;
-            gap: 0.4rem;
+            gap: 0.35rem;
             font-weight: 600;
         }
 
         .lang-btn {
             background-color: #ffffff;
             border: 1px solid var(--border-color);
-            padding: 0.4rem 0.65rem;
-            border-radius: 20px;
+            padding: 0.35rem 0.6rem;
+            border-radius: 16px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.85rem;
             display: inline-flex;
             align-items: center;
             gap: 0.25rem;
+            white-space: nowrap;
         }
 
         .lang-btn.active.orange-mode { background-color: var(--primary-orange); color: white; }
@@ -111,8 +112,8 @@
             .container { padding: 0.75rem; }
             .grid-inputs { grid-template-columns: 1fr; }
             textarea { font-size: 16px; }
-            .lang-selector { gap: 0.3rem; }
-            .lang-btn { padding: 0.35rem 0.55rem; font-size: 0.8rem; }
+            .lang-selector { gap: 0.25rem; }
+            .lang-btn { padding: 0.3rem 0.5rem; font-size: 0.8rem; }
         }
 
         .input-group {
@@ -204,8 +205,8 @@
         </div>
         <div>
             <label><input type="checkbox" id="autoTranslateToggle" checked> Auto-Translate</label>
-            <label style="margin-left: 0.5rem;">
-                <input type="checkbox" id="allowBackupToggle" checked> Use backup translator if Google fails (results can be wonky)
+            <label style="margin-left: 0.5rem; font-size: 0.8rem; font-weight: normal;">
+                <input type="checkbox" id="allowBackupToggle" checked> Use backup if Google fails
             </label>
         </div>
     </div>
@@ -248,12 +249,17 @@
 <script>
     let currentLang = 'de';
     let translationTimeout;
-    const TRANSLATION_CACHE = "wardPhraseMapper:v10:";
+    const TRANSLATION_CACHE = "wardPhraseMapper:v11:";
 
-    function getThemeClass(lang) {
-        const maps = { de:'orange-mode', ja:'sakura-mode', es:'sangria-mode', fr:'lavender-mode', it:'emerald-mode', ru:'crimson-mode', zh:'gold-mode' };
-        return maps[lang] || 'orange-mode';
-    }
+    const LANG_CONFIG = {
+        de: { name: 'German', label: '🇩🇪 DE', theme: 'orange-mode' },
+        ja: { name: 'Japanese', label: '🇯🇵 JA', theme: 'sakura-mode' },
+        es: { name: 'Spanish', label: '🇪🇸 ES', theme: 'sangria-mode' },
+        fr: { name: 'French', label: '🇫🇷 FR', theme: 'lavender-mode' },
+        it: { name: 'Italian', label: '🇮🇹 IT', theme: 'emerald-mode' },
+        ru: { name: 'Russian', label: '🇷🇺 RU', theme: 'crimson-mode' },
+        zh: { name: 'Chinese', label: '🇨🇳 ZH', theme: 'gold-mode' }
+    };
 
     function speakText(inputId, langCode) {
         const text = document.getElementById(inputId).value;
@@ -286,7 +292,7 @@
                 return result;
             }
         } catch(e) {
-            console.warn("Primary Google API request failed. Trying backup...");
+            console.warn("Primary API failed. Trying backup...");
         }
 
         if (document.getElementById("allowBackupToggle").checked) {
@@ -300,7 +306,7 @@
                     }
                 }
             } catch(e) {
-                console.error("Backup translation engine failed:", e);
+                console.error("Backup engine failed:", e);
             }
         }
         return null;
@@ -350,7 +356,7 @@
     async function updatePhraseMaps() {
         const engText = document.getElementById("englishInput").value;
         const foreignText = document.getElementById("foreignInput").value;
-        const themeClass = getThemeClass(currentLang);
+        const config = LANG_CONFIG[currentLang];
 
         const engPhrases = splitPhrases(engText);
         const foreignPhrases = splitPhrases(foreignText);
@@ -366,7 +372,7 @@
         `).join("");
 
         foreignGrid.innerHTML = foreignPhrases.map((p, i) => `
-            <div class="word-card foreign-card ${themeClass}">
+            <div class="word-card foreign-card ${config.theme}">
                 <div class="phrase-text">${p}</div>
                 <div class="phrase-translation" id="for-p-${i}">...</div>
             </div>
@@ -391,11 +397,30 @@
 
     function setLanguage(lang) {
         currentLang = lang;
-        document.querySelectorAll('.lang-btn').forEach(b => b.className = "lang-btn");
-        const activeBtn = document.getElementById('btn' + lang.toUpperCase());
-        if (activeBtn) activeBtn.classList.add("active", getThemeClass(lang));
+        const config = LANG_CONFIG[lang];
+
+        // Update UI Labels
+        document.getElementById('mainTitle').innerText = `EN ➜ ${lang.toUpperCase()}: Ward's Phrasen-Mapper`;
+        document.getElementById('foreignLabel').innerText = `${config.name} Sentence`;
+        document.getElementById('foreignRowTitle').innerText = `${config.name} Phrase Map`;
+
+        // Update Buttons
+        Object.keys(LANG_CONFIG).forEach(code => {
+            const btn = document.getElementById('btn' + code.toUpperCase());
+            if (btn) {
+                btn.className = "lang-btn";
+                btn.innerText = LANG_CONFIG[code].label;
+                if (code === lang) {
+                    btn.classList.add("active", config.theme);
+                }
+            }
+        });
+
         handleInput('en');
     }
+
+    // Initialize labels on load
+    setLanguage('de');
 </script>
 </body>
 </html>
