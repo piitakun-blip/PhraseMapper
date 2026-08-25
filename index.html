@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#f8fafc">
-
     <title>EN ➜ Target Phrase Mapper</title>
 
-    <!-- Japanese transliteration -->
+    <!-- Japanese reading / Romaji -->
     <script src="https://cdn.jsdelivr.net/npm/wanakana@5.3.1/wanakana.min.js"></script>
 
     <style>
@@ -58,6 +57,7 @@
 
             background-color: var(--bg-color);
             color: var(--text-color);
+
             line-height: 1.5;
 
             padding: 2rem 1rem;
@@ -69,6 +69,7 @@
             margin: 0 auto;
 
             background: var(--card-bg);
+
             padding: 2rem;
 
             border-radius: 12px;
@@ -83,9 +84,12 @@
             margin-top: 0;
 
             font-size: 1.6rem;
+
             color: #0f172a;
 
-            border-bottom: 2px solid var(--border-color);
+            border-bottom:
+                2px solid var(--border-color);
+
             padding-bottom: 0.75rem;
 
             text-align: center;
@@ -93,24 +97,30 @@
 
         .control-panel {
             display: flex;
+
             justify-content: space-between;
             align-items: center;
 
             flex-wrap: wrap;
+
             gap: 1rem;
 
             margin-bottom: 2rem;
 
             background-color: #f1f5f9;
+
             padding: 0.75rem 1.25rem;
 
             border-radius: 8px;
+
             border: 1px solid var(--border-color);
         }
 
         .lang-selector {
             display: flex;
+
             align-items: center;
+
             flex-wrap: wrap;
 
             gap: 0.35rem;
@@ -130,9 +140,11 @@
             cursor: pointer;
 
             font-weight: 700;
+
             font-size: 0.85rem;
 
             display: inline-flex;
+
             align-items: center;
 
             gap: 0.35rem;
@@ -193,14 +205,19 @@
 
         .options {
             display: flex;
+
             flex-direction: column;
+
             gap: 0.25rem;
         }
 
         .options label {
             margin: 0 !important;
+
             font-size: 0.82rem;
+
             font-weight: 600;
+
             text-transform: none;
         }
 
@@ -237,6 +254,7 @@
 
             .lang-btn {
                 padding: 0.3rem 0.5rem;
+
                 font-size: 0.8rem;
             }
 
@@ -247,6 +265,7 @@
 
         .input-group {
             display: flex;
+
             flex-direction: column;
 
             gap: 0.5rem;
@@ -254,16 +273,19 @@
 
         label {
             font-weight: 600;
+
             font-size: 0.9rem;
 
             text-transform: uppercase;
 
             display: flex;
+
             justify-content: space-between;
         }
 
         .input-wrapper {
             position: relative;
+
             width: 100%;
         }
 
@@ -271,14 +293,15 @@
             width: 100%;
 
             padding: 0.75rem;
+
             padding-right: 2.5rem;
 
-            border: 1px solid var(--border-color);
+            border:
+                1px solid var(--border-color);
+
             border-radius: 6px;
 
             font-size: 1rem;
-
-            box-sizing: border-box;
 
             font-family: inherit;
 
@@ -288,10 +311,12 @@
         textarea:focus {
             outline: none;
 
-            border-color: var(--primary-blue);
+            border-color:
+                var(--primary-blue);
 
             box-shadow:
-                0 0 0 2px rgba(2,132,199,0.1);
+                0 0 0 2px
+                rgba(2,132,199,0.1);
         }
 
         .play-btn {
@@ -301,6 +326,7 @@
             top: 0.5rem;
 
             background: none;
+
             border: none;
 
             cursor: pointer;
@@ -315,7 +341,8 @@
 
             background: #f8fafc;
 
-            border: 1px dashed var(--border-color);
+            border:
+                1px dashed var(--border-color);
 
             border-radius: 6px;
 
@@ -338,13 +365,15 @@
 
         .output-section {
             display: flex;
+
             flex-direction: column;
 
             gap: 1.5rem;
         }
 
         .row-container {
-            border: 1px solid var(--border-color);
+            border:
+                1px solid var(--border-color);
 
             border-radius: 8px;
 
@@ -401,46 +430,69 @@
         }
 
         .word-card.english-card {
-            background-color: var(--blue-light);
+            background-color:
+                var(--blue-light);
 
-            border-color: var(--primary-blue);
+            border-color:
+                var(--primary-blue);
 
             color: #0369a1;
         }
 
         .word-card.foreign-card.orange-mode {
-            background-color: var(--orange-light);
-            border-color: var(--primary-orange);
+            background-color:
+                var(--orange-light);
+
+            border-color:
+                var(--primary-orange);
         }
 
         .word-card.foreign-card.sakura-mode {
-            background-color: var(--sakura-light);
-            border-color: var(--primary-sakura);
+            background-color:
+                var(--sakura-light);
+
+            border-color:
+                var(--primary-sakura);
         }
 
         .word-card.foreign-card.sangria-mode {
-            background-color: var(--sangria-light);
-            border-color: var(--primary-sangria);
+            background-color:
+                var(--sangria-light);
+
+            border-color:
+                var(--primary-sangria);
         }
 
         .word-card.foreign-card.lavender-mode {
-            background-color: var(--lavender-light);
-            border-color: var(--primary-lavender);
+            background-color:
+                var(--lavender-light);
+
+            border-color:
+                var(--primary-lavender);
         }
 
         .word-card.foreign-card.emerald-mode {
-            background-color: var(--emerald-light);
-            border-color: var(--primary-emerald);
+            background-color:
+                var(--emerald-light);
+
+            border-color:
+                var(--primary-emerald);
         }
 
         .word-card.foreign-card.crimson-mode {
-            background-color: var(--crimson-light);
-            border-color: var(--primary-crimson);
+            background-color:
+                var(--crimson-light);
+
+            border-color:
+                var(--primary-crimson);
         }
 
         .word-card.foreign-card.gold-mode {
-            background-color: var(--gold-light);
-            border-color: var(--primary-gold);
+            background-color:
+                var(--gold-light);
+
+            border-color:
+                var(--primary-gold);
         }
 
         .phrase-text {
@@ -508,6 +560,11 @@
     <h1 id="mainTitle">
         EN ➜ DE: Ward's Phrasen-Mapper
     </h1>
+
+
+    <!-- =========================================================
+         LANGUAGE CONTROLS
+         ========================================================= -->
 
     <div class="control-panel">
 
@@ -608,6 +665,7 @@
 
         </div>
 
+
         <div class="options">
 
             <label>
@@ -637,13 +695,20 @@
     </div>
 
 
+    <!-- =========================================================
+         INPUTS
+         ========================================================= -->
+
     <div class="grid-inputs">
+
 
         <!-- ENGLISH -->
 
         <div class="input-group">
 
-            <label style="color:var(--primary-blue)">
+            <label
+                style="color:var(--primary-blue)"
+            >
                 English Sentence
             </label>
 
@@ -669,13 +734,12 @@
         </div>
 
 
-        <!-- FOREIGN -->
+        <!-- TARGET -->
 
         <div class="input-group">
 
             <label
                 id="foreignLabel"
-                style="color:var(--primary-orange)"
             >
                 German Sentence
             </label>
@@ -699,6 +763,7 @@
 
             </div>
 
+
             <div class="retranslation-box">
 
                 <div class="retranslation-title">
@@ -718,9 +783,12 @@
     </div>
 
 
-    <!-- OUTPUT -->
+    <!-- =========================================================
+         OUTPUT
+         ========================================================= -->
 
     <div class="output-section">
+
 
         <div class="row-container">
 
@@ -762,6 +830,7 @@
 
     </div>
 
+
     <div
         class="status"
         id="statusText"
@@ -772,387 +841,476 @@
 
 <script>
 
-    /* ============================================================
-       GLOBAL STATE
-       ============================================================ */
+/* ================================================================
+   GLOBAL STATE
+   ================================================================ */
 
-    let currentLang = 'de';
+let currentLang = "de";
 
-    let translationTimeout = null;
+let translationTimeout = null;
 
-    let updateGeneration = 0;
+let updateGeneration = 0;
 
-    const TRANSLATION_CACHE =
-        "wardPhraseMapper:v17:";
-
-
-    /* ============================================================
-       LANGUAGE CONFIG
-       ============================================================ */
-
-    const LANG_CONFIG = {
-
-        de: {
-            name: 'German',
-            theme: 'orange-mode'
-        },
-
-        ja: {
-            name: 'Japanese',
-            theme: 'sakura-mode'
-        },
-
-        es: {
-            name: 'Spanish',
-            theme: 'sangria-mode'
-        },
-
-        fr: {
-            name: 'French',
-            theme: 'lavender-mode'
-        },
-
-        it: {
-            name: 'Italian',
-            theme: 'emerald-mode'
-        },
-
-        ru: {
-            name: 'Russian',
-            theme: 'crimson-mode'
-        },
-
-        zh: {
-            name: 'Chinese',
-            theme: 'gold-mode'
-        }
-
-    };
+const TRANSLATION_CACHE =
+    "wardPhraseMapper:v18:";
 
 
-    /* ============================================================
-       HTML ESCAPING
-       ============================================================ */
+/* ================================================================
+   LANGUAGE CONFIG
+   ================================================================ */
 
-    function escapeHTML(value) {
+const LANG_CONFIG = {
 
-        return String(value ?? '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
+    de: {
+        name: "German",
+        theme: "orange-mode"
+    },
 
+    ja: {
+        name: "Japanese",
+        theme: "sakura-mode"
+    },
+
+    es: {
+        name: "Spanish",
+        theme: "sangria-mode"
+    },
+
+    fr: {
+        name: "French",
+        theme: "lavender-mode"
+    },
+
+    it: {
+        name: "Italian",
+        theme: "emerald-mode"
+    },
+
+    ru: {
+        name: "Russian",
+        theme: "crimson-mode"
+    },
+
+    zh: {
+        name: "Chinese",
+        theme: "gold-mode"
     }
 
-
-    /* ============================================================
-       SPEECH
-       ============================================================ */
-
-    function speakText(inputId, langCode) {
-
-        const input =
-            document.getElementById(inputId);
-
-        if (!input) return;
-
-        const text = input.value.trim();
-
-        if (!text || !window.speechSynthesis) {
-            return;
-        }
-
-        window.speechSynthesis.cancel();
-
-        const utterance =
-            new SpeechSynthesisUtterance(text);
-
-        utterance.lang = langCode;
-
-        window.speechSynthesis.speak(utterance);
-    }
+};
 
 
-    /* ============================================================
-       TRANSLATION
-       ============================================================ */
+/* ================================================================
+   HTML ESCAPE
+   ================================================================ */
 
-    async function translateUnified(
-        text,
-        sourceLang,
-        targetLang
+function escapeHTML(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* ================================================================
+   SPEECH
+   ================================================================ */
+
+function speakText(inputId, langCode) {
+
+    const element =
+        document.getElementById(inputId);
+
+    if (!element) return;
+
+    const text =
+        element.value.trim();
+
+    if (
+        !text ||
+        !window.speechSynthesis
     ) {
+        return;
+    }
 
-        if (!text || !text.trim()) {
-            return {
-                translation: "",
-                translit: ""
-            };
+    window.speechSynthesis.cancel();
+
+    const utterance =
+        new SpeechSynthesisUtterance(text);
+
+    utterance.lang = langCode;
+
+    window.speechSynthesis.speak(
+        utterance
+    );
+
+}
+
+
+/* ================================================================
+   TRANSLATION
+   ================================================================ */
+
+async function translateUnified(
+    text,
+    sourceLang,
+    targetLang
+) {
+
+    if (!text || !text.trim()) {
+
+        return {
+            translation: "",
+            translit: ""
+        };
+
+    }
+
+
+    const cacheKey =
+        TRANSLATION_CACHE +
+        `${sourceLang}>${targetLang}:${text}`;
+
+
+    /* ------------------------------------------------------------
+       CACHE
+       ------------------------------------------------------------ */
+
+    try {
+
+        const cached =
+            localStorage.getItem(
+                cacheKey
+            );
+
+        if (cached) {
+
+            return JSON.parse(cached);
+
         }
 
-        const cacheKey =
-            TRANSLATION_CACHE +
-            `${sourceLang}>${targetLang}:${text}`;
+    } catch (error) {
 
-        try {
+        console.warn(
+            "Cache read failed:",
+            error
+        );
 
-            const cached =
-                localStorage.getItem(cacheKey);
+    }
 
-            if (cached) {
-                return JSON.parse(cached);
+
+    /* ------------------------------------------------------------
+       GOOGLE
+       ------------------------------------------------------------ */
+
+    try {
+
+        const url =
+            "https://translate.googleapis.com/translate_a/single" +
+            "?client=gtx" +
+            "&sl=" +
+            encodeURIComponent(sourceLang) +
+            "&tl=" +
+            encodeURIComponent(targetLang) +
+            "&dt=t" +
+            "&dt=rm" +
+            "&q=" +
+            encodeURIComponent(text);
+
+
+        const response =
+            await fetch(url);
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Google translation failed"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        let translation = "";
+
+        let translit = "";
+
+
+        if (
+            data &&
+            data[0]
+        ) {
+
+            data[0].forEach(
+                segment => {
+
+                    if (
+                        segment &&
+                        segment[0]
+                    ) {
+
+                        translation +=
+                            segment[0];
+
+                    }
+
+
+                    if (
+                        segment &&
+                        segment[2]
+                    ) {
+
+                        translit +=
+                            segment[2];
+
+                    }
+
+                    else if (
+                        segment &&
+                        segment[3]
+                    ) {
+
+                        translit +=
+                            segment[3];
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        if (
+            translation.trim()
+        ) {
+
+            const result = {
+
+                translation:
+                    translation.trim(),
+
+                translit:
+                    translit.trim()
+
+            };
+
+
+            try {
+
+                localStorage.setItem(
+                    cacheKey,
+                    JSON.stringify(result)
+                );
+
+            } catch (error) {
+
+                console.warn(
+                    "Cache write failed:",
+                    error
+                );
+
             }
 
-        } catch (e) {
-            console.warn(
-                "Cache read failed:",
-                e
-            );
+
+            return result;
+
         }
 
+    } catch (error) {
 
-        /* --------------------------------------------------------
-           GOOGLE TRANSLATE
-           -------------------------------------------------------- */
+        console.warn(
+            "Primary translation failed:",
+            error
+        );
+
+    }
+
+
+    /* ------------------------------------------------------------
+       MYMEMORY BACKUP
+       ------------------------------------------------------------ */
+
+    const backup =
+        document.getElementById(
+            "allowBackupToggle"
+        );
+
+
+    if (
+        backup &&
+        backup.checked
+    ) {
 
         try {
 
             const url =
-                `https://translate.googleapis.com/translate_a/single` +
-                `?client=gtx` +
-                `&sl=${encodeURIComponent(sourceLang)}` +
-                `&tl=${encodeURIComponent(targetLang)}` +
-                `&dt=t` +
-                `&dt=rm` +
-                `&q=${encodeURIComponent(text)}`;
+                "https://api.mymemory.translated.net/get" +
+                "?q=" +
+                encodeURIComponent(text) +
+                "&langpair=" +
+                encodeURIComponent(sourceLang) +
+                "|" +
+                encodeURIComponent(targetLang);
 
-            const resp =
+
+            const response =
                 await fetch(url);
 
-            if (!resp.ok) {
-                throw new Error(
-                    "Google translation request failed"
-                );
-            }
 
-            const data =
-                await resp.json();
+            if (response.ok) {
 
-            let translation = "";
-            let translit = "";
-
-            if (data && data[0]) {
-
-                data[0].forEach(segment => {
-
-                    if (segment && segment[0]) {
-                        translation += segment[0];
-                    }
-
-                    if (segment && segment[2]) {
-                        translit += segment[2];
-                    }
-
-                    else if (segment && segment[3]) {
-                        translit += segment[3];
-                    }
-
-                });
-
-            }
+                const data =
+                    await response.json();
 
 
-            if (translation.trim()) {
+                const translation =
+                    data?.responseData?.translatedText;
 
-                const result = {
-                    translation:
-                        translation.trim(),
 
-                    translit:
-                        translit.trim()
-                };
+                if (translation) {
 
-                try {
+                    return {
 
-                    localStorage.setItem(
-                        cacheKey,
-                        JSON.stringify(result)
-                    );
+                        translation:
+                            translation.trim(),
 
-                } catch (e) {
-                    console.warn(
-                        "Cache write failed:",
-                        e
-                    );
+                        translit: ""
+
+                    };
+
                 }
 
-                return result;
             }
 
-        } catch (e) {
+        } catch (error) {
 
             console.warn(
-                "Primary translation failed:",
-                e
+                "Backup translation failed:",
+                error
             );
 
         }
 
-
-        /* --------------------------------------------------------
-           BACKUP TRANSLATOR
-           -------------------------------------------------------- */
-
-        const backupToggle =
-            document.getElementById(
-                "allowBackupToggle"
-            );
-
-        if (
-            backupToggle &&
-            backupToggle.checked
-        ) {
-
-            try {
-
-                const url =
-                    `https://api.mymemory.translated.net/get` +
-                    `?q=${encodeURIComponent(text)}` +
-                    `&langpair=${encodeURIComponent(sourceLang)}` +
-                    `|${encodeURIComponent(targetLang)}`;
-
-                const resp =
-                    await fetch(url);
-
-                if (resp.ok) {
-
-                    const data =
-                        await resp.json();
-
-                    const translated =
-                        data?.responseData?.translatedText;
-
-                    if (translated) {
-
-                        return {
-                            translation:
-                                translated.trim(),
-
-                            translit: ""
-                        };
-
-                    }
-
-                }
-
-            } catch (e) {
-
-                console.warn(
-                    "Backup translation failed:",
-                    e
-                );
-
-            }
-
-        }
-
-        return null;
     }
 
 
-    /* ============================================================
-       BATCH TRANSLATION
-       ============================================================ */
+    return null;
 
-    async function translateBatchFast(
-        phrases,
-        sourceLang,
-        targetLang
+}
+
+
+/* ================================================================
+   ENGLISH PHRASE BATCH TRANSLATION
+   ================================================================ */
+
+async function translateBatchFast(
+    phrases,
+    sourceLang,
+    targetLang
+) {
+
+    if (!phrases.length) {
+        return [];
+    }
+
+
+    /*
+     * The delimiter is deliberately unusual.
+     */
+
+    const delimiter =
+        " ###WARD_PHRASE### ";
+
+
+    const joined =
+        phrases.join(delimiter);
+
+
+    const result =
+        await translateUnified(
+            joined,
+            sourceLang,
+            targetLang
+        );
+
+
+    if (
+        !result ||
+        !result.translation
     ) {
 
-        if (!phrases.length) {
-            return [];
-        }
-
-        /*
-         * Use a delimiter that is very unlikely to occur
-         * naturally in a sentence.
-         */
-
-        const delimiter =
-            " ###WARD_PHRASE### ";
-
-        const joinedText =
-            phrases.join(delimiter);
-
-        const result =
-            await translateUnified(
-                joinedText,
-                sourceLang,
-                targetLang
-            );
-
-        if (!result || !result.translation) {
-
-            return phrases.map(() => ({
+        return phrases.map(
+            () => ({
                 translation: "",
                 translit: ""
-            }));
+            })
+        );
 
-        }
+    }
 
 
-        /*
-         * Google normally preserves the delimiter.
-         */
+    const translations =
+        result.translation.split(
+            /\s*###WARD_PHRASE###\s*/i
+        );
 
-        let translations =
-            result.translation.split(
+
+    const transliterations =
+        result.translit
+            ? result.translit.split(
                 /\s*###WARD_PHRASE###\s*/i
-            );
-
-        let transliterations =
-            result.translit
-                ? result.translit.split(
-                    /\s*###WARD_PHRASE###\s*/i
-                )
-                : [];
+            )
+            : [];
 
 
-        /*
-         * If the translation engine altered the delimiter,
-         * fall back to individual requests.
-         */
+    /*
+     * If Google destroyed the delimiter,
+     * translate individually.
+     */
 
-        if (
-            phrases.length > 1 &&
-            translations.length !== phrases.length
-        ) {
+    if (
+        phrases.length > 1 &&
+        translations.length !== phrases.length
+    ) {
 
-            const individual =
-                await Promise.all(
-                    phrases.map(phrase =>
+        const individual =
+            await Promise.all(
+                phrases.map(
+                    phrase =>
                         translateUnified(
                             phrase,
                             sourceLang,
                             targetLang
                         )
-                    )
-                );
+                )
+            );
 
-            return individual.map(result => ({
+
+        return individual.map(
+            result => ({
+
                 translation:
                     result?.translation || "",
 
                 translit:
                     result?.translit || ""
-            }));
 
-        }
+            })
+        );
+
+    }
 
 
-        return phrases.map((phrase, index) => ({
+    return phrases.map(
+        (_, index) => ({
 
             translation:
                 translations[index]?.trim() || "",
@@ -1160,763 +1318,1384 @@
             translit:
                 transliterations[index]?.trim() || ""
 
-        }));
+        })
+    );
+
+}
+
+
+/* ================================================================
+   ENGLISH PARSER
+   ================================================================ */
+
+function parseEnglishPhrases(text) {
+
+    if (
+        !text ||
+        !text.trim()
+    ) {
+
+        return [];
 
     }
 
 
-    /* ============================================================
-       ENGLISH PHRASE PARSER
-       ============================================================ */
+    text =
+        text
+            .trim()
+            .replace(/\s+/g, " ");
 
-    function parseEnglishPhrases(text) {
 
-        if (!text || !text.trim()) {
-            return [];
+    const words =
+        text.split(" ");
+
+
+    const phrases = [];
+
+    let current = [];
+
+
+    const conjunctions = new Set([
+
+        "and",
+        "but",
+        "or",
+        "nor",
+        "yet",
+
+        "because",
+        "although",
+        "though",
+
+        "since",
+        "while",
+        "whereas",
+
+        "if",
+        "unless",
+        "until",
+
+        "when",
+        "whenever",
+
+        "that",
+        "which",
+        "who",
+        "whom",
+
+        "where",
+
+        "so"
+
+    ]);
+
+
+    const prepositions = new Set([
+
+        "in",
+        "on",
+        "at",
+        "to",
+        "for",
+        "with",
+
+        "about",
+        "against",
+        "between",
+        "into",
+
+        "through",
+        "during",
+        "before",
+        "after",
+
+        "above",
+        "below",
+        "from",
+
+        "up",
+        "down",
+        "off",
+        "over",
+        "under",
+
+        "by",
+        "without",
+
+        "within",
+        "around",
+        "among",
+
+        "behind",
+        "beside",
+        "near",
+
+        "toward",
+        "towards",
+
+        "upon",
+        "across",
+        "along",
+
+        "inside",
+        "outside",
+
+        "past",
+        "despite",
+        "except"
+
+    ]);
+
+
+    const auxiliaries = new Set([
+
+        "am",
+        "is",
+        "are",
+        "was",
+        "were",
+
+        "be",
+        "been",
+        "being",
+
+        "have",
+        "has",
+        "had",
+
+        "do",
+        "does",
+        "did",
+
+        "can",
+        "could",
+
+        "will",
+        "would",
+
+        "shall",
+        "should",
+
+        "may",
+        "might",
+
+        "must"
+
+    ]);
+
+
+    const pronouns = new Set([
+
+        "i",
+        "you",
+        "he",
+        "she",
+        "it",
+        "we",
+        "they",
+
+        "me",
+        "him",
+        "her",
+        "us",
+        "them"
+
+    ]);
+
+
+    const determiners = new Set([
+
+        "a",
+        "an",
+        "the",
+
+        "this",
+        "that",
+        "these",
+        "those",
+
+        "my",
+        "your",
+        "his",
+        "her",
+        "our",
+        "their",
+
+        "some",
+        "any",
+        "each",
+        "every",
+        "no"
+
+    ]);
+
+
+    function clean(word) {
+
+        return word
+            .toLowerCase()
+            .replace(
+                /^[^a-z']+|[^a-z']+$/g,
+                ""
+            );
+
+    }
+
+
+    function pushCurrent() {
+
+        if (current.length) {
+
+            phrases.push(
+                current.join(" ")
+            );
+
+            current = [];
+
         }
 
-        text =
-            text.trim()
-                .replace(/\s+/g, ' ');
+    }
 
 
-        const words =
-            text.split(' ');
+    function isPunctuation(word) {
 
-        const phrases = [];
+        return /[,;:!?]/.test(word);
 
-        let current = [];
+    }
+
+
+    function isSentenceEnd(word) {
+
+        return /[.!?]$/.test(word);
+
+    }
+
+
+    function nextWord(index) {
+
+        if (
+            index + 1 <
+            words.length
+        ) {
+
+            return clean(
+                words[index + 1]
+            );
+
+        }
+
+        return "";
+
+    }
+
+
+    let i = 0;
+
+
+    while (
+        i < words.length
+    ) {
+
+        const word =
+            words[i];
+
+        const w =
+            clean(word);
+
+        const next =
+            nextWord(i);
 
 
         /* --------------------------------------------------------
-           WORD GROUPS
+           PUNCTUATION
            -------------------------------------------------------- */
 
-        const conjunctions = new Set([
-
-            "and",
-            "but",
-            "or",
-            "nor",
-            "yet",
-
-            "because",
-            "although",
-            "though",
-
-            "since",
-            "while",
-            "whereas",
-
-            "if",
-            "unless",
-            "until",
-
-            "when",
-            "whenever",
-
-            "that",
-            "which",
-            "who",
-            "whom",
-
-            "where",
-
-            "so"
-
-        ]);
-
-
-        const prepositions = new Set([
-
-            "in",
-            "on",
-            "at",
-            "to",
-            "for",
-            "with",
-
-            "about",
-            "against",
-            "between",
-            "into",
-
-            "through",
-            "during",
-            "before",
-            "after",
-
-            "above",
-            "below",
-            "from",
-
-            "up",
-            "down",
-            "off",
-            "over",
-            "under",
-
-            "by",
-            "without",
-
-            "within",
-            "around",
-            "among",
-
-            "behind",
-            "beside",
-            "near",
-
-            "toward",
-            "towards",
-
-            "upon",
-            "across",
-            "along",
-
-            "inside",
-            "outside",
-
-            "past",
-            "despite",
-            "except"
-
-        ]);
-
-
-        const auxiliaryVerbs = new Set([
-
-            "am",
-            "is",
-            "are",
-            "was",
-            "were",
-
-            "be",
-            "been",
-            "being",
-
-            "have",
-            "has",
-            "had",
-
-            "do",
-            "does",
-            "did",
-
-            "can",
-            "could",
-
-            "will",
-            "would",
-
-            "shall",
-            "should",
-
-            "may",
-            "might",
-
-            "must"
-
-        ]);
-
-
-        const pronouns = new Set([
-
-            "i",
-            "you",
-            "he",
-            "she",
-            "it",
-            "we",
-            "they",
-
-            "me",
-            "him",
-            "her",
-            "us",
-            "them"
-
-        ]);
-
-
-        const determiners = new Set([
-
-            "a",
-            "an",
-            "the",
-
-            "this",
-            "that",
-            "these",
-            "those",
-
-            "my",
-            "your",
-            "his",
-            "her",
-            "our",
-            "their",
-
-            "some",
-            "any",
-
-            "each",
-            "every",
-
-            "no"
-
-        ]);
-
-
-        /* --------------------------------------------------------
-           HELPERS
-           -------------------------------------------------------- */
-
-        function clean(word) {
-
-            return word
-                .toLowerCase()
-                .replace(
-                    /^[^a-z']+|[^a-z']+$/g,
-                    ''
-                );
-
-        }
-
-
-        function pushCurrent() {
-
-            if (current.length) {
-
-                phrases.push(
-                    current.join(' ')
-                );
-
-                current = [];
-
-            }
-
-        }
-
-
-        function addPhrase(wordsArray) {
-
-            if (wordsArray.length) {
-
-                phrases.push(
-                    wordsArray.join(' ')
-                );
-
-            }
-
-        }
-
-
-        function isPunctuation(word) {
-
-            return /[,;:!?]$/.test(word);
-
-        }
-
-
-        function isSentenceEnd(word) {
-
-            return /[.!?]$/.test(word);
-
-        }
-
-
-        function nextWord(index) {
-
-            if (
-                index + 1 <
-                words.length
-            ) {
-
-                return clean(
-                    words[index + 1]
-                );
-
-            }
-
-            return "";
-
-        }
-
-
-        /* --------------------------------------------------------
-           MAIN PARSER
-           -------------------------------------------------------- */
-
-        let i = 0;
-
-        while (i < words.length) {
-
-            const word =
-                words[i];
-
-            const w =
-                clean(word);
-
-            const next =
-                nextWord(i);
-
-
-            /* ----------------------------------------------------
-               PUNCTUATION
-               ---------------------------------------------------- */
-
-            if (isPunctuation(word)) {
-
-                current.push(word);
-
-                pushCurrent();
-
-                i++;
-
-                continue;
-
-            }
-
-
-            /* ----------------------------------------------------
-               CONJUNCTION
-               ---------------------------------------------------- */
-
-            if (conjunctions.has(w)) {
-
-                pushCurrent();
-
-                phrases.push(word);
-
-                i++;
-
-                continue;
-
-            }
-
-
-            /* ----------------------------------------------------
-               INFINITIVE
-               
-               "to go"
-               "to eat"
-               "to see"
-               ---------------------------------------------------- */
-
-            if (
-                w === "to" &&
-                next &&
-                !prepositions.has(next)
-            ) {
-
-                pushCurrent();
-
-                current.push(word);
-
-                current.push(
-                    words[i + 1]
-                );
-
-                i += 2;
-
-                pushCurrent();
-
-                continue;
-
-            }
-
-
-            /* ----------------------------------------------------
-               PREPOSITIONAL PHRASE
-               
-               "to the store"
-               "with my friend"
-               "at the station"
-               ---------------------------------------------------- */
-
-            if (prepositions.has(w)) {
-
-                pushCurrent();
-
-                const phrase = [word];
-
-                let j = i + 1;
-
-                while (
-                    j < words.length
-                ) {
-
-                    const candidate =
-                        words[j];
-
-                    const cw =
-                        clean(candidate);
-
-
-                    if (
-                        conjunctions.has(cw) ||
-                        prepositions.has(cw)
-                    ) {
-
-                        break;
-
-                    }
-
-
-                    phrase.push(candidate);
-
-
-                    if (
-                        isPunctuation(
-                            candidate
-                        )
-                    ) {
-
-                        break;
-
-                    }
-
-
-                    /*
-                     * Prevent very long cards.
-                     */
-
-                    if (
-                        phrase.length >= 5
-                    ) {
-
-                        break;
-
-                    }
-
-                    j++;
-
-                }
-
-
-                addPhrase(phrase);
-
-                i = j;
-
-                continue;
-
-            }
-
-
-            /* ----------------------------------------------------
-               AUXILIARY + VERB
-               
-               "is going"
-               "will go"
-               "has finished"
-               ---------------------------------------------------- */
-
-            if (
-                auxiliaryVerbs.has(w) &&
-                next &&
-                !conjunctions.has(next)
-            ) {
-
-                pushCurrent();
-
-                const phrase = [
-                    word,
-                    words[i + 1]
-                ];
-
-                let j = i + 2;
-
-
-                /*
-                 * Handle:
-                 *
-                 * "has been"
-                 * "will be"
-                 * "is being"
-                 */
-
-                if (
-                    j < words.length &&
-                    auxiliaryVerbs.has(
-                        clean(words[j])
-                    )
-                ) {
-
-                    phrase.push(
-                        words[j]
-                    );
-
-                    j++;
-
-                }
-
-
-                addPhrase(phrase);
-
-                i = j;
-
-                continue;
-
-            }
-
-
-            /* ----------------------------------------------------
-               PRONOUN + VERB
-               
-               "I went"
-               "she works"
-               "they arrived"
-               ---------------------------------------------------- */
-
-            if (
-                pronouns.has(w) &&
-                next &&
-                !conjunctions.has(next) &&
-                !prepositions.has(next)
-            ) {
-
-                pushCurrent();
-
-                current.push(word);
-
-                current.push(
-                    words[i + 1]
-                );
-
-                i += 2;
-
-                continue;
-
-            }
-
-
-            /* ----------------------------------------------------
-               DETERMINER + NOUN PHRASE
-               
-               "the car"
-               "my friend"
-               "some milk"
-               ---------------------------------------------------- */
-
-            if (determiners.has(w)) {
-
-                pushCurrent();
-
-                const phrase = [word];
-
-                let j = i + 1;
-
-                while (
-                    j < words.length
-                ) {
-
-                    const candidate =
-                        words[j];
-
-                    const cw =
-                        clean(candidate);
-
-
-                    if (
-                        conjunctions.has(cw) ||
-                        prepositions.has(cw)
-                    ) {
-
-                        break;
-
-                    }
-
-
-                    phrase.push(candidate);
-
-
-                    if (
-                        phrase.length >= 4
-                    ) {
-
-                        break;
-
-                    }
-
-
-                    if (
-                        isPunctuation(candidate)
-                    ) {
-
-                        break;
-
-                    }
-
-                    j++;
-
-                }
-
-
-                addPhrase(phrase);
-
-                i = j;
-
-                continue;
-
-            }
-
-
-            /* ----------------------------------------------------
-               DEFAULT WORD HANDLING
-               ---------------------------------------------------- */
+        if (
+            isPunctuation(word)
+        ) {
 
             current.push(word);
 
+            pushCurrent();
+
+            i++;
+
+            continue;
+
+        }
+
+
+        /* --------------------------------------------------------
+           CONJUNCTION
+           -------------------------------------------------------- */
+
+        if (
+            conjunctions.has(w)
+        ) {
+
+            pushCurrent();
+
+            phrases.push(word);
+
+            i++;
+
+            continue;
+
+        }
+
+
+        /* --------------------------------------------------------
+           INFINITIVE
+           
+           "to go"
+           "to eat"
+           -------------------------------------------------------- */
+
+        if (
+            w === "to" &&
+            next &&
+            !prepositions.has(next)
+        ) {
+
+            pushCurrent();
+
+            current.push(word);
+
+            current.push(
+                words[i + 1]
+            );
+
+            i += 2;
+
+            pushCurrent();
+
+            continue;
+
+        }
+
+
+        /* --------------------------------------------------------
+           PREPOSITIONAL PHRASE
+           
+           "to the store"
+           "with my friend"
+           -------------------------------------------------------- */
+
+        if (
+            prepositions.has(w)
+        ) {
+
+            pushCurrent();
+
+            const phrase = [word];
+
+            let j = i + 1;
+
+
+            while (
+                j < words.length
+            ) {
+
+                const candidate =
+                    words[j];
+
+                const cw =
+                    clean(candidate);
+
+
+                if (
+                    conjunctions.has(cw) ||
+                    prepositions.has(cw)
+                ) {
+
+                    break;
+
+                }
+
+
+                phrase.push(
+                    candidate
+                );
+
+
+                if (
+                    isPunctuation(candidate)
+                ) {
+
+                    break;
+
+                }
+
+
+                if (
+                    phrase.length >= 5
+                ) {
+
+                    break;
+
+                }
+
+
+                j++;
+
+            }
+
+
+            phrases.push(
+                phrase.join(" ")
+            );
+
+
+            i = j;
+
+            continue;
+
+        }
+
+
+        /* --------------------------------------------------------
+           AUXILIARY + VERB
+           -------------------------------------------------------- */
+
+        if (
+            auxiliaries.has(w) &&
+            next &&
+            !conjunctions.has(next)
+        ) {
+
+            pushCurrent();
+
+            const phrase = [
+                word,
+                words[i + 1]
+            ];
+
+
+            let j = i + 2;
+
+
+            if (
+                j < words.length &&
+                auxiliaries.has(
+                    clean(words[j])
+                )
+            ) {
+
+                phrase.push(
+                    words[j]
+                );
+
+                j++;
+
+            }
+
+
+            phrases.push(
+                phrase.join(" ")
+            );
+
+
+            i = j;
+
+            continue;
+
+        }
+
+
+        /* --------------------------------------------------------
+           PRONOUN + VERB
+           -------------------------------------------------------- */
+
+        if (
+            pronouns.has(w) &&
+            next &&
+            !conjunctions.has(next) &&
+            !prepositions.has(next)
+        ) {
+
+            pushCurrent();
+
+            current.push(word);
+
+            current.push(
+                words[i + 1]
+            );
+
+            i += 2;
+
+            continue;
+
+        }
+
+
+        /* --------------------------------------------------------
+           DETERMINER + NOUN PHRASE
+           -------------------------------------------------------- */
+
+        if (
+            determiners.has(w)
+        ) {
+
+            pushCurrent();
+
+            const phrase = [word];
+
+            let j = i + 1;
+
+
+            while (
+                j < words.length
+            ) {
+
+                const candidate =
+                    words[j];
+
+                const cw =
+                    clean(candidate);
+
+
+                if (
+                    conjunctions.has(cw) ||
+                    prepositions.has(cw)
+                ) {
+
+                    break;
+
+                }
+
+
+                phrase.push(
+                    candidate
+                );
+
+
+                if (
+                    phrase.length >= 4
+                ) {
+
+                    break;
+
+                }
+
+
+                if (
+                    isPunctuation(candidate)
+                ) {
+
+                    break;
+
+                }
+
+
+                j++;
+
+            }
+
+
+            phrases.push(
+                phrase.join(" ")
+            );
+
+
+            i = j;
+
+            continue;
+
+        }
+
+
+        /* --------------------------------------------------------
+           DEFAULT
+           -------------------------------------------------------- */
+
+        current.push(word);
+
+
+        if (
+            current.length >= 4
+        ) {
+
+            pushCurrent();
+
+        }
+
+
+        if (
+            isSentenceEnd(word)
+        ) {
+
+            pushCurrent();
+
+        }
+
+
+        i++;
+
+    }
+
+
+    pushCurrent();
+
+
+    return phrases.filter(
+        phrase =>
+            phrase.trim().length > 0
+    );
+
+}
+
+
+/* ================================================================
+   JAPANESE CHARACTER HELPERS
+   ================================================================ */
+
+function isJapaneseCharacter(char) {
+
+    return /[\u3040-\u30ff\u3400-\u9fff々ー]/.test(
+        char
+    );
+
+}
+
+
+function isKanji(char) {
+
+    return /[\u3400-\u4dbf\u4e00-\u9fff]/.test(
+        char
+    );
+
+}
+
+
+function isKana(char) {
+
+    return /[\u3040-\u30ff]/.test(
+        char
+    );
+
+}
+
+
+/* ================================================================
+   JAPANESE PARSER
+   ================================================================ */
+
+function parseJapanesePhrases(text) {
+
+    if (
+        !text ||
+        !text.trim()
+    ) {
+
+        return [];
+
+    }
+
+
+    /*
+     * Japanese normally has no spaces.
+     * Remove spaces that Google may have inserted.
+     */
+
+    const source =
+        text
+            .trim()
+            .replace(/\s+/g, "");
+
+
+    const phrases = [];
+
+    let current = "";
+
+
+    /*
+     * Japanese particles.
+     *
+     * Longer particles come first.
+     */
+
+    const particles = [
+
+        "について",
+        "に対して",
+        "によって",
+        "として",
+        "にとって",
+        "において",
+        "までに",
+        "のために",
+        "から",
+        "まで",
+        "より",
+        "だけ",
+        "しか",
+        "ほど",
+        "など",
+        "なんて",
+        "なんか",
+
+        "では",
+        "には",
+        "へ",
+        "と",
+        "が",
+        "を",
+        "に",
+        "で",
+        "は",
+        "も"
+
+    ];
+
+
+    /*
+     * Japanese clause-ending expressions.
+     */
+
+    const clauseEndings = [
+
+        "ので",
+        "のに",
+        "けれども",
+        "けれど",
+        "けど",
+        "から",
+        "ので",
+        "なら",
+        "ならば",
+        "たら",
+        "ても",
+        "でも",
+        "ながら",
+        "し",
+        "が"
+
+    ];
+
+
+    /*
+     * Common sentence endings.
+     */
+
+    const sentenceEndings = [
+
+        "です",
+        "ます",
+        "でした",
+        "ました",
+        "ません",
+        "ませんでした",
+
+        "たい",
+        "たくない",
+
+        "ない",
+        "なかった",
+
+        "だった",
+        "だ",
+
+        "でしょう",
+        "だろう",
+
+        "ください",
+        "下さい",
+
+        "ませんか",
+        "ましょう",
+
+        "たいです",
+        "たくないです"
+
+    ];
+
+
+    function startsWithAt(
+        value,
+        index,
+        candidate
+    ) {
+
+        return value.startsWith(
+            candidate,
+            index
+        );
+
+    }
+
+
+    function flush() {
+
+        if (
+            current.trim()
+        ) {
+
+            phrases.push(
+                current.trim()
+            );
+
+            current = "";
+
+        }
+
+    }
+
+
+    let i = 0;
+
+
+    while (
+        i < source.length
+    ) {
+
+        const char =
+            source[i];
+
+
+        current += char;
+
+
+        /* --------------------------------------------------------
+           PUNCTUATION
+           -------------------------------------------------------- */
+
+        if (
+            /[。！？]/.test(char)
+        ) {
+
+            flush();
+
+            i++;
+
+            continue;
+
+        }
+
+
+        /* --------------------------------------------------------
+           COMMA
+           
+           Japanese comma is useful as a clause boundary,
+           but not always a phrase boundary.
+           -------------------------------------------------------- */
+
+        if (
+            char === "、"
+        ) {
 
             /*
-             * Prevent giant cards.
+             * If the current phrase is reasonably long,
+             * treat it as a clause boundary.
              */
 
             if (
                 current.length >= 4
             ) {
 
-                pushCurrent();
+                flush();
+
+            }
+
+            i++;
+
+            continue;
+
+        }
+
+
+        /* --------------------------------------------------------
+           CLAUSE ENDINGS
+           
+           Examples:
+           
+           必要なので
+           行きたいけど
+           食べたから
+           -------------------------------------------------------- */
+
+        let matchedClause =
+            null;
+
+
+        for (
+            const ending
+            of clauseEndings
+        ) {
+
+            if (
+                startsWithAt(
+                    source,
+                    i,
+                    ending
+                )
+            ) {
+
+                matchedClause =
+                    ending;
+
+                break;
+
+            }
+
+        }
+
+
+        if (
+            matchedClause
+        ) {
+
+            /*
+             * Consume the remaining characters
+             * of the expression.
+             */
+
+            for (
+                let j = 1;
+                j < matchedClause.length;
+                j++
+            ) {
+
+                i++;
+
+                current +=
+                    source[i];
 
             }
 
 
+            /*
+             * Clause endings are useful boundaries.
+             */
+
             if (
-                isSentenceEnd(word)
+                current.length >= 3
             ) {
 
-                pushCurrent();
+                flush();
 
             }
 
 
             i++;
 
+            continue;
+
         }
 
 
-        pushCurrent();
+        /* --------------------------------------------------------
+           PARTICLES
+           -------------------------------------------------------- */
 
-
-        return phrases.filter(
-            phrase =>
-                phrase &&
-                phrase.trim().length > 0
-        );
-
-    }
-
-
-    /* ============================================================
-       FOREIGN PHRASE PARSER
-       ============================================================ */
-
-    function parseForeignPhrases(text) {
-
-        if (!text || !text.trim()) {
-            return [];
-        }
-
-        const words =
-            text.trim()
-                .split(/\s+/);
-
-
-        if (words.length <= 1) {
-            return words;
-        }
-
-
-        const chunks = [];
-
-        let current = [];
+        let matchedParticle =
+            null;
 
 
         for (
-            let i = 0;
-            i < words.length;
-            i++
+            const particle
+            of particles
         ) {
 
-            current.push(
-                words[i]
-            );
-
-
-            /*
-             * Target-language display chunks.
-             *
-             * This remains intentionally simple because
-             * German/French/Spanish/Italian/Russian/Chinese/
-             * Japanese have different word-order systems.
-             */
-
             if (
-                current.length >= 2
+                startsWithAt(
+                    source,
+                    i,
+                    particle
+                )
             ) {
 
-                chunks.push(
-                    current.join(" ")
-                );
+                matchedParticle =
+                    particle;
 
-                current = [];
+                break;
 
             }
 
         }
 
 
-        if (current.length) {
+        if (
+            matchedParticle
+        ) {
 
-            chunks.push(
-                current.join(" ")
-            );
+            /*
+             * Consume multi-character particle.
+             */
+
+            for (
+                let j = 1;
+                j < matchedParticle.length;
+                j++
+            ) {
+
+                i++;
+
+                current +=
+                    source[i];
+
+            }
+
+
+            /*
+             * Important:
+             *
+             * Do NOT split on は / が / を automatically.
+             *
+             * Japanese phrases such as:
+             *
+             * 私は学生です
+             * 牛乳が必要です
+             * 本を読みます
+             *
+             * need their predicate.
+             *
+             * Instead, split on location/action particles
+             * when the current chunk already contains enough
+             * material.
+             */
+
+            if (
+                matchedParticle === "に" ||
+                matchedParticle === "で" ||
+                matchedParticle === "へ" ||
+                matchedParticle === "まで" ||
+                matchedParticle === "から"
+            ) {
+
+                /*
+                 * Don't split tiny chunks.
+                 */
+
+                if (
+                    current.length >= 3
+                ) {
+
+                    flush();
+
+                }
+
+            }
+
+
+            i++;
+
+            continue;
 
         }
 
 
-        return chunks;
+        /* --------------------------------------------------------
+           SENTENCE ENDINGS
+           -------------------------------------------------------- */
+
+        let matchedEnding =
+            null;
+
+
+        for (
+            const ending
+            of sentenceEndings
+        ) {
+
+            if (
+                source.startsWith(
+                    ending,
+                    i
+                )
+            ) {
+
+                matchedEnding =
+                    ending;
+
+                break;
+
+            }
+
+        }
+
+
+        if (
+            matchedEnding
+        ) {
+
+            /*
+             * Consume ending.
+             */
+
+            for (
+                let j = 1;
+                j < matchedEnding.length;
+                j++
+            ) {
+
+                i++;
+
+                current +=
+                    source[i];
+
+            }
+
+
+            /*
+             * Don't always flush here.
+             *
+             * We want:
+             *
+             * 行きたいです
+             *
+             * as one phrase.
+             *
+             * But if the sentence has already become
+             * very long, flush it.
+             */
+
+            if (
+                current.length >= 8
+            ) {
+
+                flush();
+
+            }
+
+
+            i++;
+
+            continue;
+
+        }
+
+
+        /*
+         * --------------------------------------------------------
+         * LONG-CHUNK SAFETY
+         * --------------------------------------------------------
+         *
+         * Prevent an entire long Japanese sentence from
+         * becoming one card.
+         */
+
+        if (
+            current.length >= 12
+        ) {
+
+            /*
+             * Prefer breaking at a kana/kanji transition.
+             */
+
+            const previous =
+                source[i - 1] || "";
+
+            const currentChar =
+                source[i];
+
+
+            if (
+                isKanji(previous) &&
+                isKana(currentChar)
+            ) {
+
+                flush();
+
+            }
+
+        }
+
+
+        i++;
 
     }
 
 
-    /* ============================================================
-       RENDER ENGLISH MAP
-       ============================================================ */
+    flush();
 
-    function renderEnglishMap(
+
+    /*
+     * ------------------------------------------------------------
+     * CLEAN UP
+     * ------------------------------------------------------------
+     */
+
+    let cleaned =
         phrases
+            .map(
+                phrase =>
+                    phrase
+                        .replace(
+                            /^、+/,
+                            ""
+                        )
+                        .trim()
+            )
+            .filter(Boolean);
+
+
+    /*
+     * If the parser produced only one enormous chunk,
+     * perform a safer fallback split around particles.
+     */
+
+    if (
+        cleaned.length === 1 &&
+        cleaned[0].length > 15
     ) {
 
-        const grid =
-            document.getElementById(
-                "englishOutput"
+        cleaned =
+            japaneseFallbackSplit(
+                cleaned[0]
             );
 
+    }
 
-        if (!phrases.length) {
 
-            grid.innerHTML = `
-                <div class="empty-message">
-                    Enter an English sentence above.
-                </div>
-            `;
+    return cleaned;
 
-            return;
+}
+
+
+/* ================================================================
+   JAPANESE FALLBACK SPLITTER
+   ================================================================ */
+
+function japaneseFallbackSplit(text) {
+
+    if (
+        !text ||
+        text.length <= 1
+    ) {
+
+        return text
+            ? [text]
+            : [];
+
+    }
+
+
+    const result = [];
+
+    let current = "";
+
+
+    const boundaryParticles = [
+        "に",
+        "で",
+        "へ",
+        "と",
+        "から",
+        "まで"
+    ];
+
+
+    for (
+        let i = 0;
+        i < text.length;
+        i++
+    ) {
+
+        const char =
+            text[i];
+
+        current += char;
+
+
+        if (
+            boundaryParticles.includes(
+                char
+            ) &&
+            current.length >= 3
+        ) {
+
+            /*
+             * Don't split if the next character appears
+             * to be part of a common grammatical ending.
+             */
+
+            const next =
+                text[i + 1] || "";
+
+
+            if (
+                next &&
+                /[ぁ-ん]/.test(next)
+            ) {
+
+                continue;
+
+            }
+
+
+            result.push(
+                current
+            );
+
+            current = "";
 
         }
 
+    }
 
-        grid.innerHTML =
-            phrases.map(
+
+    if (
+        current
+    ) {
+
+        result.push(
+            current
+        );
+
+    }
+
+
+    return result.filter(
+        x => x.trim()
+    );
+
+}
+
+
+/* ================================================================
+   RENDER ENGLISH MAP
+   ================================================================ */
+
+function renderEnglishMap(
+    phrases
+) {
+
+    const grid =
+        document.getElementById(
+            "englishOutput"
+        );
+
+
+    if (
+        !phrases.length
+    ) {
+
+        grid.innerHTML = `
+            <div class="empty-message">
+                Enter an English sentence above.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    grid.innerHTML =
+        phrases
+            .map(
                 (phrase, index) => `
 
-                    <div class="word-card english-card">
+                    <div
+                        class="word-card english-card"
+                    >
 
-                        <div class="phrase-text">
-                            ${escapeHTML(phrase)}
+                        <div
+                            class="phrase-text"
+                        >
+                            ${escapeHTML(
+                                phrase
+                            )}
                         </div>
 
                         <div
@@ -1929,51 +2708,61 @@
                     </div>
 
                 `
-            ).join('');
+            )
+            .join("");
+
+}
+
+
+/* ================================================================
+   RENDER FOREIGN MAP
+   ================================================================ */
+
+function renderForeignMap(
+    phrases
+) {
+
+    const grid =
+        document.getElementById(
+            "foreignOutput"
+        );
+
+
+    const config =
+        LANG_CONFIG[currentLang];
+
+
+    if (
+        !phrases.length
+    ) {
+
+        grid.innerHTML = `
+            <div class="empty-message">
+                Translation will appear here.
+            </div>
+        `;
+
+        return;
 
     }
 
 
-    /* ============================================================
-       RENDER FOREIGN MAP
-       ============================================================ */
-
-    function renderForeignMap(
+    grid.innerHTML =
         phrases
-    ) {
-
-        const grid =
-            document.getElementById(
-                "foreignOutput"
-            );
-
-        const config =
-            LANG_CONFIG[currentLang];
-
-
-        if (!phrases.length) {
-
-            grid.innerHTML = `
-                <div class="empty-message">
-                    Translation will appear here.
-                </div>
-            `;
-
-            return;
-
-        }
-
-
-        grid.innerHTML =
-            phrases.map(
+            .map(
                 (phrase, index) => `
 
                     <div
                         class="word-card foreign-card ${config.theme}"
                     >
 
-                        <div class="phrase-text">
-                            ${escapeHTML(phrase)}
+                        <div
+                            class="phrase-text"
+                            id="foreign-phrase-${index}"
+                        >
+                            ${escapeHTML(
+                                phrase
+                            )}
                         </div>
 
                         <div
@@ -1989,443 +2778,657 @@
                         <div
                             class="phrase-translation"
                             id="for-p-${index}"
-                        >
-                            ...
-                        </div>
+                        ></div>
 
                     </div>
 
                 `
-            ).join('');
+            )
+            .join("");
+
+}
+
+
+/* ================================================================
+   UPDATE PHRASE MAPS
+   ================================================================ */
+
+async function updatePhraseMaps() {
+
+    const generation =
+        ++updateGeneration;
+
+
+    const englishText =
+        document
+            .getElementById(
+                "englishInput"
+            )
+            .value
+            .trim();
+
+
+    const foreignText =
+        document
+            .getElementById(
+                "foreignInput"
+            )
+            .value
+            .trim();
+
+
+    /*
+     * ------------------------------------------------------------
+     * ENGLISH PARSING
+     * ------------------------------------------------------------
+     */
+
+    const englishPhrases =
+        parseEnglishPhrases(
+            englishText
+        );
+
+
+    /*
+     * ------------------------------------------------------------
+     * TARGET PARSING
+     *
+     * Japanese gets its own routine.
+     * ------------------------------------------------------------
+     */
+
+    let foreignPhrases = [];
+
+
+    if (
+        currentLang === "ja"
+    ) {
+
+        foreignPhrases =
+            parseJapanesePhrases(
+                foreignText
+            );
 
     }
 
+    else {
 
-    /* ============================================================
-       UPDATE PHRASE MAPS
-       ============================================================ */
-
-    async function updatePhraseMaps() {
-
-        const generation =
-            ++updateGeneration;
-
-
-        const engText =
-            document.getElementById(
-                "englishInput"
-            ).value;
-
-        const foreignText =
-            document.getElementById(
-                "foreignInput"
-            ).value;
-
-
-        const engPhrases =
-            parseEnglishPhrases(
-                engText
-            );
-
-        const foreignPhrases =
+        foreignPhrases =
             parseForeignPhrases(
                 foreignText
             );
 
+    }
 
-        renderEnglishMap(
-            engPhrases
+
+    renderEnglishMap(
+        englishPhrases
+    );
+
+
+    /*
+     * ------------------------------------------------------------
+     * TRANSLATE ENGLISH PHRASES
+     * ------------------------------------------------------------
+     */
+
+    if (
+        englishPhrases.length
+    ) {
+
+        const translated =
+            await translateBatchFast(
+                englishPhrases,
+                "en",
+                currentLang
+            );
+
+
+        if (
+            generation !==
+            updateGeneration
+        ) {
+
+            return;
+
+        }
+
+
+        translated.forEach(
+            (result, index) => {
+
+                const element =
+                    document.getElementById(
+                        `eng-p-${index}`
+                    );
+
+
+                if (element) {
+
+                    element.innerText =
+                        result?.translation ||
+                        "";
+
+                }
+
+            }
         );
+
+    }
+
+
+    /*
+     * ------------------------------------------------------------
+     * JAPANESE TARGET MAP
+     *
+     * Japanese should display the user's actual Japanese
+     * sentence rather than attempting to manufacture Japanese
+     * chunks from English.
+     * ------------------------------------------------------------
+     */
+
+    if (
+        currentLang === "ja"
+    ) {
 
         renderForeignMap(
             foreignPhrases
         );
 
 
-        /* --------------------------------------------------------
-           ENGLISH → TARGET
-           -------------------------------------------------------- */
+        foreignPhrases.forEach(
+            (phrase, index) => {
 
-        if (engPhrases.length) {
-
-            const translatedEnglish =
-                await translateBatchFast(
-                    engPhrases,
-                    'en',
-                    currentLang
-                );
+                const phraseElement =
+                    document.getElementById(
+                        `foreign-phrase-${index}`
+                    );
 
 
-            /*
-             * Ignore an old request if the user has already
-             * typed something new.
-             */
-
-            if (
-                generation !==
-                updateGeneration
-            ) {
-
-                return;
-
-            }
+                const readingElement =
+                    document.getElementById(
+                        `for-r-${index}`
+                    );
 
 
-            translatedEnglish.forEach(
-                (result, index) => {
+                const romajiElement =
+                    document.getElementById(
+                        `for-rom-${index}`
+                    );
 
-                    const element =
-                        document.getElementById(
-                            `eng-p-${index}`
-                        );
 
-                    if (element) {
+                const translationElement =
+                    document.getElementById(
+                        `for-p-${index}`
+                    );
 
-                        element.innerText =
-                            result.translation ||
-                            "";
 
-                    }
+                /*
+                 * Japanese reading.
+                 */
+
+                if (
+                    phraseElement
+                ) {
+
+                    phraseElement.innerText =
+                        phrase;
 
                 }
-            );
-
-        }
 
 
-        /* --------------------------------------------------------
-           TARGET → ENGLISH
-           -------------------------------------------------------- */
+                if (
+                    window.wanakana
+                ) {
 
-        if (foreignPhrases.length) {
-
-            const translatedForeign =
-                await translateBatchFast(
-                    foreignPhrases,
-                    currentLang,
-                    'en'
-                );
-
-
-            if (
-                generation !==
-                updateGeneration
-            ) {
-
-                return;
-
-            }
-
-
-            foreignPhrases.forEach(
-                (phrase, index) => {
-
-                    const result =
-                        translatedForeign[index] ||
-                        {};
-
-                    const transEl =
-                        document.getElementById(
-                            `for-p-${index}`
-                        );
-
-                    const readEl =
-                        document.getElementById(
-                            `for-r-${index}`
-                        );
-
-                    const romEl =
-                        document.getElementById(
-                            `for-rom-${index}`
+                    const hiragana =
+                        wanakana.toHiragana(
+                            phrase
                         );
 
 
-                    if (transEl) {
+                    const romaji =
+                        wanakana.toRomaji(
+                            phrase
+                        );
 
-                        transEl.innerText =
-                            result.translation ||
-                            "";
-
-                    }
-
-
-                    /* --------------------------------------------
-                       JAPANESE READING
-                       -------------------------------------------- */
 
                     if (
-                        currentLang === 'ja' &&
-                        window.wanakana
+                        readingElement
                     ) {
 
-                        const hiragana =
-                            wanakana.toHiragana(
-                                phrase
-                            );
+                        /*
+                         * Only show Hiragana when it differs
+                         * from the original.
+                         */
 
-                        const romaji =
-                            wanakana.toRomaji(
-                                phrase
-                            );
-
-
-                        if (readEl) {
-
-                            readEl.innerText =
-                                hiragana !== phrase
-                                    ? hiragana
-                                    : "";
-
-                        }
-
-
-                        if (romEl) {
-
-                            romEl.innerText =
-                                romaji;
-
-                        }
+                        readingElement.innerText =
+                            hiragana !== phrase
+                                ? hiragana
+                                : "";
 
                     }
 
 
-                    /* --------------------------------------------
-                       OTHER LANGUAGE TRANSLITERATION
-                       -------------------------------------------- */
-
-                    else if (
-                        result.translit &&
-                        readEl
+                    if (
+                        romajiElement
                     ) {
 
-                        readEl.innerText =
-                            result.translit;
+                        romajiElement.innerText =
+                            romaji;
 
                     }
 
                 }
-            );
+
+
+                /*
+                 * Translate the Japanese phrase back to
+                 * English for the explanation under the card.
+                 */
+
+                translateUnified(
+                    phrase,
+                    "ja",
+                    "en"
+                )
+                .then(
+                    result => {
+
+                        if (
+                            generation !==
+                            updateGeneration
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        if (
+                            translationElement
+                        ) {
+
+                            translationElement.innerText =
+                                result?.translation ||
+                                "";
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+        /*
+         * Re-translation of complete Japanese sentence.
+         */
+
+        if (
+            foreignText
+        ) {
+
+            const retrans =
+                await translateUnified(
+                    foreignText,
+                    "ja",
+                    "en"
+                );
+
+
+            if (
+                generation !==
+                updateGeneration
+            ) {
+
+                return;
+
+            }
+
+
+            document.getElementById(
+                "retranslationText"
+            ).innerText =
+                retrans
+                    ? retrans.translation
+                    : "Re-translation failed";
 
         }
 
 
         setStatus(
-            `${engPhrases.length} English phrase${
-                engPhrases.length === 1
-                    ? ''
-                    : 's'
-            } detected`
+            `${englishPhrases.length} English phrase${
+                englishPhrases.length === 1
+                    ? ""
+                    : "s"
+            } • ${
+                foreignPhrases.length
+            } Japanese phrase${
+                foreignPhrases.length === 1
+                    ? ""
+                    : "s"
+            }`
         );
+
+
+        return;
 
     }
 
 
-    /* ============================================================
-       INPUT HANDLING
-       ============================================================ */
+    /*
+     * ------------------------------------------------------------
+     * OTHER LANGUAGES
+     * ------------------------------------------------------------
+     */
 
-    function handleInput(lang) {
-
-        clearTimeout(
-            translationTimeout
-        );
-
-
-        translationTimeout =
-            setTimeout(
-                async () => {
-
-                    const auto =
-                        document.getElementById(
-                            "autoTranslateToggle"
-                        ).checked;
-
-                    const engInput =
-                        document.getElementById(
-                            "englishInput"
-                        );
-
-                    const foreignInput =
-                        document.getElementById(
-                            "foreignInput"
-                        );
+    renderForeignMap(
+        foreignPhrases
+    );
 
 
-                    /* --------------------------------------------
-                       ENGLISH → FOREIGN
-                       -------------------------------------------- */
+    if (
+        foreignPhrases.length
+    ) {
 
-                    if (
-                        lang === 'en' &&
-                        auto &&
-                        engInput.value.trim()
-                    ) {
-
-                        setStatus(
-                            "Translating..."
-                        );
-
-
-                        const result =
-                            await translateUnified(
-                                engInput.value.trim(),
-                                'en',
-                                currentLang
-                            );
-
-
-                        if (result) {
-
-                            foreignInput.value =
-                                result.translation;
-
-                        }
-
-                    }
-
-
-                    /* --------------------------------------------
-                       FOREIGN → ENGLISH
-                       -------------------------------------------- */
-
-                    else if (
-                        lang === 'foreign' &&
-                        auto &&
-                        foreignInput.value.trim()
-                    ) {
-
-                        setStatus(
-                            "Translating..."
-                        );
-
-
-                        const result =
-                            await translateUnified(
-                                foreignInput.value.trim(),
-                                currentLang,
-                                'en'
-                            );
-
-
-                        if (result) {
-
-                            engInput.value =
-                                result.translation;
-
-                        }
-
-                    }
-
-
-                    /* --------------------------------------------
-                       RE-TRANSLATION
-                       -------------------------------------------- */
-
-                    if (
-                        foreignInput.value.trim()
-                    ) {
-
-                        const retrans =
-                            await translateUnified(
-                                foreignInput.value.trim(),
-                                currentLang,
-                                'en'
-                            );
-
-
-                        const retransElement =
-                            document.getElementById(
-                                "retranslationText"
-                            );
-
-
-                        if (retransElement) {
-
-                            retransElement.innerText =
-                                retrans
-                                    ? retrans.translation
-                                    : "Re-translation failed";
-
-                        }
-
-                    }
-
-                    else {
-
-                        document.getElementById(
-                            "retranslationText"
-                        ).innerHTML =
-                            "<em>Re-translation will appear here...</em>";
-
-                    }
-
-
-                    await updatePhraseMaps();
-
-                },
-                350
+        const translatedForeign =
+            await translateBatchFast(
+                foreignPhrases,
+                currentLang,
+                "en"
             );
 
-    }
 
+        if (
+            generation !==
+            updateGeneration
+        ) {
 
-    /* ============================================================
-       LANGUAGE SWITCHING
-       ============================================================ */
-
-    function setLanguage(lang) {
-
-        if (!LANG_CONFIG[lang]) {
             return;
+
         }
 
 
-        currentLang = lang;
+        foreignPhrases.forEach(
+            (phrase, index) => {
+
+                const result =
+                    translatedForeign[index] ||
+                    {};
 
 
-        const config =
-            LANG_CONFIG[lang];
+                const translationElement =
+                    document.getElementById(
+                        `for-p-${index}`
+                    );
 
 
-        /* --------------------------------------------
-           UI LABELS
-           -------------------------------------------- */
+                const readingElement =
+                    document.getElementById(
+                        `for-r-${index}`
+                    );
+
+
+                if (
+                    translationElement
+                ) {
+
+                    translationElement.innerText =
+                        result.translation ||
+                        "";
+
+                }
+
+
+                if (
+                    result.translit &&
+                    readingElement
+                ) {
+
+                    readingElement.innerText =
+                        result.translit;
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /*
+     * ------------------------------------------------------------
+     * COMPLETE TARGET → ENGLISH RETRANSLATION
+     * ------------------------------------------------------------
+     */
+
+    if (
+        foreignText
+    ) {
+
+        const retrans =
+            await translateUnified(
+                foreignText,
+                currentLang,
+                "en"
+            );
+
+
+        if (
+            generation !==
+            updateGeneration
+        ) {
+
+            return;
+
+        }
+
 
         document.getElementById(
-            'mainTitle'
+            "retranslationText"
         ).innerText =
-            `EN ➜ ${lang.toUpperCase()}: Ward's Phrasen-Mapper`;
+            retrans
+                ? retrans.translation
+                : "Re-translation failed";
 
+    }
 
-        document.getElementById(
-            'foreignLabel'
-        ).innerText =
-            `${config.name} Sentence`;
-
-
-        document.getElementById(
-            'foreignRowTitle'
-        ).innerText =
-            `${config.name} Phrase Map`;
-
+    else {
 
         document.getElementById(
-            'foreignLabel'
-        ).style.color =
-            `var(--primary-${getThemeColorName(config.theme)})`;
+            "retranslationText"
+        ).innerHTML =
+            "<em>Re-translation will appear here...</em>";
+
+    }
 
 
-        /* --------------------------------------------
-           BUTTONS
-           -------------------------------------------- */
+    setStatus(
+        `${englishPhrases.length} English phrase${
+            englishPhrases.length === 1
+                ? ""
+                : "s"
+        }`
+    );
 
-        Object.keys(
-            LANG_CONFIG
-        ).forEach(code => {
+}
+
+
+/* ================================================================
+   INPUT HANDLING
+   ================================================================ */
+
+function handleInput(lang) {
+
+    clearTimeout(
+        translationTimeout
+    );
+
+
+    translationTimeout =
+        setTimeout(
+            async () => {
+
+                const auto =
+                    document.getElementById(
+                        "autoTranslateToggle"
+                    ).checked;
+
+
+                const englishInput =
+                    document.getElementById(
+                        "englishInput"
+                    );
+
+
+                const foreignInput =
+                    document.getElementById(
+                        "foreignInput"
+                    );
+
+
+                /*
+                 * ENGLISH → TARGET
+                 */
+
+                if (
+                    lang === "en" &&
+                    auto &&
+                    englishInput.value.trim()
+                ) {
+
+                    setStatus(
+                        "Translating..."
+                    );
+
+
+                    const result =
+                        await translateUnified(
+                            englishInput.value.trim(),
+                            "en",
+                            currentLang
+                        );
+
+
+                    if (
+                        result
+                    ) {
+
+                        foreignInput.value =
+                            result.translation;
+
+                    }
+
+                }
+
+
+                /*
+                 * TARGET → ENGLISH
+                 */
+
+                else if (
+                    lang === "foreign" &&
+                    auto &&
+                    foreignInput.value.trim()
+                ) {
+
+                    setStatus(
+                        "Translating..."
+                    );
+
+
+                    const result =
+                        await translateUnified(
+                            foreignInput.value.trim(),
+                            currentLang,
+                            "en"
+                        );
+
+
+                    if (
+                        result
+                    ) {
+
+                        englishInput.value =
+                            result.translation;
+
+                    }
+
+                }
+
+
+                /*
+                 * Update everything.
+                 */
+
+                await updatePhraseMaps();
+
+            },
+            350
+        );
+
+}
+
+
+/* ================================================================
+   LANGUAGE SWITCHING
+   ================================================================ */
+
+function setLanguage(lang) {
+
+    if (
+        !LANG_CONFIG[lang]
+    ) {
+
+        return;
+
+    }
+
+
+    currentLang =
+        lang;
+
+
+    const config =
+        LANG_CONFIG[lang];
+
+
+    /*
+     * Titles.
+     */
+
+    document.getElementById(
+        "mainTitle"
+    ).innerText =
+        `EN ➜ ${lang.toUpperCase()}: Ward's Phrasen-Mapper`;
+
+
+    document.getElementById(
+        "foreignLabel"
+    ).innerText =
+        `${config.name} Sentence`;
+
+
+    document.getElementById(
+        "foreignRowTitle"
+    ).innerText =
+        `${config.name} Phrase Map`;
+
+
+    /*
+     * Button states.
+     */
+
+    Object.keys(
+        LANG_CONFIG
+    ).forEach(
+        code => {
 
             const button =
                 document.getElementById(
-                    'btn' +
+                    "btn" +
                     code.toUpperCase()
                 );
 
@@ -2439,7 +3442,9 @@
                 "lang-btn";
 
 
-            if (code === lang) {
+            if (
+                code === lang
+            ) {
 
                 button.classList.add(
                     "active",
@@ -2448,83 +3453,64 @@
 
             }
 
-        });
-
-
-        /* --------------------------------------------
-           RE-TRANSLATE EXISTING SENTENCE
-           -------------------------------------------- */
-
-        const english =
-            document.getElementById(
-                "englishInput"
-            ).value.trim();
-
-
-        if (english) {
-
-            handleInput('en');
-
         }
+    );
 
-        else {
 
-            updatePhraseMaps();
+    /*
+     * Re-run translation if English exists.
+     */
 
-        }
+    const english =
+        document.getElementById(
+            "englishInput"
+        ).value.trim();
+
+
+    if (
+        english
+    ) {
+
+        handleInput("en");
 
     }
 
+    else {
 
-    /* ============================================================
-       THEME COLOR HELPER
-       ============================================================ */
-
-    function getThemeColorName(theme) {
-
-        const map = {
-
-            "orange-mode": "orange",
-            "sakura-mode": "sakura",
-            "sangria-mode": "sangria",
-            "lavender-mode": "lavender",
-            "emerald-mode": "emerald",
-            "crimson-mode": "crimson",
-            "gold-mode": "gold"
-
-        };
-
-        return map[theme] || "orange";
+        updatePhraseMaps();
 
     }
 
+}
 
-    /* ============================================================
-       STATUS
-       ============================================================ */
 
-    function setStatus(message) {
+/* ================================================================
+   STATUS
+   ================================================================ */
 
-        const status =
-            document.getElementById(
-                "statusText"
-            );
+function setStatus(message) {
 
-        if (status) {
+    const element =
+        document.getElementById(
+            "statusText"
+        );
 
-            status.innerText =
-                message;
 
-        }
+    if (element) {
+
+        element.innerText =
+            message;
 
     }
 
+}
 
-    /* ============================================================
-       INITIALIZE
-       ============================================================ */
 
-    setLanguage('de');
+/* ================================================================
+   INITIALIZE
+   ================================================================ */
+
+setLanguage("de");
 
 </script>
 
