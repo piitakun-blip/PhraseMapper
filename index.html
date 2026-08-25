@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#f8fafc">
     <title>EN ➜ Target Phrase Mapper</title>
+
+    <!-- Transliteration support for Japanese Romaji & Hiragana -->
+    <script src="https://cdn.jsdelivr.net/npm/wanakana@5.3.1/wanakana.min.js"></script>
+
     <style>
         :root {
             --bg-color: #f8fafc;
@@ -180,7 +184,7 @@
         .word-grid { display: flex; flex-wrap: wrap; gap: 0.75rem; }
         .word-card {
             position: relative; display: flex; flex-direction: column; align-items: center;
-            padding: 0.8rem 1.2rem 0.6rem; border-radius: 8px; border: 1.5px solid; min-width: 100px; text-align: center;
+            padding: 0.8rem 1.2rem 0.6rem; border-radius: 8px; border: 1.5px solid; min-width: 110px; text-align: center;
         }
         .word-card.english-card { background-color: var(--blue-light); border-color: var(--primary-blue); color: #0369a1; }
         .word-card.foreign-card.orange-mode { background-color: var(--orange-light); border-color: var(--primary-orange); }
@@ -192,9 +196,9 @@
         .word-card.foreign-card.gold-mode { background-color: var(--gold-light); border-color: var(--primary-gold); }
 
         .phrase-text { font-size: 1.05rem; font-weight: 600; }
-        .phrase-reading { font-size: 0.75rem; font-weight: 500; color: #64748b; margin-top: 0.1rem; }
-        .phrase-romaji { font-size: 0.72rem; font-style: italic; color: #475569; }
-        .phrase-translation { font-size: 0.8rem; font-style: italic; opacity: 0.85; margin-top: 0.25rem; }
+        .phrase-reading { font-size: 0.8rem; font-weight: 600; color: #be185d; margin-top: 0.15rem; }
+        .phrase-romaji { font-size: 0.75rem; font-style: italic; color: #475569; }
+        .phrase-translation { font-size: 0.82rem; font-style: italic; opacity: 0.9; margin-top: 0.25rem; }
     </style>
 </head>
 <body>
@@ -273,7 +277,7 @@
 <script>
     let currentLang = 'de';
     let translationTimeout;
-    const TRANSLATION_CACHE = "wardPhraseMapper:v13:";
+    const TRANSLATION_CACHE = "wardPhraseMapper:v15:";
 
     const LANG_CONFIG = {
         de: { name: 'German', theme: 'orange-mode' },
@@ -344,10 +348,23 @@
         return null;
     }
 
-    async function translatePhraseBatch(phrases, sourceLang, targetLang) {
+    // High-performance single-request batch translator
+    async function translateBatchFast(phrases, sourceLang, targetLang) {
         if (!phrases.length) return [];
-        const results = await Promise.all(phrases.map(p => translateUnified(p, sourceLang, targetLang)));
-        return results.map(r => r || { translation: "", translit: "" });
+        const delimiter = " ||| ";
+        const joinedText = phrases.join(delimiter);
+        
+        const res = await translateUnified(joinedText, sourceLang, targetLang);
+        if (res && res.translation) {
+            const splitTrans = res.translation.split(/\s*\|\|\|\s*/);
+            const splitTranslit = res.translit ? res.translit.split(/\s*\|\|\|\s*/) : [];
+            
+            return phrases.map((_, i) => ({
+                translation: splitTrans[i] || "",
+                translit: splitTranslit[i] || ""
+            }));
+        }
+        return phrases.map(() => ({ translation: "", translit: "" }));
     }
 
     function handleInput(lang) {
@@ -373,10 +390,43 @@
             }
 
             updatePhraseMaps();
-        }, 500);
+        }, 300);
     }
 
-    function splitPhrases(text) {
+    // Comprehensive English clause, infinitive, and prepositional phrase chunker
+    function parseEnglishPhrases(text) {
+        if (!text.trim()) return [];
+
+        const prepList = "in|on|at|to|for|with|about|against|between|into|through|during|before|after|above|below|from|up|down|off|over|under|by";
+        const conjList = "and|but|or|because|although|since|while|if|when|that|which|who";
+
+        // Regex capturing clauses, infinitives (to + verb), prepositional phrases, or remaining clauses
+        const regex = new RegExp(`\\b(to\\s+[a-z]+|(?:${prepList})\\s+[^,;\\s]+|(?:${conjList}))\\b`, 'gi');
+
+        const words = text.trim();
+        const rawTokens = words.split(regex).filter(Boolean);
+        const chunks = [];
+        let current = "";
+
+        rawTokens.forEach(token => {
+            if (/^(and|but|or|because|although|since|while|if|when|that|which|who|,|;)$/i.test(token.trim())) {
+                if (current.trim()) chunks.push(current.trim());
+                chunks.push(token.trim());
+                current = "";
+            } else if (/^to\s+[a-z]+/i.test(token.trim())) {
+                if (current.trim()) chunks.push(current.trim());
+                chunks.push(token.trim());
+                current = "";
+            } else {
+                current += " " + token;
+            }
+        });
+
+        if (current.trim()) chunks.push(current.trim());
+        return chunks.filter(c => c.length > 0);
+    }
+
+    function parseForeignPhrases(text) {
         if (!text) return [];
         return text.trim().split(/\s+/).filter(Boolean);
     }
@@ -386,8 +436,8 @@
         const foreignText = document.getElementById("foreignInput").value;
         const config = LANG_CONFIG[currentLang];
 
-        const engPhrases = splitPhrases(engText);
-        const foreignPhrases = splitPhrases(foreignText);
+        const engPhrases = parseEnglishPhrases(engText);
+        const foreignPhrases = parseForeignPhrases(foreignText);
 
         const engGrid = document.getElementById("englishOutput");
         const foreignGrid = document.getElementById("foreignOutput");
@@ -409,7 +459,7 @@
         `).join("");
 
         if (engPhrases.length) {
-            const translatedEng = await translatePhraseBatch(engPhrases, 'en', currentLang);
+            const translatedEng = await translateBatchFast(engPhrases, 'en', currentLang);
             translatedEng.forEach((res, i) => {
                 const el = document.getElementById(`eng-p-${i}`);
                 if (el) el.innerText = res.translation || "";
@@ -417,31 +467,24 @@
         }
 
         if (foreignPhrases.length) {
-            const translatedForeign = await translatePhraseBatch(foreignPhrases, currentLang, 'en');
-            
-            // Fetch transliterated readings (Hiragana/Romaji/Pinyin) for non-Latin languages
-            let readings = [];
-            if (['ja', 'zh', 'ru'].includes(currentLang)) {
-                readings = await translatePhraseBatch(foreignPhrases, currentLang, currentLang);
-            }
+            const translatedForeign = await translateBatchFast(foreignPhrases, currentLang, 'en');
 
-            foreignPhrases.forEach((_, i) => {
+            foreignPhrases.forEach((phrase, i) => {
                 const transEl = document.getElementById(`for-p-${i}`);
                 const readEl = document.getElementById(`for-r-${i}`);
                 const romEl = document.getElementById(`for-rom-${i}`);
 
                 if (transEl) transEl.innerText = translatedForeign[i]?.translation || "";
 
-                if (readings[i]?.translit) {
-                    const translitText = readings[i].translit;
-                    if (currentLang === 'ja') {
-                        // Display Katakana/Hiragana reading & Romaji split
-                        readEl.innerText = translitText;
-                    } else if (currentLang === 'zh') {
-                        readEl.innerText = translitText; // Pinyin
-                    } else if (currentLang === 'ru') {
-                        romEl.innerText = translitText; // Latin Transliteration
-                    }
+                // Client-side instant Hiragana & Romaji rendering for Japanese
+                if (currentLang === 'ja' && window.wanakana) {
+                    const hiragana = wanakana.toHiragana(phrase);
+                    const romaji = wanakana.toRomaji(phrase);
+                    
+                    if (readEl) readEl.innerText = hiragana !== phrase ? hiragana : "";
+                    if (romEl) romEl.innerText = romaji;
+                } else if (translatedForeign[i]?.translit) {
+                    if (readEl) readEl.innerText = translatedForeign[i].translit;
                 }
             });
         }
