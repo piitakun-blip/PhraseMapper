@@ -858,7 +858,7 @@ function isMobileMode() {
 }
 
 const TRANSLATION_CACHE =
-    "wardPhraseMapper:v22:";
+    "wardPhraseMapper:v23:";
 
 
 /* ================================================================
@@ -1264,6 +1264,245 @@ async function translateUnified(
 
 
     return null;
+
+}
+
+
+
+/* ================================================================
+   JAPANESE READING / ROMAJI
+   ================================================================ */
+
+/*
+ * This deliberately mirrors the Japanese reading behavior from the
+ * original working Phrase Mapper.
+ *
+ * We ask Google for JA -> JA with dt=rm and read the phonetic
+ * transliteration from the response. This request is kept separate
+ * from normal translation caching and from the backup translator.
+ */
+async function getJapaneseReading(
+    phrase
+) {
+
+    if (
+        !phrase ||
+        !phrase.trim()
+    ) {
+
+        return {
+            romaji: "",
+            hiragana: ""
+        };
+
+    }
+
+
+    const url =
+        "https://translate.googleapis.com/translate_a/single" +
+        "?client=gtx" +
+        "&sl=ja" +
+        "&tl=ja" +
+        "&dt=t" +
+        "&dt=rm" +
+        "&q=" +
+        encodeURIComponent(
+            phrase
+        );
+
+
+    /*
+     * A couple of attempts are useful on iPhone, where this endpoint
+     * can occasionally fail transiently.
+     */
+    for (
+        let attempt = 0;
+        attempt < 2;
+        attempt++
+    ) {
+
+        try {
+
+            const response =
+                await fetch(
+                    url,
+                    {
+                        cache: "no-store"
+                    }
+                );
+
+
+            if (
+                !response.ok
+            ) {
+
+                throw new Error(
+                    "Japanese reading request failed"
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            let romaji = "";
+
+
+            if (
+                data &&
+                Array.isArray(
+                    data[0]
+                )
+            ) {
+
+                data[0].forEach(
+                    segment => {
+
+                        if (
+                            !Array.isArray(
+                                segment
+                            )
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        /*
+                         * This is the exact response pattern used by
+                         * the original working version: Google's
+                         * phonetic row is the segment where translated
+                         * text is empty/null.
+                         */
+                        if (
+                            !segment[0]
+                        ) {
+
+                            if (
+                                segment[2] &&
+                                typeof segment[2] === "string"
+                            ) {
+
+                                romaji =
+                                    segment[2];
+
+                            }
+
+                            else if (
+                                segment[3] &&
+                                typeof segment[3] === "string"
+                            ) {
+
+                                romaji =
+                                    segment[3];
+
+                            }
+
+                        }
+
+                    }
+                );
+
+            }
+
+
+            romaji =
+                romaji.trim();
+
+
+            if (
+                romaji
+            ) {
+
+                let hiragana = "";
+
+
+                if (
+                    window.wanakana
+                ) {
+
+                    hiragana =
+                        wanakana.toHiragana(
+                            romaji
+                        );
+
+                }
+
+
+                return {
+                    romaji,
+                    hiragana
+                };
+
+            }
+
+        }
+
+        catch (
+            error
+        ) {
+
+            console.warn(
+                `Japanese reading attempt ${attempt + 1} failed:`,
+                error
+            );
+
+        }
+
+
+        if (
+            attempt === 0
+        ) {
+
+            await new Promise(
+                resolve =>
+                    setTimeout(
+                        resolve,
+                        500
+                    )
+            );
+
+        }
+
+    }
+
+
+    /*
+     * Kana-only fallback:
+     * wanakana can safely convert kana, but it cannot determine
+     * readings for kanji.
+     */
+    if (
+        window.wanakana &&
+        !/[一-龯々〆ヵヶ]/u.test(
+            phrase
+        )
+    ) {
+
+        const hiragana =
+            wanakana.toHiragana(
+                phrase
+            );
+
+
+        return {
+            hiragana,
+            romaji:
+                wanakana.toRomaji(
+                    hiragana
+                )
+        };
+
+    }
+
+
+    return {
+        romaji: "",
+        hiragana: ""
+    };
 
 }
 
@@ -3664,20 +3903,13 @@ async function updatePhraseMaps() {
 
                 /*
                  * Japanese reading:
-                 * wanakana can romanize kana, but it cannot determine the
-                 * pronunciation of kanji. Ask Google's Japanese endpoint for
-                 * transliteration first; use wanakana only as a kana fallback.
+                 * restore the original proven JA -> JA dt=rm path.
                  */
-                translateUnified(
-                    phrase,
-                    "ja",
-                    "ja",
-                    {
-                        allowBackup: false
-                    }
+                getJapaneseReading(
+                    phrase
                 )
                 .then(
-                    readingResult => {
+                    reading => {
 
                         if (
                             generation !==
@@ -3688,84 +3920,39 @@ async function updatePhraseMaps() {
 
                         }
 
-                        let romaji =
-                            readingResult?.translit ||
-                            "";
-
-                        let hiragana =
-                            "";
-
-                        if (
-                            window.wanakana
-                        ) {
-
-                            if (
-                                romaji
-                            ) {
-
-                                hiragana =
-                                    wanakana.toHiragana(
-                                        romaji
-                                    );
-
-                            }
-
-                            else {
-
-                                /*
-                                 * Kana-only fallback. Do not pretend wanakana
-                                 * can infer a kanji reading.
-                                 */
-                                const containsKanji =
-                                    /[一-龯々〆ヵヶ]/u.test(
-                                        phrase
-                                    );
-
-                                if (
-                                    !containsKanji
-                                ) {
-
-                                    hiragana =
-                                        wanakana.toHiragana(
-                                            phrase
-                                        );
-
-                                    romaji =
-                                        wanakana.toRomaji(
-                                            hiragana
-                                        );
-
-                                }
-
-                            }
-
-                        }
 
                         if (
                             readingElement
                         ) {
 
                             readingElement.innerText =
-                                hiragana &&
-                                hiragana !== phrase
-                                    ? hiragana
-                                    : "";
+                                reading?.hiragana ||
+                                "";
 
                         }
+
 
                         if (
                             romajiElement
                         ) {
 
                             romajiElement.innerText =
-                                romaji;
+                                reading?.romaji ||
+                                "";
 
                         }
 
                     }
                 )
                 .catch(
-                    () => {}
+                    error => {
+
+                        console.warn(
+                            "Japanese reading display failed:",
+                            error
+                        );
+
+                    }
                 );
 
 
