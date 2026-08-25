@@ -883,7 +883,7 @@ function isMobileMode() {
 }
 
 const TRANSLATION_CACHE =
-    "wardPhraseMapper:v32:";
+    "wardPhraseMapper:v34:";
 
 
 /* ================================================================
@@ -2291,6 +2291,30 @@ function parseEnglishPhrases(text) {
             .trim()
             .replace(/\s+/g, " ");
 
+    /*
+     * Context-sensitive construction:
+     * "I would like to buy you a drink"
+     * becomes:
+     *   "I would like"
+     *   "to buy you a drink"
+     *
+     * This avoids translating tiny fragments such as "to buy"
+     * without the object/complement that gives them meaning.
+     */
+    const wouldLikeMatch =
+        text.match(
+            /^(.+?\bwould\s+(?:really\s+)?(?:like|love|prefer))\s+to\s+(.+)$/i
+        );
+
+    if (
+        wouldLikeMatch
+    ) {
+        return [
+            wouldLikeMatch[1].trim(),
+            `to ${wouldLikeMatch[2].trim()}`
+        ];
+    }
+
 
     const words =
         text.split(" ");
@@ -2931,6 +2955,32 @@ function splitByPunctuation(text) {
 function parseGermanPhrases(text) {
     const source = normalizeSpacedText(text);
     if (!source) return [];
+
+    /*
+     * Context-sensitive German preference construction:
+     *
+     *   Ich würde dir gerne einen Drink spendieren
+     *
+     * becomes:
+     *   Ich würde dir gerne
+     *   einen Drink spendieren
+     *
+     * "würde ... gerne" expresses the idea of "would like" together,
+     * even though the words are not a literal one-to-one match.
+     */
+    const conditionalPreference =
+        source.match(
+            /^((?:ich|du|er|sie|es|wir|ihr|Sie)\s+(?:würde|würdest|würden|würdet)(?:\s+\S+){0,3}?\s+gern(?:e)?)\s+(.+)$/i
+        );
+
+    if (
+        conditionalPreference
+    ) {
+        return [
+            conditionalPreference[1].trim(),
+            conditionalPreference[2].trim()
+        ];
+    }
 
     const words = source.split(" ");
     const phrases = [];
@@ -4234,6 +4284,295 @@ function japaneseFallbackSplit(text) {
 
 
 /* ================================================================
+   CONTEXTUAL PHRASE ALIGNMENT
+   ================================================================ */
+
+/*
+ * Phrase translations are much more useful when they are aligned against
+ * the two COMPLETE sentences rather than treated as mini-translations.
+ *
+ * We use the target-card back-translations only as semantic clues, then
+ * display the ACTUAL phrase from the opposite sentence whenever a confident
+ * one-to-one match can be found.
+ */
+
+function alignmentTokens(text) {
+    const stopWords =
+        new Set([
+            "a", "an", "the", "to", "of", "in", "on", "at",
+            "for", "with", "and", "or", "but"
+        ]);
+
+    return String(text || "")
+        .toLowerCase()
+        .normalize("NFKD")
+        .replace(/[^\p{L}\p{N}'’]+/gu, " ")
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean)
+        .map(token => ({
+            token,
+            weight:
+                stopWords.has(token)
+                    ? 0.35
+                    : 1
+        }));
+}
+
+
+function phraseSimilarity(a, b) {
+    const left =
+        alignmentTokens(a);
+
+    const right =
+        alignmentTokens(b);
+
+    if (
+        !left.length ||
+        !right.length
+    ) {
+        return 0;
+    }
+
+    const leftMap =
+        new Map();
+
+    left.forEach(
+        item =>
+            leftMap.set(
+                item.token,
+                Math.max(
+                    leftMap.get(item.token) || 0,
+                    item.weight
+                )
+            )
+    );
+
+    const rightMap =
+        new Map();
+
+    right.forEach(
+        item =>
+            rightMap.set(
+                item.token,
+                Math.max(
+                    rightMap.get(item.token) || 0,
+                    item.weight
+                )
+            )
+    );
+
+    const allTokens =
+        new Set([
+            ...leftMap.keys(),
+            ...rightMap.keys()
+        ]);
+
+    let intersection = 0;
+    let union = 0;
+
+    allTokens.forEach(
+        token => {
+            const l =
+                leftMap.get(token) || 0;
+
+            const r =
+                rightMap.get(token) || 0;
+
+            intersection +=
+                Math.min(l, r);
+
+            union +=
+                Math.max(l, r);
+        }
+    );
+
+    let score =
+        union
+            ? intersection / union
+            : 0;
+
+    /*
+     * Common paraphrase hints. These are intentionally small and generic;
+     * they do not replace the translator. They simply help alignment when
+     * a natural translation uses words such as "gladly" for "would like".
+     */
+    const aNorm =
+        String(a || "").toLowerCase();
+
+    const bNorm =
+        String(b || "").toLowerCase();
+
+    const preferenceA =
+        /\b(would like|would love|prefer|want)\b/.test(aNorm);
+
+    const preferenceB =
+        /\b(would like|would love|prefer|want|gladly|happy to|be happy to)\b/.test(bNorm);
+
+    if (
+        preferenceA &&
+        preferenceB
+    ) {
+        score += 0.18;
+    }
+
+    return Math.min(
+        1,
+        score
+    );
+}
+
+
+function applyContextualAlignment(
+    englishPhrases,
+    foreignPhrases,
+    foreignGlosses,
+    englishFallbacks
+) {
+    if (
+        !englishPhrases.length ||
+        !foreignPhrases.length
+    ) {
+        return;
+    }
+
+    const candidates = [];
+
+    foreignPhrases.forEach(
+        (foreignPhrase, foreignIndex) => {
+            const gloss =
+                foreignGlosses[foreignIndex]?.translation ||
+                "";
+
+            englishPhrases.forEach(
+                (englishPhrase, englishIndex) => {
+                    candidates.push({
+                        englishIndex,
+                        foreignIndex,
+                        score:
+                            phraseSimilarity(
+                                englishPhrase,
+                                gloss
+                            )
+                    });
+                }
+            );
+        }
+    );
+
+    candidates.sort(
+        (a, b) =>
+            b.score - a.score
+    );
+
+    const usedEnglish =
+        new Set();
+
+    const usedForeign =
+        new Set();
+
+    const matches = [];
+
+    candidates.forEach(
+        candidate => {
+            if (
+                candidate.score < 0.24 ||
+                usedEnglish.has(candidate.englishIndex) ||
+                usedForeign.has(candidate.foreignIndex)
+            ) {
+                return;
+            }
+
+            usedEnglish.add(
+                candidate.englishIndex
+            );
+
+            usedForeign.add(
+                candidate.foreignIndex
+            );
+
+            matches.push(
+                candidate
+            );
+        }
+    );
+
+    /*
+     * Start with the old card translations as safe fallbacks.
+     */
+    englishPhrases.forEach(
+        (_, index) => {
+            const element =
+                document.getElementById(
+                    `eng-p-${index}`
+                );
+
+            if (
+                element &&
+                englishFallbacks[index]?.translation
+            ) {
+                element.innerText =
+                    englishFallbacks[index].translation;
+            }
+        }
+    );
+
+    foreignPhrases.forEach(
+        (_, index) => {
+            const element =
+                document.getElementById(
+                    `for-p-${index}`
+                );
+
+            if (
+                element &&
+                foreignGlosses[index]?.translation
+            ) {
+                element.innerText =
+                    foreignGlosses[index].translation;
+            }
+        }
+    );
+
+    /*
+     * Confident matches are replaced with phrases taken directly from the
+     * complete source/target sentence pair.
+     */
+    matches.forEach(
+        match => {
+            const englishElement =
+                document.getElementById(
+                    `eng-p-${match.englishIndex}`
+                );
+
+            const foreignElement =
+                document.getElementById(
+                    `for-p-${match.foreignIndex}`
+                );
+
+            if (
+                englishElement
+            ) {
+                englishElement.innerText =
+                    foreignPhrases[
+                        match.foreignIndex
+                    ];
+            }
+
+            if (
+                foreignElement
+            ) {
+                foreignElement.innerText =
+                    englishPhrases[
+                        match.englishIndex
+                    ];
+            }
+        }
+    );
+}
+
+
+/* ================================================================
    RENDER ENGLISH MAP
    ================================================================ */
 
@@ -4430,6 +4769,9 @@ async function updatePhraseMaps() {
     );
 
 
+    let englishCardTranslations = [];
+
+
     /*
      * ------------------------------------------------------------
      * TRANSLATE ENGLISH PHRASES
@@ -4440,7 +4782,7 @@ async function updatePhraseMaps() {
         englishPhrases.length
     ) {
 
-        const translated =
+        englishCardTranslations =
             await translateBatchFast(
                 englishPhrases,
                 "en",
@@ -4462,7 +4804,7 @@ async function updatePhraseMaps() {
         }
 
 
-        translated.forEach(
+        englishCardTranslations.forEach(
             (result, index) => {
 
                 const element =
@@ -4797,6 +5139,18 @@ async function updatePhraseMaps() {
                 }
 
             }
+        );
+
+        /*
+         * Contextual alignment:
+         * use the complete translated sentence to determine which actual
+         * target phrase belongs under each English card, and vice versa.
+         */
+        applyContextualAlignment(
+            englishPhrases,
+            foreignPhrases,
+            translatedForeign,
+            englishCardTranslations
         );
 
     }
