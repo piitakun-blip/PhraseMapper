@@ -74,18 +74,21 @@
             display: flex;
             align-items: center;
             flex-wrap: wrap;
-            gap: 0.5rem;
+            gap: 0.4rem;
             font-weight: 600;
         }
 
         .lang-btn {
             background-color: #ffffff;
             border: 1px solid var(--border-color);
-            padding: 0.4rem 1rem;
+            padding: 0.4rem 0.65rem;
             border-radius: 20px;
             cursor: pointer;
             font-weight: 600;
             font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
         }
 
         .lang-btn.active.orange-mode { background-color: var(--primary-orange); color: white; }
@@ -108,6 +111,8 @@
             .container { padding: 0.75rem; }
             .grid-inputs { grid-template-columns: 1fr; }
             textarea { font-size: 16px; }
+            .lang-selector { gap: 0.3rem; }
+            .lang-btn { padding: 0.35rem 0.55rem; font-size: 0.8rem; }
         }
 
         .input-group {
@@ -144,19 +149,20 @@
 
         .retranslation-box {
             margin-top: 0.4rem;
-            padding: 0.5rem;
+            padding: 0.6rem;
             background: #f8fafc;
             border: 1px dashed var(--border-color);
             border-radius: 6px;
-            font-size: 0.85rem;
-            color: #475569;
+            font-size: 0.88rem;
+            color: #334155;
         }
 
         .retranslation-title {
             font-weight: bold;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             text-transform: uppercase;
-            color: #94a3b8;
+            color: #64748b;
+            margin-bottom: 0.2rem;
         }
 
         .output-section { display: flex; flex-direction: column; gap: 1.5rem; }
@@ -178,7 +184,6 @@
 
         .phrase-text { font-size: 1.05rem; font-weight: 600; }
         .phrase-translation { font-size: 0.8rem; font-style: italic; opacity: 0.85; margin-top: 0.2rem; }
-        .card-speak-btn { position: absolute; top: 2px; right: 4px; background: none; border: none; cursor: pointer; font-size: 0.75rem; opacity: 0.5; }
     </style>
 </head>
 <body>
@@ -186,26 +191,28 @@
 <div class="container">
     <h1 id="mainTitle">EN ➜ DE: Ward's Phrasen-Mapper</h1>
     
-    <div class="control-panel" id="controlPanel">
+    <div class="control-panel">
         <div class="lang-selector">
-            <span>Target Language:</span>
-            <button class="lang-btn active orange-mode" id="btnDE" onclick="setLanguage('de')">German</button>
-            <button class="lang-btn" id="btnJA" onclick="setLanguage('ja')">Japanese</button>
-            <button class="lang-btn" id="btnES" onclick="setLanguage('es')">Spanish</button>
-            <button class="lang-btn" id="btnFR" onclick="setLanguage('fr')">French</button>
-            <button class="lang-btn" id="btnIT" onclick="setLanguage('it')">Italian</button>
-            <button class="lang-btn" id="btnRU" onclick="setLanguage('ru')">Russian</button>
-            <button class="lang-btn" id="btnZH" onclick="setLanguage('zh')">Chinese</button>
+            <span>Target:</span>
+            <button class="lang-btn active orange-mode" id="btnDE" onclick="setLanguage('de')">🇩🇪 DE</button>
+            <button class="lang-btn" id="btnJA" onclick="setLanguage('ja')">🇯🇵 JA</button>
+            <button class="lang-btn" id="btnES" onclick="setLanguage('es')">🇪🇸 ES</button>
+            <button class="lang-btn" id="btnFR" onclick="setLanguage('fr')">🇫🇷 FR</button>
+            <button class="lang-btn" id="btnIT" onclick="setLanguage('it')">🇮🇹 IT</button>
+            <button class="lang-btn" id="btnRU" onclick="setLanguage('ru')">🇷🇺 RU</button>
+            <button class="lang-btn" id="btnZH" onclick="setLanguage('zh')">🇨🇳 ZH</button>
         </div>
         <div>
-            <label><input type="checkbox" id="autoTranslateToggle" checked onchange="handleToggleChange()"> Auto-Translate</label>
-            <label><input type="checkbox" id="allowBackupToggle" checked> Use Backup</label>
+            <label><input type="checkbox" id="autoTranslateToggle" checked> Auto-Translate</label>
+            <label style="margin-left: 0.5rem;">
+                <input type="checkbox" id="allowBackupToggle" checked> Use backup translator if Google fails (results can be wonky)
+            </label>
         </div>
     </div>
 
     <div class="grid-inputs">
         <div class="input-group">
-            <label style="color:var(--primary-blue)">English Sentence <span id="translationStatus"></span></label>
+            <label style="color:var(--primary-blue)">English Sentence</label>
             <div class="input-wrapper">
                 <textarea id="englishInput" rows="2" placeholder="Type English sentence..." oninput="handleInput('en')"></textarea>
                 <button class="play-btn" onclick="speakText('englishInput', 'en')">🔊</button>
@@ -219,8 +226,8 @@
                 <button class="play-btn" onclick="speakText('foreignInput', currentLang)">🔊</button>
             </div>
             <div class="retranslation-box">
-                <div class="retranslation-title">Back-Translation to English</div>
-                <div id="retranslationText"><em>Retranslation will appear here...</em></div>
+                <div class="retranslation-title">Re-translation (English)</div>
+                <div id="retranslationText"><em>Re-translation will appear here...</em></div>
             </div>
         </div>
     </div>
@@ -241,14 +248,11 @@
 <script>
     let currentLang = 'de';
     let translationTimeout;
-    let mappingTimeout;
-    let mappingGeneration = 0;
-
-    const TRANSLATION_CACHE_PREFIX = "wardPhraseMapper:v8:";
+    const TRANSLATION_CACHE = "wardPhraseMapper:v10:";
 
     function getThemeClass(lang) {
         const maps = { de:'orange-mode', ja:'sakura-mode', es:'sangria-mode', fr:'lavender-mode', it:'emerald-mode', ru:'crimson-mode', zh:'gold-mode' };
-        return maps[lang] || 'blue-mode';
+        return maps[lang] || 'orange-mode';
     }
 
     function speakText(inputId, langCode) {
@@ -260,44 +264,31 @@
         window.speechSynthesis.speak(utterance);
     }
 
-    // Single Batch Translator for Phrase Lists (Batch fetching prevents rate limits)
-    async function translateBatch(phraseArray, sourceLang, targetLang) {
-        if (!phraseArray.length) return [];
-        const combinedText = phraseArray.join("\n");
-        const res = await translateUnified(combinedText, sourceLang, targetLang);
-        if (res && res.translation) {
-            return res.translation.split("\n");
-        }
-        return new Array(phraseArray.length).fill("");
-    }
-
     async function translateUnified(text, sourceLang, targetLang) {
         if (!text.trim()) return { translation: "" };
-        
-        const cacheKey = TRANSLATION_CACHE_PREFIX + `${sourceLang}>${targetLang}:${text}`;
+
+        const cacheKey = TRANSLATION_CACHE + `${sourceLang}>${targetLang}:${text}`;
         const cached = localStorage.getItem(cacheKey);
         if (cached) return JSON.parse(cached);
 
-        // Try Google Primary
         try {
             const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=` + encodeURIComponent(text);
             const resp = await fetch(url);
-            if (!resp.ok) throw new Error("Google blocked");
+            if (!resp.ok) throw new Error("Google throttled");
             const data = await resp.json();
             let trans = "";
             if (data && data[0]) {
                 data[0].forEach(seg => { if (seg[0]) trans += seg[0]; });
             }
             if (trans.trim()) {
-                const resObj = { translation: trans.trim(), provider: 'google' };
-                localStorage.setItem(cacheKey, JSON.stringify(resObj));
-                return resObj;
+                const result = { translation: trans.trim() };
+                localStorage.setItem(cacheKey, JSON.stringify(result));
+                return result;
             }
         } catch(e) {
-            console.warn("Google API failed/blocked, checking backup...");
+            console.warn("Primary Google API request failed. Trying backup...");
         }
 
-        // Backup Fallback (MyMemory)
         if (document.getElementById("allowBackupToggle").checked) {
             try {
                 const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`;
@@ -305,15 +296,24 @@
                 if (resp.ok) {
                     const data = await resp.json();
                     if (data?.responseData?.translatedText) {
-                        const resObj = { translation: data.responseData.translatedText.trim(), provider: 'mymemory' };
-                        return resObj;
+                        return { translation: data.responseData.translatedText.trim() };
                     }
                 }
             } catch(e) {
-                console.error("Backup provider failed:", e);
+                console.error("Backup translation engine failed:", e);
             }
         }
         return null;
+    }
+
+    async function translatePhraseBatch(phrases, sourceLang, targetLang) {
+        if (!phrases.length) return [];
+        const combined = phrases.join("\n");
+        const res = await translateUnified(combined, sourceLang, targetLang);
+        if (res && res.translation) {
+            return res.translation.split("\n");
+        }
+        return new Array(phrases.length).fill("");
     }
 
     function handleInput(lang) {
@@ -331,69 +331,61 @@
                 if (res) engInput.value = res.translation;
             }
 
-            // Always run Back-Translation check
             if (foreignInput.value.trim()) {
-                const reTrans = await translateUnified(foreignInput.value.trim(), currentLang, 'en');
-                document.getElementById("retranslationText").innerText = reTrans ? reTrans.translation : "Translation failed";
+                const retrans = await translateUnified(foreignInput.value.trim(), currentLang, 'en');
+                document.getElementById("retranslationText").innerText = retrans ? retrans.translation : "Re-translation failed";
             } else {
-                document.getElementById("retranslationText").innerHTML = "<em>Retranslation will appear here...</em>";
+                document.getElementById("retranslationText").innerHTML = "<em>Re-translation will appear here...</em>";
             }
 
-            updateMapping();
-        }, 600);
+            updatePhraseMaps();
+        }, 500);
     }
 
     function splitPhrases(text) {
         if (!text) return [];
-        return text.trim().split(/\s+/).filter(Boolean); // Simple, resilient chunking
+        return text.trim().split(/\s+/).filter(Boolean);
     }
 
-    async function updateMapping() {
-        mappingGeneration++;
-        const currentGen = mappingGeneration;
-
-        const engVal = document.getElementById("englishInput").value;
-        const foreignVal = document.getElementById("foreignInput").value;
-
-        const engOutputDiv = document.getElementById("englishOutput");
-        const foreignOutputDiv = document.getElementById("foreignOutput");
+    async function updatePhraseMaps() {
+        const engText = document.getElementById("englishInput").value;
+        const foreignText = document.getElementById("foreignInput").value;
         const themeClass = getThemeClass(currentLang);
 
-        const engPhrases = splitPhrases(engVal);
-        engOutputDiv.innerHTML = engPhrases.map((p, i) => `
+        const engPhrases = splitPhrases(engText);
+        const foreignPhrases = splitPhrases(foreignText);
+
+        const engGrid = document.getElementById("englishOutput");
+        const foreignGrid = document.getElementById("foreignOutput");
+
+        engGrid.innerHTML = engPhrases.map((p, i) => `
             <div class="word-card english-card">
                 <div class="phrase-text">${p}</div>
-                <div class="phrase-translation" id="eng-t-${i}">...</div>
+                <div class="phrase-translation" id="eng-p-${i}">...</div>
             </div>
         `).join("");
 
-        const foreignPhrases = splitPhrases(foreignVal);
-        foreignOutputDiv.innerHTML = foreignPhrases.map((p, i) => `
+        foreignGrid.innerHTML = foreignPhrases.map((p, i) => `
             <div class="word-card foreign-card ${themeClass}">
                 <div class="phrase-text">${p}</div>
-                <div class="phrase-translation" id="for-t-${i}">...</div>
+                <div class="phrase-translation" id="for-p-${i}">...</div>
             </div>
         `).join("");
 
-        // Perform single-batch translations for performance
         if (engPhrases.length) {
-            const engTransList = await translateBatch(engPhrases, 'en', currentLang);
-            if (currentGen === mappingGeneration) {
-                engTransList.forEach((t, i) => {
-                    const el = document.getElementById(`eng-t-${i}`);
-                    if (el) el.innerText = t || "";
-                });
-            }
+            const translatedEng = await translatePhraseBatch(engPhrases, 'en', currentLang);
+            translatedEng.forEach((t, i) => {
+                const el = document.getElementById(`eng-p-${i}`);
+                if (el) el.innerText = t || "";
+            });
         }
 
         if (foreignPhrases.length) {
-            const foreignTransList = await translateBatch(foreignPhrases, currentLang, 'en');
-            if (currentGen === mappingGeneration) {
-                foreignTransList.forEach((t, i) => {
-                    const el = document.getElementById(`for-t-${i}`);
-                    if (el) el.innerText = t || "";
-                });
-            }
+            const translatedForeign = await translatePhraseBatch(foreignPhrases, currentLang, 'en');
+            translatedForeign.forEach((t, i) => {
+                const el = document.getElementById(`for-p-${i}`);
+                if (el) el.innerText = t || "";
+            });
         }
     }
 
