@@ -544,11 +544,15 @@
         .status {
             margin-top: 1rem;
 
-            font-size: 0.75rem;
+            font-size: 0.82rem;
 
-            color: #64748b;
+            font-weight: 600;
+
+            color: #475569;
 
             text-align: center;
+
+            min-height: 1.2em;
         }
     </style>
 </head>
@@ -858,7 +862,7 @@ function isMobileMode() {
 }
 
 const TRANSLATION_CACHE =
-    "wardPhraseMapper:v26:";
+    "wardPhraseMapper:v27:";
 
 
 /* ================================================================
@@ -972,7 +976,7 @@ function setTranslationProviderStatus(provider, detail = "") {
 
         status.innerText =
             detail ||
-            "Google Translate available";
+            "✓ Google Translate available";
 
     }
 
@@ -980,7 +984,7 @@ function setTranslationProviderStatus(provider, detail = "") {
 
         status.innerText =
             detail ||
-            "Backup translator used — results may be less reliable";
+            "⚠ Backup translator in use — results may be less reliable";
 
     }
 
@@ -988,7 +992,7 @@ function setTranslationProviderStatus(provider, detail = "") {
 
         status.innerText =
             detail ||
-            "Translation service unavailable";
+            "✕ Translation service unavailable";
 
     }
 
@@ -4107,15 +4111,7 @@ async function updatePhraseMaps() {
         }
 
 
-        {
-        const status = document.getElementById("statusText");
-        if (status) {
-            const prefix = status.innerText ? status.innerText + " • " : "";
-            status.innerText =
-                prefix +
-                `${englishPhrases.length} English phrase${englishPhrases.length === 1 ? "" : "s"}`;
-        }
-    }
+        
 
 
         return;
@@ -4278,13 +4274,7 @@ async function updatePhraseMaps() {
     }
 
 
-    setStatus(
-        `${englishPhrases.length} English phrase${
-            englishPhrases.length === 1
-                ? ""
-                : "s"
-        }`
-    );
+    
 
 }
 
@@ -4673,4 +4663,3 @@ setLanguage("de");
 
 </body>
 </html>
-
