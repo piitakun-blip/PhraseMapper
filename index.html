@@ -843,8 +843,8 @@
     }
 
     // More resilient translation layer:
-    // 1) local cache, 2) Google endpoint with timeout/retry, 3) MyMemory fallback.
-    const TRANSLATION_CACHE_PREFIX = "wardPhraseMapper:v2:";
+    // 1) local cache, 2) Google endpoint with timeout/retry. No fallback translator.
+    const TRANSLATION_CACHE_PREFIX = "wardPhraseMapper:v3:";
 
     function getCachedTranslation(text, sourceLang, targetLang) {
         try {
@@ -900,26 +900,6 @@
         return { translation: translation.trim(), transliteration: transliteration.trim() };
     }
 
-    async function myMemoryTranslate(text, sourceLang, targetLang) {
-        const languageMap = {
-            en: "en", de: "de", ja: "ja", es: "es",
-            fr: "fr", it: "it", ru: "ru", zh: "zh-CN"
-        };
-        const source = languageMap[sourceLang] || sourceLang;
-        const target = languageMap[targetLang] || targetLang;
-        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${encodeURIComponent(source + "|" + target)}`;
-
-        const response = await fetchWithTimeout(url, 8000);
-        if (!response.ok) throw new Error("Fallback translation request failed");
-
-        const data = await response.json();
-        const translated = data && data.responseData && data.responseData.translatedText
-            ? data.responseData.translatedText
-            : "";
-
-        if (!translated.trim()) throw new Error("Fallback returned no translation");
-        return { translation: translated.trim(), transliteration: "" };
-    }
 
     async function translateText(text, sourceLang, targetLang) {
         if (!text.trim()) return { translation: "", transliteration: "" };
@@ -935,19 +915,13 @@
             } catch (e) {
                 console.warn(`Google translation attempt ${attempt + 1} failed:`, e);
                 if (attempt === 0) {
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                    await new Promise(resolve => setTimeout(resolve, 700));
                 }
             }
         }
 
-        try {
-            const result = await myMemoryTranslate(text, sourceLang, targetLang);
-            setCachedTranslation(text, sourceLang, targetLang, result);
-            return result;
-        } catch (e) {
-            console.error("All translation services failed:", e);
-            return null;
-        }
+        console.error("Google translation unavailable after retry.");
+        return null;
     }
 
     function handleToggleChange() {
@@ -997,7 +971,7 @@
             translationTimeout = setTimeout(async () => {
                 const res = await translateText(text, 'en', currentLang);
                 if (res === null) {
-                    statusSpan.innerText = navigator.onLine ? "⚠️ Translation services are temporarily unavailable. Please try again." : "⚠️ Your device appears to be offline.";
+                    statusSpan.innerText = navigator.onLine ? "⚠️ Google Translate is temporarily unavailable. Please try again." : "⚠️ Your device appears to be offline.";
                 } else if (res) {
                     foreignInput.value = res.translation;
                     statusSpan.innerText = "Translation synced!";
@@ -1021,7 +995,7 @@
             translationTimeout = setTimeout(async () => {
                 const res = await translateText(text, currentLang, 'en');
                 if (res === null) {
-                    statusSpan.innerText = navigator.onLine ? "⚠️ Translation services are temporarily unavailable. Please try again." : "⚠️ Your device appears to be offline.";
+                    statusSpan.innerText = navigator.onLine ? "⚠️ Google Translate is temporarily unavailable. Please try again." : "⚠️ Your device appears to be offline.";
                 } else if (res) {
                     engInput.value = res.translation;
                     statusSpan.innerText = "Translation synced!";
