@@ -446,7 +446,7 @@ async function handleChat(request, env) {
         AI_MODEL,
         {
           prompt,
-          max_tokens: 300,
+          max_tokens: 180,
           temperature: 0.35,
         }
       );
