@@ -914,10 +914,9 @@
     <section class="ai-tutor" id="aiTutor">
         <h2>🤖 AI Language Tutor</h2>
         <div class="ai-quick-actions">
-            <button type="button" onclick="askTutorQuick('Explain the grammar in this translation.')">Explain grammar</button>
-            <button type="button" onclick="askTutorQuick('Explain the word order and why it differs from English.')">Explain word order</button>
-            <button type="button" onclick="askTutorQuick('Is this natural phrasing? Suggest a more natural alternative if needed.')">Natural phrasing?</button>
-        </div>
+            <button type="button" onclick="askTutorQuick('Help me understand this translation. Explain the most important difference from English in simple terms.')">Help me understand</button>
+            <button type="button" onclick="askTutorQuick('Why is the word order different from English? Explain it simply.')">Why this word order?</button>
+            <button type="button" onclick="askTutorQuick('Does this sound natural in the target language? If not, suggest a more natural version.')">Does this sound natural?</button>
         <div class="ai-input-row">
             <textarea id="aiQuestion" placeholder="Ask about this translation..."></textarea>
             <button type="button" class="ai-send-btn" onclick="askTutor()">Ask</button>
