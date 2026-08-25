@@ -330,9 +330,8 @@ The learner is studying ${languageName}.
 
 Answer the learner's current question about the translation below.
 
-Give a clear, accurate explanation in 2-5 short sentences, no more than 100 words. Focus only on information needed to answer the question. Use simple language appropriate for a language learner.
+Give a simple, useful explanation in 1–2 short paragraphs, no more than 100 words. Focus on helping the learner understand how the expression works in the target language. Explain only the language features that are important to the learner's question.
 
-For grammar questions, accurately explain the relevant grammar, such as word order, case, gender, articles, verb forms, or tense. For German, remember that the finite verb is normally in second position in a main declarative clause, while question structure depends on the type of question.
 
 English sentence:
 ${englishSentence || "(none)"}
