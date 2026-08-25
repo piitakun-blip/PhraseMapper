@@ -1,0 +1,5345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Cloudflare Worker build: server-translation + AI tutor v40 -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#f8fafc">
+    <title>Ward's Phrase Mapper</title>
+
+    <!-- Japanese reading / Romaji -->
+    <script src="https://cdn.jsdelivr.net/npm/wanakana@5.3.1/wanakana.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --border-color: #e2e8f0;
+
+            --primary-blue: #0284c7;
+            --blue-light: #f0f9ff;
+
+            --primary-orange: #c2410c;
+            --orange-light: #fff7ed;
+
+            --primary-sakura: #db2777;
+            --sakura-light: #fdf2f8;
+
+            --primary-sangria: #dc2626;
+            --sangria-light: #fef2f2;
+
+            --primary-lavender: #6366f1;
+            --lavender-light: #e0e7ff;
+
+            --primary-emerald: #059669;
+            --emerald-light: #ecfdf5;
+
+            --primary-crimson: #be123c;
+            --crimson-light: #fff1f2;
+
+            --primary-gold: #ea580c;
+            --gold-light: #fff7ed;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Helvetica,
+                Arial,
+                sans-serif;
+
+            background-color: var(--bg-color);
+            color: var(--text-color);
+
+            line-height: 1.5;
+
+            padding: 2rem 1rem;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+
+            background: var(--card-bg);
+
+            padding: 2rem;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 6px -1px rgb(0 0 0 / 0.1);
+
+            border: 1px solid var(--border-color);
+        }
+
+        h1 {
+            margin-top: 0;
+
+            font-size: 1.6rem;
+
+            color: #0f172a;
+
+            border-bottom:
+                2px solid var(--border-color);
+
+            padding-bottom: 0.75rem;
+
+            text-align: center;
+        }
+
+        .subtitle {
+            margin-top: -0.35rem;
+            margin-bottom: 1.2rem;
+            text-align: center;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        @media (max-width: 768px) {
+            .subtitle {
+                margin-top: -0.2rem;
+                margin-bottom: 0.8rem;
+                font-size: 0.82rem;
+            }
+        }
+
+        .control-panel {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            flex-wrap: wrap;
+
+            gap: 1rem;
+
+            margin-bottom: 2rem;
+
+            background-color: #f1f5f9;
+
+            padding: 0.75rem 1.25rem;
+
+            border-radius: 8px;
+
+            border: 1px solid var(--border-color);
+        }
+
+        .lang-selector {
+            display: flex;
+
+            align-items: center;
+
+            flex-wrap: wrap;
+
+            gap: 0.35rem;
+
+            font-weight: 600;
+        }
+
+        .lang-btn {
+            background-color: #ffffff;
+
+            border: 1px solid var(--border-color);
+
+            padding: 0.35rem 0.6rem;
+
+            border-radius: 16px;
+
+            cursor: pointer;
+
+            font-weight: 700;
+
+            font-size: 0.85rem;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 0.35rem;
+
+            white-space: nowrap;
+        }
+
+        .lang-btn:hover {
+            filter: brightness(0.97);
+        }
+
+        .flag-icon {
+            width: 18px;
+            height: 13px;
+
+            object-fit: cover;
+
+            border-radius: 2px;
+
+            box-shadow:
+                0 0 1px rgba(0,0,0,0.3);
+        }
+
+        .lang-btn.active.orange-mode {
+            background-color: var(--primary-orange);
+            color: white;
+        }
+
+        .lang-btn.active.sakura-mode {
+            background-color: var(--primary-sakura);
+            color: white;
+        }
+
+        .lang-btn.active.sangria-mode {
+            background-color: var(--primary-sangria);
+            color: white;
+        }
+
+        .lang-btn.active.lavender-mode {
+            background-color: var(--primary-lavender);
+            color: white;
+        }
+
+        .lang-btn.active.emerald-mode {
+            background-color: var(--primary-emerald);
+            color: white;
+        }
+
+        .lang-btn.active.crimson-mode {
+            background-color: var(--primary-crimson);
+            color: white;
+        }
+
+        .lang-btn.active.gold-mode {
+            background-color: var(--primary-gold);
+            color: white;
+        }
+
+        .options {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 0.25rem;
+        }
+
+        .options label {
+            margin: 0 !important;
+
+            font-size: 0.82rem;
+
+            font-weight: 600;
+
+            text-transform: none;
+        }
+
+        .grid-inputs {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 1.5rem;
+
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0.4rem;
+            }
+
+            .container {
+                padding: 0.75rem;
+            }
+
+            .grid-inputs {
+                grid-template-columns: 1fr;
+            }
+
+            textarea {
+                font-size: 16px;
+            }
+
+            .lang-selector {
+                gap: 0.25rem;
+            }
+
+            .lang-btn {
+                padding: 0.3rem 0.5rem;
+
+                font-size: 0.8rem;
+            }
+
+            .control-panel {
+                align-items: flex-start;
+            }
+        }
+
+        .input-group {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 0.5rem;
+        }
+
+        label {
+            font-weight: 600;
+
+            font-size: 0.9rem;
+
+            text-transform: uppercase;
+
+            display: flex;
+
+            justify-content: space-between;
+        }
+
+        .input-wrapper {
+            position: relative;
+
+            width: 100%;
+        }
+
+        textarea {
+            width: 100%;
+
+            padding: 0.75rem;
+
+            padding-right: 2.5rem;
+
+            border:
+                1px solid var(--border-color);
+
+            border-radius: 6px;
+
+            font-size: 1rem;
+
+            font-family: inherit;
+
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+
+            border-color:
+                var(--primary-blue);
+
+            box-shadow:
+                0 0 0 2px
+                rgba(2,132,199,0.1);
+        }
+
+        .play-btn {
+            position: absolute;
+
+            right: 0.5rem;
+            top: 0.5rem;
+
+            background: none;
+
+            border: none;
+
+            cursor: pointer;
+
+            font-size: 1.2rem;
+        }
+
+        .retranslation-box {
+            margin-top: 0.4rem;
+
+            padding: 0.6rem;
+
+            background: #f8fafc;
+
+            border:
+                1px dashed var(--border-color);
+
+            border-radius: 6px;
+
+            font-size: 0.88rem;
+
+            color: #334155;
+        }
+
+        .retranslation-title {
+            font-weight: bold;
+
+            font-size: 0.72rem;
+
+            text-transform: uppercase;
+
+            color: #64748b;
+
+            margin-bottom: 0.2rem;
+        }
+
+        .output-section {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 1.5rem;
+        }
+
+        .row-container {
+            border:
+                1px solid var(--border-color);
+
+            border-radius: 8px;
+
+            padding: 1.25rem;
+
+            background-color: #fafafa;
+        }
+
+        .row-title {
+            font-size: 0.8rem;
+
+            font-weight: bold;
+
+            text-transform: uppercase;
+
+            margin-bottom: 0.75rem;
+
+            color: #64748b;
+        }
+
+        .word-grid {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 0.75rem;
+        }
+
+        .word-card {
+            position: relative;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding:
+                0.8rem
+                1.2rem
+                0.6rem;
+
+            border-radius: 8px;
+
+            border: 1.5px solid;
+
+            min-width: 110px;
+
+            max-width: 100%;
+
+            text-align: center;
+        }
+
+        .word-card.english-card {
+            background-color:
+                var(--blue-light);
+
+            border-color:
+                var(--primary-blue);
+
+            color: #0369a1;
+        }
+
+        .word-card.foreign-card.orange-mode {
+            background-color:
+                var(--orange-light);
+
+            border-color:
+                var(--primary-orange);
+        }
+
+        .word-card.foreign-card.sakura-mode {
+            background-color:
+                var(--sakura-light);
+
+            border-color:
+                var(--primary-sakura);
+        }
+
+        .word-card.foreign-card.sangria-mode {
+            background-color:
+                var(--sangria-light);
+
+            border-color:
+                var(--primary-sangria);
+        }
+
+        .word-card.foreign-card.lavender-mode {
+            background-color:
+                var(--lavender-light);
+
+            border-color:
+                var(--primary-lavender);
+        }
+
+        .word-card.foreign-card.emerald-mode {
+            background-color:
+                var(--emerald-light);
+
+            border-color:
+                var(--primary-emerald);
+        }
+
+        .word-card.foreign-card.crimson-mode {
+            background-color:
+                var(--crimson-light);
+
+            border-color:
+                var(--primary-crimson);
+        }
+
+        .word-card.foreign-card.gold-mode {
+            background-color:
+                var(--gold-light);
+
+            border-color:
+                var(--primary-gold);
+        }
+
+        .phrase-text {
+            font-size: 1.05rem;
+
+            font-weight: 600;
+
+            overflow-wrap: anywhere;
+        }
+
+        .phrase-reading {
+            font-size: 0.8rem;
+
+            font-weight: 600;
+
+            color: #be185d;
+
+            margin-top: 0.15rem;
+        }
+
+        .phrase-romaji {
+            font-size: 0.75rem;
+
+            font-style: italic;
+
+            color: #475569;
+        }
+
+        .phrase-translation {
+            font-size: 0.82rem;
+
+            font-style: italic;
+
+            opacity: 0.9;
+
+            margin-top: 0.25rem;
+
+            overflow-wrap: anywhere;
+        }
+
+        .empty-message {
+            color: #94a3b8;
+
+            font-style: italic;
+
+            font-size: 0.9rem;
+        }
+
+        .status {
+            margin-top: 1rem;
+
+            font-size: 0.82rem;
+
+            font-weight: 600;
+
+            color: #475569;
+
+            text-align: center;
+
+            min-height: 1.2em;
+        }
+
+        .ai-tutor {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: #f8fafc;
+        }
+        .ai-tutor h2 {
+            margin: 0 0 0.6rem 0;
+            font-size: 1rem;
+            color: #0f172a;
+        }
+        .ai-quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 0.65rem;
+        }
+        .ai-quick-actions button,
+        .ai-send-btn {
+            border: 1px solid var(--border-color);
+            background: white;
+            border-radius: 18px;
+            padding: 0.4rem 0.7rem;
+            font: inherit;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .ai-input-row {
+            display: flex;
+            gap: 0.5rem;
+            align-items: stretch;
+        }
+        .ai-input-row textarea {
+            flex: 1;
+            min-height: 74px;
+            height: 74px;
+            resize: vertical;
+        }
+        .ai-send-btn {
+            min-width: 72px;
+        }
+        .ai-response {
+            margin-top: 0.75rem;
+            padding: 0.8rem;
+            border-radius: 8px;
+            background: white;
+            border: 1px solid var(--border-color);
+            white-space: pre-wrap;
+            min-height: 2.5rem;
+            font-size: 0.9rem;
+        }
+        .ai-meta {
+            margin-top: 0.4rem;
+            font-size: 0.76rem;
+            color: #64748b;
+        }
+        @media (max-width: 768px) {
+            .ai-input-row {
+                flex-direction: column;
+            }
+            .ai-send-btn {
+                width: 100%;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1 id="mainTitle">
+        🇺🇸 Ward's Phrase Mapper
+    </h1>
+
+    <div id="subtitle" class="subtitle">
+        🇩🇪 Wards Phrasen-Mapper
+    </div>
+
+
+    <!-- =========================================================
+         LANGUAGE CONTROLS
+         ========================================================= -->
+
+    <div class="control-panel">
+
+        <div class="lang-selector">
+
+            <span>Target:</span>
+
+            <button
+                class="lang-btn active orange-mode"
+                id="btnDE"
+                onclick="setLanguage('de')"
+            >
+                <img
+                    src="https://flagcdn.com/de.svg"
+                    class="flag-icon"
+                    alt="DE"
+                >
+                DE
+            </button>
+
+            <button
+                class="lang-btn"
+                id="btnJA"
+                onclick="setLanguage('ja')"
+            >
+                <img
+                    src="https://flagcdn.com/jp.svg"
+                    class="flag-icon"
+                    alt="JA"
+                >
+                JA
+            </button>
+
+            <button
+                class="lang-btn"
+                id="btnES"
+                onclick="setLanguage('es')"
+            >
+                <img
+                    src="https://flagcdn.com/es.svg"
+                    class="flag-icon"
+                    alt="ES"
+                >
+                ES
+            </button>
+
+            <button
+                class="lang-btn"
+                id="btnFR"
+                onclick="setLanguage('fr')"
+            >
+                <img
+                    src="https://flagcdn.com/fr.svg"
+                    class="flag-icon"
+                    alt="FR"
+                >
+                FR
+            </button>
+
+            <button
+                class="lang-btn"
+                id="btnIT"
+                onclick="setLanguage('it')"
+            >
+                <img
+                    src="https://flagcdn.com/it.svg"
+                    class="flag-icon"
+                    alt="IT"
+                >
+                IT
+            </button>
+
+            <button
+                class="lang-btn"
+                id="btnRU"
+                onclick="setLanguage('ru')"
+            >
+                <img
+                    src="https://flagcdn.com/ru.svg"
+                    class="flag-icon"
+                    alt="RU"
+                >
+                RU
+            </button>
+
+            <button
+                class="lang-btn"
+                id="btnZH"
+                onclick="setLanguage('zh')"
+            >
+                <img
+                    src="https://flagcdn.com/cn.svg"
+                    class="flag-icon"
+                    alt="ZH"
+                >
+                ZH
+            </button>
+
+        </div>
+
+
+        <div class="options">
+
+            <label>
+                <span>
+                    <input
+                        type="checkbox"
+                        id="autoTranslateToggle"
+                        checked
+                    >
+                    Auto-Translate
+                </span>
+            </label>
+
+            <label>
+                <span>
+                    <input
+                        type="checkbox"
+                        id="allowBackupToggle"
+                        checked
+                    >
+                    Use backup if Google fails (emergency results may be wonky)
+                </span>
+            </label>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         INPUTS
+         ========================================================= -->
+
+    <div class="grid-inputs">
+
+
+        <!-- ENGLISH -->
+
+        <div class="input-group">
+
+            <label
+                style="color:var(--primary-blue)"
+            >
+                English Sentence
+            </label>
+
+            <div class="input-wrapper">
+
+                <textarea
+                    id="englishInput"
+                    rows="3"
+                    placeholder="Type English sentence..."
+                    oninput="handleInput('en')"
+                ></textarea>
+
+                <button
+                    class="play-btn"
+                    onclick="speakText('englishInput', 'en-US')"
+                    title="Listen"
+                >
+                    🔊
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- TARGET -->
+
+        <div class="input-group">
+
+            <label
+                id="foreignLabel"
+            >
+                German Sentence
+            </label>
+
+            <div class="input-wrapper">
+
+                <textarea
+                    id="foreignInput"
+                    rows="3"
+                    placeholder="Translation..."
+                    oninput="handleInput('foreign')"
+                ></textarea>
+
+                <button
+                    class="play-btn"
+                    onclick="speakText('foreignInput', currentLang)"
+                    title="Listen"
+                >
+                    🔊
+                </button>
+
+            </div>
+
+
+            <div class="retranslation-box">
+
+                <div class="retranslation-title">
+                    Re-translation (English)
+                </div>
+
+                <div id="retranslationText">
+                    <em>
+                        Re-translation will appear here...
+                    </em>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         OUTPUT
+         ========================================================= -->
+
+    <div class="output-section">
+        <div class="row-container">
+
+            <div
+                class="row-title"
+                id="foreignRowTitle"
+            >
+                German Phrase Map
+            </div>
+
+            <div
+                id="foreignOutput"
+                class="word-grid"
+            >
+                <div class="empty-message">
+                    Translation will appear here.
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="status"
+        id="statusText"
+    ></div>
+
+
+    <section class="ai-tutor" id="aiTutor">
+        <h2>🤖 AI Language Tutor</h2>
+        <div class="ai-quick-actions">
+            <button type="button" onclick="askTutorQuick('Explain the grammar in this translation.')">Explain grammar</button>
+            <button type="button" onclick="askTutorQuick('Explain the word order and why it differs from English.')">Explain word order</button>
+            <button type="button" onclick="askTutorQuick('Is this natural phrasing? Suggest a more natural alternative if needed.')">Natural phrasing?</button>
+        </div>
+        <div class="ai-input-row">
+            <textarea id="aiQuestion" placeholder="Ask about this translation..."></textarea>
+            <button type="button" class="ai-send-btn" onclick="askTutor()">Ask</button>
+        </div>
+        <div class="ai-response" id="aiResponse">
+            Ask about the current sentence, grammar, word order, or phrasing.
+        </div>
+        <div class="ai-meta">
+            The tutor automatically receives the current English sentence, translated sentence, selected language, and phrase cards.
+        </div>
+    </section>
+
+</div>
+
+
+<script>
+/* ================================================================
+   CLOUDFLARE CONFIG
+   ================================================================ */
+
+/*
+ * Leave AI_WORKER_URL blank until the Workers AI backend is created.
+ * The app works normally without it.
+ */
+
+/* ================================================================
+   GLOBAL STATE
+   ================================================================ */
+
+let currentLang = "de";
+
+let translationTimeout = null;
+
+let fullTranslationController = null;
+
+let updateGeneration = 0;
+
+function isMobileMode() {
+    return window.matchMedia("(max-width: 768px)").matches;
+}
+
+const TRANSLATION_CACHE =
+    "wardPhraseMapper:v40:";
+
+
+/* ================================================================
+   LANGUAGE CONFIG
+   ================================================================ */
+
+const LANG_CONFIG = {
+
+    de: {
+        name: "German",
+        flag: "🇩🇪",
+        subtitle: "🇩🇪 Wards Phrasen-Mapper",
+        theme: "orange-mode"
+    },
+
+    ja: {
+        name: "Japanese",
+        flag: "🇯🇵",
+        subtitle: "🇯🇵 Wardのフレーズ・マッパー",
+        theme: "sakura-mode"
+    },
+
+    es: {
+        name: "Spanish",
+        flag: "🇪🇸",
+        subtitle: "🇪🇸 Mapeador de Frases de Ward",
+        theme: "sangria-mode"
+    },
+
+    fr: {
+        name: "French",
+        flag: "🇫🇷",
+        subtitle: "🇫🇷 Mappeur de phrases de Ward",
+        theme: "lavender-mode"
+    },
+
+    it: {
+        name: "Italian",
+        flag: "🇮🇹",
+        subtitle: "🇮🇹 Mappatore di frasi di Ward",
+        theme: "emerald-mode"
+    },
+
+    ru: {
+        name: "Russian",
+        flag: "🇷🇺",
+        subtitle: "🇷🇺 Фразовый картограф Уорда",
+        theme: "crimson-mode"
+    },
+
+    zh: {
+        name: "Chinese",
+        flag: "🇨🇳",
+        subtitle: "🇨🇳 Ward 的短语映射器",
+        theme: "gold-mode"
+    }
+
+};
+
+
+/* ================================================================
+   HTML ESCAPE
+   ================================================================ */
+
+function escapeHTML(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* ================================================================
+   SPEECH
+   ================================================================ */
+
+function speakText(inputId, langCode) {
+
+    const element =
+        document.getElementById(inputId);
+
+    if (!element) return;
+
+    const text =
+        element.value.trim();
+
+    if (
+        !text ||
+        !window.speechSynthesis
+    ) {
+        return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const utterance =
+        new SpeechSynthesisUtterance(text);
+
+    utterance.lang = langCode;
+
+    window.speechSynthesis.speak(
+        utterance
+    );
+
+}
+
+
+
+
+function setTranslationProviderStatus(provider, detail = "") {
+
+    const status =
+        document.getElementById(
+            "statusText"
+        );
+
+    if (!status) return;
+
+
+    if (provider === "google") {
+
+        status.innerText =
+            detail ||
+            "✓ Google Translate available";
+
+    }
+
+    else if (provider === "lingva") {
+
+        status.innerText =
+            detail ||
+            "✓ Backup translation in use — target phrase cards will fill progressively";
+
+    }
+
+    else if (provider === "mymemory") {
+
+        status.innerText =
+            detail ||
+            "⚠ Emergency backup in use — phrase cards may take a few seconds";
+
+    }
+
+    else if (provider === "backup") {
+
+        status.innerText =
+            detail ||
+            "⚠ Backup translator in use";
+
+    }
+
+    else if (provider === "unavailable") {
+
+        status.innerText =
+            detail ||
+            "✕ Translation service unavailable";
+
+    }
+
+    else {
+
+        status.innerText =
+            detail || "";
+
+    }
+
+}
+
+
+function isEmergencyProvider(provider) {
+    return provider === "mymemory";
+}
+
+
+function backupAllowed() {
+
+    const toggle =
+        document.getElementById(
+            "allowBackupToggle"
+        );
+
+    return !!(
+        toggle &&
+        toggle.checked
+    );
+
+}
+
+
+/* ================================================================
+   TRANSLATION — CLOUDFLARE BACKEND
+   ================================================================ */
+
+async function callTranslationBackend(text, sourceLang, targetLang, options = {}) {
+    const response = await fetch(
+        "/api/translate",
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                text,
+                sourceLang,
+                targetLang,
+                allowBackup: options.allowBackup === true,
+                allowMyMemory: options.allowMyMemory === true
+            }),
+            signal: options.signal || undefined,
+            cache: "no-store"
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(`Translation backend HTTP ${response.status}`);
+    }
+
+    return await response.json();
+}
+
+async function translateUnified(text, sourceLang, targetLang, options = {}) {
+    if (!text || !text.trim()) {
+        return { translation: "", translit: "", provider: "none" };
+    }
+
+    const cacheKey =
+        TRANSLATION_CACHE +
+        `${sourceLang}>${targetLang}:${text}`;
+
+    try {
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
+            const parsed = JSON.parse(cached);
+            return { ...parsed, provider: "google" };
+        }
+    } catch (error) {
+        console.warn("Cache read failed:", error);
+    }
+
+    try {
+        const result = await callTranslationBackend(
+            text,
+            sourceLang,
+            targetLang,
+            options
+        );
+
+        if (result && result.translation) {
+            if (result.provider === "google") {
+                try {
+                    localStorage.setItem(
+                        cacheKey,
+                        JSON.stringify({
+                            translation: result.translation,
+                            translit: result.translit || ""
+                        })
+                    );
+                } catch (error) {
+                    console.warn("Cache write failed:", error);
+                }
+            }
+
+            setTranslationProviderStatus(result.provider || "backup");
+            return result;
+        }
+    } catch (error) {
+        if (error && error.name === "AbortError") {
+            throw error;
+        }
+        console.warn("Cloudflare translation backend failed:", error);
+    }
+
+    setTranslationProviderStatus("unavailable");
+    return null;
+}
+
+
+/* ================================================================
+   JAPANESE READING / ROMAJI
+   ================================================================ */
+
+/*
+ * This deliberately mirrors the Japanese reading behavior from the
+ * original working Phrase Mapper.
+ *
+ * We ask Google for JA -> JA with dt=rm and read the phonetic
+ * transliteration from the response. This request is kept separate
+ * from normal translation caching and from the backup translator.
+ */
+
+let kuroshiroReaderPromise = null;
+
+
+async function getLocalJapaneseReader() {
+
+    if (
+        kuroshiroReaderPromise
+    ) {
+
+        return kuroshiroReaderPromise;
+
+    }
+
+
+    kuroshiroReaderPromise =
+        (async () => {
+
+            try {
+
+                /*
+                 * Load only when Japanese kanji readings are actually needed.
+                 * This avoids making every page load download a Japanese
+                 * dictionary.
+                 */
+                const [
+                    kuroshiroModule,
+                    analyzerModule
+                ] =
+                    await Promise.all([
+                        import(
+                            "https://esm.sh/kuroshiro@1.2.0"
+                        ),
+                        import(
+                            "https://esm.sh/kuroshiro-analyzer-kuromoji@1.1.0"
+                        )
+                    ]);
+
+
+                const Kuroshiro =
+                    kuroshiroModule.default;
+
+
+                const KuromojiAnalyzer =
+                    analyzerModule.default;
+
+
+                const reader =
+                    new Kuroshiro();
+
+
+                await reader.init(
+                    new KuromojiAnalyzer({
+                        dictPath:
+                            "https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/dict/"
+                    })
+                );
+
+
+                return reader;
+
+            }
+
+            catch (
+                error
+            ) {
+
+                /*
+                 * Allow a later retry if initialization failed because the
+                 * phone temporarily lost connectivity.
+                 */
+                kuroshiroReaderPromise =
+                    null;
+
+
+                console.warn(
+                    "Local Japanese reading engine failed to initialize:",
+                    error
+                );
+
+
+                return null;
+
+            }
+
+        })();
+
+
+    return kuroshiroReaderPromise;
+
+}
+
+
+async function getLocalJapaneseReading(
+    phrase
+) {
+
+    try {
+
+        const reader =
+            await getLocalJapaneseReader();
+
+
+        if (
+            !reader
+        ) {
+
+            return null;
+
+        }
+
+
+        const hiragana =
+            await reader.convert(
+                phrase,
+                {
+                    to:
+                        "hiragana",
+
+                    mode:
+                        "normal"
+                }
+            );
+
+
+        if (
+            !hiragana ||
+            !hiragana.trim()
+        ) {
+
+            return null;
+
+        }
+
+
+        let romaji = "";
+
+
+        /*
+         * Once kanji have been resolved to hiragana, Wanakana is excellent
+         * for producing consistent romaji without another network request.
+         */
+        if (
+            window.wanakana
+        ) {
+
+            romaji =
+                wanakana.toRomaji(
+                    hiragana
+                );
+
+        }
+
+        else {
+
+            romaji =
+                await reader.convert(
+                    phrase,
+                    {
+                        to:
+                            "romaji",
+
+                        mode:
+                            "normal"
+                    }
+                );
+
+        }
+
+
+        return {
+            hiragana:
+                hiragana.trim(),
+
+            romaji:
+                String(romaji || "").trim(),
+
+            provider:
+                "local"
+        };
+
+    }
+
+    catch (
+        error
+    ) {
+
+        console.warn(
+            "Local Japanese reading failed:",
+            error
+        );
+
+
+        return null;
+
+    }
+
+}
+
+
+async function getJapaneseReading(
+    phrase
+) {
+
+    if (
+        !phrase ||
+        !phrase.trim()
+    ) {
+
+        return {
+            romaji: "",
+            hiragana: ""
+        };
+
+    }
+
+
+    const url =
+        "https://translate.googleapis.com/translate_a/single" +
+        "?client=gtx" +
+        "&sl=ja" +
+        "&tl=ja" +
+        "&dt=t" +
+        "&dt=rm" +
+        "&q=" +
+        encodeURIComponent(
+            phrase
+        );
+
+
+    /*
+     * A couple of attempts are useful on iPhone, where this endpoint
+     * can occasionally fail transiently.
+     */
+    for (
+        let attempt = 0;
+        attempt < 2;
+        attempt++
+    ) {
+
+        try {
+
+            const response =
+                await fetch(
+                    url,
+                    {
+                        cache: "no-store"
+                    }
+                );
+
+
+            if (
+                !response.ok
+            ) {
+
+                throw new Error(
+                    "Japanese reading request failed"
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            let romaji = "";
+
+
+            if (
+                data &&
+                Array.isArray(
+                    data[0]
+                )
+            ) {
+
+                data[0].forEach(
+                    segment => {
+
+                        if (
+                            !Array.isArray(
+                                segment
+                            )
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        /*
+                         * This is the exact response pattern used by
+                         * the original working version: Google's
+                         * phonetic row is the segment where translated
+                         * text is empty/null.
+                         */
+                        if (
+                            !segment[0]
+                        ) {
+
+                            if (
+                                segment[2] &&
+                                typeof segment[2] === "string"
+                            ) {
+
+                                romaji =
+                                    segment[2];
+
+                            }
+
+                            else if (
+                                segment[3] &&
+                                typeof segment[3] === "string"
+                            ) {
+
+                                romaji =
+                                    segment[3];
+
+                            }
+
+                        }
+
+                    }
+                );
+
+            }
+
+
+            romaji =
+                romaji.trim();
+
+
+            if (
+                romaji
+            ) {
+
+                let hiragana = "";
+
+
+                if (
+                    window.wanakana
+                ) {
+
+                    hiragana =
+                        wanakana.toHiragana(
+                            romaji
+                        );
+
+                }
+
+
+                return {
+                    romaji,
+                    hiragana
+                };
+
+            }
+
+        }
+
+        catch (
+            error
+        ) {
+
+            console.warn(
+                `Japanese reading attempt ${attempt + 1} failed:`,
+                error
+            );
+
+        }
+
+
+        if (
+            attempt === 0
+        ) {
+
+            await new Promise(
+                resolve =>
+                    setTimeout(
+                        resolve,
+                        500
+                    )
+            );
+
+        }
+
+    }
+
+
+    /*
+     * If direct Google reading is unavailable (common on iPhone),
+     * fall back to a local Japanese morphological analyzer.
+     *
+     * Unlike Wanakana alone, Kuroshiro/Kuromoji can determine readings
+     * for kanji from the Japanese phrase itself.
+     */
+    const localReading =
+        await getLocalJapaneseReading(
+            phrase
+        );
+
+
+    if (
+        localReading &&
+        (
+            localReading.hiragana ||
+            localReading.romaji
+        )
+    ) {
+
+        return localReading;
+
+    }
+
+
+    /*
+     * Final kana-only fallback.
+     */
+    if (
+        window.wanakana &&
+        !/[一-龯々〆ヵヶ]/u.test(
+            phrase
+        )
+    ) {
+
+        const hiragana =
+            wanakana.toHiragana(
+                phrase
+            );
+
+
+        return {
+            hiragana,
+            romaji:
+                wanakana.toRomaji(
+                    hiragana
+                ),
+            provider:
+                "wanakana"
+        };
+
+    }
+
+
+    return {
+        romaji: "",
+        hiragana: "",
+        provider: "unavailable"
+    };
+
+}
+
+
+/* ================================================================
+   LIMITED-CONCURRENCY CARD TRANSLATION
+   ================================================================ */
+
+async function mapWithConcurrency(items, worker, limit = null) {
+    if (!items.length) return [];
+
+    const concurrency =
+        limit || (isMobileMode() ? 2 : 4);
+
+    const results = new Array(items.length);
+    let nextIndex = 0;
+
+    async function runWorker() {
+        while (true) {
+            const index = nextIndex++;
+            if (index >= items.length) return;
+
+            try {
+                results[index] =
+                    await worker(items[index], index);
+            } catch (error) {
+                console.warn(
+                    "Phrase-card translation failed:",
+                    error
+                );
+                results[index] = null;
+            }
+        }
+    }
+
+    await Promise.all(
+        Array.from(
+            { length: Math.min(concurrency, items.length) },
+            () => runWorker()
+        )
+    );
+
+    return results;
+}
+
+
+/* ================================================================
+   ENGLISH PHRASE BATCH TRANSLATION
+   ================================================================ */
+
+async function translateBatchFast(
+    phrases,
+    sourceLang,
+    targetLang,
+    options = {}
+) {
+
+    if (!phrases.length) {
+        return [];
+    }
+
+
+    const allowBackup =
+        options.allowBackup === true;
+
+
+    /*
+     * Google batch translation first for efficiency.
+     * Backup is intentionally NOT used on the joined batch because
+     * backup translators can rearrange or damage the delimiter.
+     */
+    const delimiter =
+        " ###WARD_PHRASE### ";
+
+
+    const joined =
+        phrases.join(
+            delimiter
+        );
+
+
+    const result =
+        await translateUnified(
+            joined,
+            sourceLang,
+            targetLang,
+            {
+                allowBackup: false
+            }
+        );
+
+
+    if (
+        result &&
+        result.translation
+    ) {
+
+        const translations =
+            result.translation.split(
+                /\s*###WARD_PHRASE###\s*/i
+            );
+
+
+        const transliterations =
+            result.translit
+                ? result.translit.split(
+                    /\s*###WARD_PHRASE###\s*/i
+                )
+                : [];
+
+
+        /*
+         * If Google preserved the delimiter, keep the efficient batch result.
+         */
+        if (
+            phrases.length === 1 ||
+            translations.length === phrases.length
+        ) {
+
+            return phrases.map(
+                (_, index) => ({
+
+                    translation:
+                        translations[index]?.trim() || "",
+
+                    translit:
+                        transliterations[index]?.trim() || ""
+
+                })
+            );
+
+        }
+
+    }
+
+
+    /*
+     * If Google failed OR destroyed the delimiter, translate each card
+     * individually. When the user has enabled backup, backup may now be
+     * used here too. Individual translation keeps phrase/card alignment.
+     */
+    const individual =
+        await mapWithConcurrency(
+            phrases,
+            phrase =>
+                translateUnified(
+                    phrase,
+                    sourceLang,
+                    targetLang,
+                    {
+                        allowBackup,
+                        // Never use MyMemory for isolated phrase cards.
+                        // It often produces contextually unrelated fragments.
+                        allowMyMemory: false
+                    }
+                )
+        );
+
+
+    return individual.map(
+        item => ({
+
+            translation:
+                item?.translation || "",
+
+            translit:
+                item?.translit || ""
+
+        })
+    );
+
+}
+
+
+/* ================================================================
+   ENGLISH PARSER
+   ================================================================ */
+
+function parseEnglishPhrases(text) {
+
+    if (
+        !text ||
+        !text.trim()
+    ) {
+
+        return [];
+
+    }
+
+
+    text =
+        text
+            .trim()
+            .replace(/\s+/g, " ");
+
+    /*
+     * Context-sensitive construction:
+     * "I would like to buy you a drink"
+     * becomes:
+     *   "I would like"
+     *   "to buy you a drink"
+     *
+     * This avoids translating tiny fragments such as "to buy"
+     * without the object/complement that gives them meaning.
+     */
+    const wouldLikeMatch =
+        text.match(
+            /^(.+?\bwould\s+(?:really\s+)?(?:like|love|prefer))\s+to\s+(.+)$/i
+        );
+
+    if (
+        wouldLikeMatch
+    ) {
+        return [
+            wouldLikeMatch[1].trim(),
+            `to ${wouldLikeMatch[2].trim()}`
+        ];
+    }
+
+
+    const words =
+        text.split(" ");
+
+
+    const phrases = [];
+
+    let current = [];
+
+
+    const conjunctions = new Set([
+
+        "and",
+        "but",
+        "or",
+        "nor",
+        "yet",
+
+        "because",
+        "although",
+        "though",
+
+        "since",
+        "while",
+        "whereas",
+
+        "if",
+        "unless",
+        "until",
+
+        "when",
+        "whenever",
+
+        "that",
+        "which",
+        "who",
+        "whom",
+
+        "where",
+
+        "so"
+
+    ]);
+
+
+    const prepositions = new Set([
+
+        "in",
+        "on",
+        "at",
+        "to",
+        "for",
+        "with",
+
+        "about",
+        "against",
+        "between",
+        "into",
+
+        "through",
+        "during",
+        "before",
+        "after",
+
+        "above",
+        "below",
+        "from",
+
+        "up",
+        "down",
+        "off",
+        "over",
+        "under",
+
+        "by",
+        "without",
+
+        "within",
+        "around",
+        "among",
+
+        "behind",
+        "beside",
+        "near",
+
+        "toward",
+        "towards",
+
+        "upon",
+        "across",
+        "along",
+
+        "inside",
+        "outside",
+
+        "past",
+        "despite",
+        "except"
+
+    ]);
+
+
+    const auxiliaries = new Set([
+
+        "am",
+        "is",
+        "are",
+        "was",
+        "were",
+
+        "be",
+        "been",
+        "being",
+
+        "have",
+        "has",
+        "had",
+
+        "do",
+        "does",
+        "did",
+
+        "can",
+        "could",
+
+        "will",
+        "would",
+
+        "shall",
+        "should",
+
+        "may",
+        "might",
+
+        "must"
+
+    ]);
+
+
+    const pronouns = new Set([
+
+        "i",
+        "you",
+        "he",
+        "she",
+        "it",
+        "we",
+        "they",
+
+        "me",
+        "him",
+        "her",
+        "us",
+        "them"
+
+    ]);
+
+
+    const determiners = new Set([
+
+        "a",
+        "an",
+        "the",
+
+        "this",
+        "that",
+        "these",
+        "those",
+
+        "my",
+        "your",
+        "his",
+        "her",
+        "our",
+        "their",
+
+        "some",
+        "any",
+        "each",
+        "every",
+        "no"
+
+    ]);
+
+
+    function clean(word) {
+
+        return word
+            .toLowerCase()
+            .replace(
+                /^[^a-z']+|[^a-z']+$/g,
+                ""
+            );
+
+    }
+
+
+    function pushCurrent() {
+
+        if (current.length) {
+
+            phrases.push(
+                current.join(" ")
+            );
+
+            current = [];
+
+        }
+
+    }
+
+
+    function isPunctuation(word) {
+
+        return /[,;:!?]/.test(word);
+
+    }
+
+
+    function isSentenceEnd(word) {
+
+        return /[.!?]$/.test(word);
+
+    }
+
+
+    function nextWord(index) {
+
+        if (
+            index + 1 <
+            words.length
+        ) {
+
+            return clean(
+                words[index + 1]
+            );
+
+        }
+
+        return "";
+
+    }
+
+
+    let i = 0;
+
+
+    while (
+        i < words.length
+    ) {
+
+        const word =
+            words[i];
+
+        const w =
+            clean(word);
+
+        const next =
+            nextWord(i);
+
+
+        /* --------------------------------------------------------
+           PUNCTUATION
+           -------------------------------------------------------- */
+
+        if (
+            isPunctuation(word)
+        ) {
+
+            current.push(word);
+
+            pushCurrent();
+
+            i++;
+
+            continue;
+
+        }
+
+
+        /* --------------------------------------------------------
+           CONJUNCTION
+           -------------------------------------------------------- */
+
+        if (
+            conjunctions.has(w)
+        ) {
+
+            pushCurrent();
+
+            phrases.push(word);
+
+            i++;
+
+            continue;
+
+        }
+
+
+        /* --------------------------------------------------------
+           INFINITIVE
+           
+           "to go"
+           "to eat"
+           -------------------------------------------------------- */
+
+        if (
+            w === "to" &&
+            next &&
+            !prepositions.has(next) &&
+            !determiners.has(next)
+        ) {
+
+            pushCurrent();
+
+            current.push(word);
+
+            current.push(
+                words[i + 1]
+            );
+
+            i += 2;
+
+            pushCurrent();
+
+            continue;
+
+        }
+
+
+        /* --------------------------------------------------------
+           PREPOSITIONAL PHRASE
+           
+           "to the store"
+           "with my friend"
+           -------------------------------------------------------- */
+
+        if (
+            prepositions.has(w)
+        ) {
+
+            pushCurrent();
+
+            const phrase = [word];
+
+            let j = i + 1;
+
+
+            while (
+                j < words.length
+            ) {
+
+                const candidate =
+                    words[j];
+
+                const cw =
+                    clean(candidate);
+
+
+                if (
+                    conjunctions.has(cw) ||
+                    prepositions.has(cw)
+                ) {
+
+                    break;
+
+                }
+
+
+                phrase.push(
+                    candidate
+                );
+
+
+                if (
+                    isPunctuation(candidate)
+                ) {
+
+                    break;
+
+                }
+
+
+                if (
+                    phrase.length >= 5
+                ) {
+
+                    break;
+
+                }
+
+
+                j++;
+
+            }
+
+
+            phrases.push(
+                phrase.join(" ")
+            );
+
+
+            i = j;
+
+            continue;
+
+        }
+
+
+        /* --------------------------------------------------------
+           AUXILIARY + VERB
+           -------------------------------------------------------- */
+
+        if (
+            auxiliaries.has(w) &&
+            next &&
+            !conjunctions.has(next)
+        ) {
+
+            pushCurrent();
+
+            const phrase = [
+                word,
+                words[i + 1]
+            ];
+
+
+            let j = i + 2;
+
+
+            if (
+                j < words.length &&
+                auxiliaries.has(
+                    clean(words[j])
+                )
+            ) {
+
+                phrase.push(
+                    words[j]
+                );
+
+                j++;
+
+            }
+
+
+            phrases.push(
+                phrase.join(" ")
+            );
+
+
+            i = j;
+
+            continue;
+
+        }
+
+
+        /* --------------------------------------------------------
+           PRONOUN + VERB
+           -------------------------------------------------------- */
+
+        if (
+            pronouns.has(w) &&
+            next &&
+            !conjunctions.has(next) &&
+            !prepositions.has(next)
+        ) {
+
+            pushCurrent();
+
+            current.push(word);
+
+            current.push(
+                words[i + 1]
+            );
+
+            i += 2;
+
+            continue;
+
+        }
+
+
+        /* --------------------------------------------------------
+           DETERMINER + NOUN PHRASE
+           -------------------------------------------------------- */
+
+        if (
+            determiners.has(w)
+        ) {
+
+            pushCurrent();
+
+            const phrase = [word];
+
+            let j = i + 1;
+
+
+            while (
+                j < words.length
+            ) {
+
+                const candidate =
+                    words[j];
+
+                const cw =
+                    clean(candidate);
+
+
+                if (
+                    conjunctions.has(cw) ||
+                    prepositions.has(cw)
+                ) {
+
+                    break;
+
+                }
+
+
+                phrase.push(
+                    candidate
+                );
+
+
+                if (
+                    phrase.length >= 4
+                ) {
+
+                    break;
+
+                }
+
+
+                if (
+                    isPunctuation(candidate)
+                ) {
+
+                    break;
+
+                }
+
+
+                j++;
+
+            }
+
+
+            phrases.push(
+                phrase.join(" ")
+            );
+
+
+            i = j;
+
+            continue;
+
+        }
+
+
+        /* --------------------------------------------------------
+           DEFAULT
+           -------------------------------------------------------- */
+
+        current.push(word);
+
+
+        if (
+            current.length >= 4
+        ) {
+
+            pushCurrent();
+
+        }
+
+
+        if (
+            isSentenceEnd(word)
+        ) {
+
+            pushCurrent();
+
+        }
+
+
+        i++;
+
+    }
+
+
+    pushCurrent();
+
+
+    return phrases.filter(
+        phrase =>
+            phrase.trim().length > 0
+    );
+
+}
+
+
+
+/* ================================================================
+   LANGUAGE-SPECIFIC TARGET PARSERS
+   ================================================================ */
+
+/*
+ * Each target language gets its own parser.
+ * This keeps parsing rules independent from translation logic.
+ *
+ * The parser contract is simple:
+ *   parser(text) -> array of meaningful phrase strings
+ */
+
+function normalizeSpacedText(text) {
+    return String(text || "")
+        .trim()
+        .replace(/\s+/g, " ");
+}
+
+function cleanToken(token) {
+    return String(token || "")
+        .toLowerCase()
+        .replace(/^[^\p{L}\p{N}'’äöüßáéíóúàèìòùâêîôûçñ]+|[^\p{L}\p{N}'’äöüßáéíóúàèìòùâêîôûçñ]+$/gu, "");
+}
+
+function splitByPunctuation(text) {
+    const source = normalizeSpacedText(text);
+    if (!source) return [];
+
+    const parts = source
+        .split(/(?<=[.!?;:])\s+|,\s+/u)
+        .map(x => x.trim())
+        .filter(Boolean);
+
+    return parts.length ? parts : [source];
+}
+
+function parseGermanPhrases(text) {
+    const source = normalizeSpacedText(text);
+    if (!source) return [];
+
+    /*
+     * Context-sensitive German preference construction:
+     *
+     *   Ich würde dir gerne einen Drink spendieren
+     *
+     * becomes:
+     *   Ich würde dir gerne
+     *   einen Drink spendieren
+     *
+     * "würde ... gerne" expresses the idea of "would like" together,
+     * even though the words are not a literal one-to-one match.
+     */
+    const conditionalPreference =
+        source.match(
+            /^((?:ich|du|er|sie|es|wir|ihr|Sie)\s+(?:würde|würdest|würden|würdet)(?:\s+\S+){0,3}?\s+gern(?:e)?)\s+(.+)$/i
+        );
+
+    if (
+        conditionalPreference
+    ) {
+        return [
+            conditionalPreference[1].trim(),
+            conditionalPreference[2].trim()
+        ];
+    }
+
+    const words = source.split(" ");
+    const phrases = [];
+
+    const prepositions = new Set([
+        "mit","zu","zum","zur","für","von","vom","bei","beim","in","im","ins",
+        "an","am","ans","auf","aufs","nach","aus","über","unter","vor","hinter",
+        "neben","wegen","ohne","gegen","um","durch","zwischen"
+    ]);
+
+    const conjunctions = new Set([
+        "und","aber","oder","denn","weil","obwohl","wenn","dass","damit","während"
+    ]);
+
+    const articles = new Set([
+        "der","die","das","den","dem","des",
+        "ein","eine","einen","einem","einer","eines",
+        "mein","meine","meinen","meinem","meiner",
+        "dein","deine","sein","seine","ihr","ihre","unser","unsere"
+    ]);
+
+    const auxiliaries = new Set([
+        "bin","bist","ist","sind","seid","war","waren",
+        "habe","hast","hat","haben","hatte","hatten",
+        "werde","wirst","wird","werden",
+        "kann","kannst","können","muss","musst","müssen",
+        "will","willst","wollen","soll","sollst","sollen",
+        "möchte","möchtest","möchten","darf","dürfen"
+    ]);
+
+    let i = 0;
+    while (i < words.length) {
+        const word = words[i];
+        const w = cleanToken(word);
+
+        if (conjunctions.has(w)) {
+            phrases.push(word);
+            i++;
+            continue;
+        }
+
+        if (prepositions.has(w)) {
+            const chunk = [word];
+            i++;
+            while (i < words.length && chunk.length < 5) {
+                const next = cleanToken(words[i]);
+                if (conjunctions.has(next) || prepositions.has(next)) break;
+                chunk.push(words[i]);
+                i++;
+                if (/[.!?;,]$/.test(chunk[chunk.length - 1])) break;
+            }
+            phrases.push(chunk.join(" "));
+            continue;
+        }
+
+        if (auxiliaries.has(w) && i + 1 < words.length) {
+            const chunk = [word, words[i + 1]];
+            i += 2;
+
+            // Catch common infinitive/complement structures without swallowing the sentence.
+            if (i < words.length && cleanToken(words[i]) === "zu" && i + 1 < words.length) {
+                chunk.push(words[i], words[i + 1]);
+                i += 2;
+            }
+
+            phrases.push(chunk.join(" "));
+            continue;
+        }
+
+        if (articles.has(w) && i + 1 < words.length) {
+            const chunk = [word, words[i + 1]];
+            i += 2;
+            if (i < words.length && !prepositions.has(cleanToken(words[i])) &&
+                !conjunctions.has(cleanToken(words[i])) && chunk.length < 4) {
+                chunk.push(words[i]);
+                i++;
+            }
+            phrases.push(chunk.join(" "));
+            continue;
+        }
+
+        // Keep final separable prefixes attached visually to the preceding verb phrase when possible.
+        if (i === words.length - 1 &&
+            new Set(["an","auf","aus","ein","mit","nach","vor","weg","zurück","zu"]).has(w) &&
+            phrases.length) {
+            phrases[phrases.length - 1] += " " + word;
+            i++;
+            continue;
+        }
+
+        const chunk = [word];
+        i++;
+        while (i < words.length && chunk.length < 3) {
+            const next = cleanToken(words[i]);
+            if (prepositions.has(next) || conjunctions.has(next) || articles.has(next)) break;
+            chunk.push(words[i]);
+            i++;
+            if (/[.!?;,]$/.test(chunk[chunk.length - 1])) break;
+        }
+        phrases.push(chunk.join(" "));
+    }
+
+    return phrases.filter(Boolean);
+}
+
+function parseSpanishPhrases(text) {
+    const source = normalizeSpacedText(text);
+    if (!source) return [];
+
+    const words = source.split(" ");
+    const phrases = [];
+
+    const prepositions = new Set([
+        "a","al","ante","bajo","con","contra","de","del","desde","durante","en",
+        "entre","hacia","hasta","para","por","según","sin","sobre","tras"
+    ]);
+    const conjunctions = new Set([
+        "y","e","o","u","pero","porque","aunque","si","cuando","mientras","que"
+    ]);
+    const determiners = new Set([
+        "el","la","los","las","un","una","unos","unas","mi","mis","tu","tus",
+        "su","sus","este","esta","estos","estas","ese","esa","esos","esas"
+    ]);
+
+    let i = 0;
+    while (i < words.length) {
+        const word = words[i];
+        const w = cleanToken(word);
+
+        if (conjunctions.has(w)) {
+            phrases.push(word);
+            i++;
+            continue;
+        }
+
+        if (prepositions.has(w)) {
+            const chunk = [word];
+            i++;
+            while (i < words.length && chunk.length < 5) {
+                const next = cleanToken(words[i]);
+                if (conjunctions.has(next) || prepositions.has(next)) break;
+                chunk.push(words[i]);
+                i++;
+            }
+            phrases.push(chunk.join(" "));
+            continue;
+        }
+
+        if (determiners.has(w) && i + 1 < words.length) {
+            const chunk = [word, words[i + 1]];
+            i += 2;
+            if (i < words.length && !prepositions.has(cleanToken(words[i])) &&
+                !conjunctions.has(cleanToken(words[i]))) {
+                chunk.push(words[i]);
+                i++;
+            }
+            phrases.push(chunk.join(" "));
+            continue;
+        }
+
+        const chunk = [word];
+        i++;
+        while (i < words.length && chunk.length < 3) {
+            const next = cleanToken(words[i]);
+            if (prepositions.has(next) || conjunctions.has(next) || determiners.has(next)) break;
+            chunk.push(words[i]);
+            i++;
+        }
+        phrases.push(chunk.join(" "));
+    }
+
+    return phrases.filter(Boolean);
+}
+
+function parseFrenchPhrases(text) {
+    const source = normalizeSpacedText(text);
+    if (!source) return [];
+
+    const words = source.split(" ");
+    const phrases = [];
+
+    const prepositions = new Set([
+        "à","au","aux","de","du","des","avec","chez","dans","en","entre","par",
+        "pour","sans","sous","sur","vers","après","avant","pendant"
+    ]);
+    const conjunctions = new Set([
+        "et","ou","mais","donc","car","parce","parceque","que","quand","si","pendantque"
+    ]);
+    const determiners = new Set([
+        "le","la","les","un","une","des","ce","cet","cette","ces",
+        "mon","ma","mes","ton","ta","tes","son","sa","ses","notre","nos","votre","vos"
+    ]);
+
+    let i = 0;
+    while (i < words.length) {
+        const word = words[i];
+        const w = cleanToken(word.replace(/[’']/g, ""));
+
+        if (conjunctions.has(w)) {
+            phrases.push(word);
+            i++;
+            continue;
+        }
+
+        // Keep elisions together with the following word: j'aime, l'école, d'accord.
+        if (/[’']$/.test(word) && i + 1 < words.length) {
+            phrases.push(word + " " + words[i + 1]);
+            i += 2;
+            continue;
+        }
+
+        if (prepositions.has(cleanToken(word))) {
+            const chunk = [word];
+            i++;
+            while (i < words.length && chunk.length < 5) {
+                const next = cleanToken(words[i]);
+                if (conjunctions.has(next) || prepositions.has(next)) break;
+                chunk.push(words[i]);
+                i++;
+            }
+            phrases.push(chunk.join(" "));
+            continue;
+        }
+
+        if (determiners.has(cleanToken(word)) && i + 1 < words.length) {
+            const chunk = [word, words[i + 1]];
+            i += 2;
+            if (i < words.length && !prepositions.has(cleanToken(words[i])) &&
+                !conjunctions.has(cleanToken(words[i]))) {
+                chunk.push(words[i]);
+                i++;
+            }
+            phrases.push(chunk.join(" "));
+            continue;
+        }
+
+        const chunk = [word];
+        i++;
+        while (i < words.length && chunk.length < 3) {
+            const next = cleanToken(words[i]);
+            if (prepositions.has(next) || conjunctions.has(next) || determiners.has(next)) break;
+            chunk.push(words[i]);
+            i++;
+        }
+        phrases.push(chunk.join(" "));
+    }
+
+    return phrases.filter(Boolean);
+}
+
+function parseItalianPhrases(text) {
+    const source = normalizeSpacedText(text);
+    if (!source) return [];
+
+    const words = source.split(" ");
+    const phrases = [];
+
+    const prepositions = new Set([
+        "a","al","allo","alla","ai","agli","alle",
+        "da","dal","dallo","dalla","dai","dagli","dalle",
+        "di","del","dello","della","dei","degli","delle",
+        "in","nel","nello","nella","nei","negli","nelle",
+        "con","su","sul","sullo","sulla","sui","sugli","sulle",
+        "per","tra","fra","senza","sotto","sopra","dopo","prima"
+    ]);
+    const conjunctions = new Set([
+        "e","o","ma","perché","se","quando","mentre","che","anche"
+    ]);
+    const determiners = new Set([
+        "il","lo","la","i","gli","le","un","uno","una",
+        "questo","questa","questi","queste","mio","mia","miei","mie",
+        "tuo","tua","suo","sua"
+    ]);
+
+    let i = 0;
+    while (i < words.length) {
+        const word = words[i];
+        const w = cleanToken(word);
+
+        if (conjunctions.has(w)) {
+            phrases.push(word);
+            i++;
+            continue;
+        }
+
+        if (prepositions.has(w)) {
+            const chunk = [word];
+            i++;
+            while (i < words.length && chunk.length < 5) {
+                const next = cleanToken(words[i]);
+                if (conjunctions.has(next) || prepositions.has(next)) break;
+                chunk.push(words[i]);
+                i++;
+            }
+            phrases.push(chunk.join(" "));
+            continue;
+        }
+
+        if (determiners.has(w) && i + 1 < words.length) {
+            const chunk = [word, words[i + 1]];
+            i += 2;
+            if (i < words.length && !prepositions.has(cleanToken(words[i])) &&
+                !conjunctions.has(cleanToken(words[i]))) {
+                chunk.push(words[i]);
+                i++;
+            }
+            phrases.push(chunk.join(" "));
+            continue;
+        }
+
+        const chunk = [word];
+        i++;
+        while (i < words.length && chunk.length < 3) {
+            const next = cleanToken(words[i]);
+            if (prepositions.has(next) || conjunctions.has(next) || determiners.has(next)) break;
+            chunk.push(words[i]);
+            i++;
+        }
+        phrases.push(chunk.join(" "));
+    }
+
+    return phrases.filter(Boolean);
+}
+
+function parseRussianPhrases(text) {
+    const source = normalizeSpacedText(text);
+    if (!source) return [];
+
+    const words = source.split(" ");
+    const phrases = [];
+
+    const prepositions = new Set([
+        "в","во","на","с","со","у","к","ко","о","об","обо","по","из","изо",
+        "от","ото","до","без","для","при","через","над","под","перед","за","между"
+    ]);
+    const conjunctions = new Set([
+        "и","а","но","или","либо","потому","поскольку","если","когда","что","хотя"
+    ]);
+
+    let i = 0;
+    while (i < words.length) {
+        const word = words[i];
+        const w = cleanToken(word);
+
+        if (conjunctions.has(w)) {
+            phrases.push(word);
+            i++;
+            continue;
+        }
+
+        if (prepositions.has(w)) {
+            const chunk = [word];
+            i++;
+            while (i < words.length && chunk.length < 4) {
+                const next = cleanToken(words[i]);
+                if (prepositions.has(next) || conjunctions.has(next)) break;
+                chunk.push(words[i]);
+                i++;
+            }
+            phrases.push(chunk.join(" "));
+            continue;
+        }
+
+        const chunk = [word];
+        i++;
+        while (i < words.length && chunk.length < 3) {
+            const next = cleanToken(words[i]);
+            if (prepositions.has(next) || conjunctions.has(next)) break;
+            chunk.push(words[i]);
+            i++;
+        }
+        phrases.push(chunk.join(" "));
+    }
+
+    return phrases.filter(Boolean);
+}
+
+function parseChinesePhrases(text) {
+    const source = String(text || "").trim();
+    if (!source) return [];
+
+    const clauses = source
+        .split(/(?<=[。！？；，、])/u)
+        .map(x => x.trim())
+        .filter(Boolean);
+
+    const boundaries = [
+        "因为","所以","但是","如果","然后","以后","以前","为了","关于",
+        "在","到","从","跟","和","与","给","对","把","被"
+    ].sort(
+        (a, b) =>
+            b.length - a.length
+    );
+
+    const result = [];
+
+    for (
+        const clause
+        of clauses
+    ) {
+
+        let current = "";
+        let i = 0;
+
+        while (
+            i < clause.length
+        ) {
+
+            let matchedBoundary =
+                null;
+
+            for (
+                const boundary
+                of boundaries
+            ) {
+
+                if (
+                    clause.startsWith(
+                        boundary,
+                        i
+                    )
+                ) {
+
+                    matchedBoundary =
+                        boundary;
+
+                    break;
+
+                }
+
+            }
+
+
+            if (
+                matchedBoundary &&
+                current.length >= 2
+            ) {
+
+                result.push(
+                    current
+                );
+
+                current =
+                    matchedBoundary;
+
+                i +=
+                    matchedBoundary.length;
+
+                continue;
+
+            }
+
+
+            if (
+                matchedBoundary
+            ) {
+
+                current +=
+                    matchedBoundary;
+
+                i +=
+                    matchedBoundary.length;
+
+            }
+
+            else {
+
+                current +=
+                    clause[i];
+
+                i++;
+
+            }
+
+
+            if (
+                current.length >= 6
+            ) {
+
+                result.push(
+                    current
+                );
+
+                current = "";
+
+            }
+
+        }
+
+
+        if (
+            current
+        ) {
+
+            result.push(
+                current
+            );
+
+        }
+
+    }
+
+    return result.filter(Boolean);
+}
+
+
+/* ================================================================
+   TARGET PARSER REGISTRY
+   ================================================================ */
+
+const TARGET_PARSERS = {
+    de: parseGermanPhrases,
+    ja: parseJapanesePhrases,
+    es: parseSpanishPhrases,
+    fr: parseFrenchPhrases,
+    it: parseItalianPhrases,
+    ru: parseRussianPhrases,
+    zh: parseChinesePhrases
+};
+
+function parseTargetPhrases(text, lang = currentLang) {
+    const parser = TARGET_PARSERS[lang];
+
+    if (typeof parser === "function") {
+        return parser(text);
+    }
+
+    // Conservative fallback if a language is ever added without a parser.
+    return splitByPunctuation(text);
+}
+
+
+/* ================================================================
+   JAPANESE CHARACTER HELPERS
+   ================================================================ */
+
+function isJapaneseCharacter(char) {
+
+    return /[\u3040-\u30ff\u3400-\u9fff々ー]/.test(
+        char
+    );
+
+}
+
+
+function isKanji(char) {
+
+    return /[\u3400-\u4dbf\u4e00-\u9fff]/.test(
+        char
+    );
+
+}
+
+
+function isKana(char) {
+
+    return /[\u3040-\u30ff]/.test(
+        char
+    );
+
+}
+
+
+/* ================================================================
+   JAPANESE PARSER
+   ================================================================ */
+
+function parseJapanesePhrases(text) {
+
+    if (
+        !text ||
+        !text.trim()
+    ) {
+
+        return [];
+
+    }
+
+
+    /*
+     * Japanese normally has no spaces.
+     * Remove spaces that Google may have inserted.
+     */
+
+    const source =
+        text
+            .trim()
+            .replace(/\s+/g, "");
+
+
+    const phrases = [];
+
+    let current = "";
+
+
+    /*
+     * Japanese particles.
+     *
+     * Longer particles come first.
+     */
+
+    const particles = [
+
+        "について",
+        "に対して",
+        "によって",
+        "として",
+        "にとって",
+        "において",
+        "までに",
+        "のために",
+        "から",
+        "まで",
+        "より",
+        "だけ",
+        "しか",
+        "ほど",
+        "など",
+        "なんて",
+        "なんか",
+
+        "では",
+        "には",
+        "へ",
+        "と",
+        "が",
+        "を",
+        "に",
+        "で",
+        "は",
+        "も"
+
+    ];
+
+
+    /*
+     * Japanese clause-ending expressions.
+     */
+
+    const clauseEndings = [
+
+        "ので",
+        "のに",
+        "けれども",
+        "けれど",
+        "けど",
+        "から",
+        "ので",
+        "なら",
+        "ならば",
+        "たら",
+        "ても",
+        "でも",
+        "ながら",
+        "し",
+        "が"
+
+    ];
+
+
+    /*
+     * Common sentence endings.
+     */
+
+    const sentenceEndings = [
+
+        "です",
+        "ます",
+        "でした",
+        "ました",
+        "ません",
+        "ませんでした",
+
+        "たい",
+        "たくない",
+
+        "ない",
+        "なかった",
+
+        "だった",
+        "だ",
+
+        "でしょう",
+        "だろう",
+
+        "ください",
+        "下さい",
+
+        "ませんか",
+        "ましょう",
+
+        "たいです",
+        "たくないです"
+
+    ];
+
+
+    function startsWithAt(
+        value,
+        index,
+        candidate
+    ) {
+
+        return value.startsWith(
+            candidate,
+            index
+        );
+
+    }
+
+
+    function flush() {
+
+        if (
+            current.trim()
+        ) {
+
+            phrases.push(
+                current.trim()
+            );
+
+            current = "";
+
+        }
+
+    }
+
+
+    let i = 0;
+
+
+    while (
+        i < source.length
+    ) {
+
+        const char =
+            source[i];
+
+
+        current += char;
+
+
+        /* --------------------------------------------------------
+           PUNCTUATION
+           -------------------------------------------------------- */
+
+        if (
+            /[。！？]/.test(char)
+        ) {
+
+            flush();
+
+            i++;
+
+            continue;
+
+        }
+
+
+        /* --------------------------------------------------------
+           COMMA
+           
+           Japanese comma is useful as a clause boundary,
+           but not always a phrase boundary.
+           -------------------------------------------------------- */
+
+        if (
+            char === "、"
+        ) {
+
+            /*
+             * If the current phrase is reasonably long,
+             * treat it as a clause boundary.
+             */
+
+            if (
+                current.length >= 4
+            ) {
+
+                flush();
+
+            }
+
+            i++;
+
+            continue;
+
+        }
+
+
+        /* --------------------------------------------------------
+           CLAUSE ENDINGS
+           
+           Examples:
+           
+           必要なので
+           行きたいけど
+           食べたから
+           -------------------------------------------------------- */
+
+        let matchedClause =
+            null;
+
+
+        for (
+            const ending
+            of clauseEndings
+        ) {
+
+            if (
+                startsWithAt(
+                    source,
+                    i,
+                    ending
+                )
+            ) {
+
+                matchedClause =
+                    ending;
+
+                break;
+
+            }
+
+        }
+
+
+        if (
+            matchedClause
+        ) {
+
+            /*
+             * Consume the remaining characters
+             * of the expression.
+             */
+
+            for (
+                let j = 1;
+                j < matchedClause.length;
+                j++
+            ) {
+
+                i++;
+
+                current +=
+                    source[i];
+
+            }
+
+
+            /*
+             * Clause endings are useful boundaries.
+             */
+
+            if (
+                current.length >= 3
+            ) {
+
+                flush();
+
+            }
+
+
+            i++;
+
+            continue;
+
+        }
+
+
+        /* --------------------------------------------------------
+           PARTICLES
+           -------------------------------------------------------- */
+
+        /*
+         * Important Japanese guard:
+         * Do not treat the first character of a grammatical ending
+         * as a standalone particle.
+         *
+         * Without this, endings such as:
+         *   です
+         *   でした
+         *   でしょう
+         *
+         * can be split at で, leaving an isolated す. Google may then
+         * interpret that standalone す as 酢 ("vinegar").
+         */
+        const beginsSentenceEnding =
+            sentenceEndings.some(
+                ending =>
+                    source.startsWith(
+                        ending,
+                        i
+                    )
+            );
+
+        let matchedParticle =
+            null;
+
+
+        if (
+            !beginsSentenceEnding
+        ) {
+
+            for (
+                const particle
+                of particles
+            ) {
+
+                if (
+                    startsWithAt(
+                        source,
+                        i,
+                        particle
+                    )
+                ) {
+
+                    matchedParticle =
+                        particle;
+
+                    break;
+
+                }
+
+            }
+
+        }
+
+
+        if (
+            matchedParticle
+        ) {
+
+            /*
+             * Consume multi-character particle.
+             */
+
+            for (
+                let j = 1;
+                j < matchedParticle.length;
+                j++
+            ) {
+
+                i++;
+
+                current +=
+                    source[i];
+
+            }
+
+
+            /*
+             * Important:
+             *
+             * Do NOT split on は / が / を automatically.
+             *
+             * Japanese phrases such as:
+             *
+             * 私は学生です
+             * 牛乳が必要です
+             * 本を読みます
+             *
+             * need their predicate.
+             *
+             * Instead, split on location/action particles
+             * when the current chunk already contains enough
+             * material.
+             */
+
+            if (
+                matchedParticle === "に" ||
+                matchedParticle === "で" ||
+                matchedParticle === "へ" ||
+                matchedParticle === "まで" ||
+                matchedParticle === "から"
+            ) {
+
+                /*
+                 * Don't split tiny chunks.
+                 */
+
+                if (
+                    current.length >= 3
+                ) {
+
+                    flush();
+
+                }
+
+            }
+
+
+            i++;
+
+            continue;
+
+        }
+
+
+        /* --------------------------------------------------------
+           SENTENCE ENDINGS
+           -------------------------------------------------------- */
+
+        let matchedEnding =
+            null;
+
+
+        for (
+            const ending
+            of sentenceEndings
+        ) {
+
+            if (
+                source.startsWith(
+                    ending,
+                    i
+                )
+            ) {
+
+                matchedEnding =
+                    ending;
+
+                break;
+
+            }
+
+        }
+
+
+        if (
+            matchedEnding
+        ) {
+
+            /*
+             * Consume ending.
+             */
+
+            for (
+                let j = 1;
+                j < matchedEnding.length;
+                j++
+            ) {
+
+                i++;
+
+                current +=
+                    source[i];
+
+            }
+
+
+            /*
+             * Don't always flush here.
+             *
+             * We want:
+             *
+             * 行きたいです
+             *
+             * as one phrase.
+             *
+             * But if the sentence has already become
+             * very long, flush it.
+             */
+
+            if (
+                current.length >= 8
+            ) {
+
+                flush();
+
+            }
+
+
+            i++;
+
+            continue;
+
+        }
+
+
+        /*
+         * --------------------------------------------------------
+         * LONG-CHUNK SAFETY
+         * --------------------------------------------------------
+         *
+         * Prevent an entire long Japanese sentence from
+         * becoming one card.
+         */
+
+        if (
+            current.length >= 12
+        ) {
+
+            /*
+             * Prefer breaking at a kana/kanji transition.
+             */
+
+            const previous =
+                source[i - 1] || "";
+
+            const currentChar =
+                source[i];
+
+
+            if (
+                isKanji(previous) &&
+                isKana(currentChar)
+            ) {
+
+                flush();
+
+            }
+
+        }
+
+
+        i++;
+
+    }
+
+
+    flush();
+
+
+    /*
+     * ------------------------------------------------------------
+     * CLEAN UP
+     * ------------------------------------------------------------
+     */
+
+    let cleaned =
+        phrases
+            .map(
+                phrase =>
+                    phrase
+                        .replace(
+                            /^、+/,
+                            ""
+                        )
+                        .trim()
+            )
+            .filter(Boolean);
+
+    /*
+     * Safety cleanup:
+     * A bare す should never be a useful phrase card in this mapper.
+     * If one somehow survives parsing, attach it to the previous phrase
+     * instead of sending "す" alone to translation.
+     */
+    cleaned =
+        cleaned.reduce(
+            (result, phrase) => {
+
+                if (
+                    phrase === "す" &&
+                    result.length
+                ) {
+
+                    result[
+                        result.length - 1
+                    ] += phrase;
+
+                }
+
+                else {
+
+                    result.push(
+                        phrase
+                    );
+
+                }
+
+                return result;
+
+            },
+            []
+        );
+
+
+    /*
+     * If the parser produced only one enormous chunk,
+     * perform a safer fallback split around particles.
+     */
+
+    if (
+        cleaned.length === 1 &&
+        cleaned[0].length > 15
+    ) {
+
+        cleaned =
+            japaneseFallbackSplit(
+                cleaned[0]
+            );
+
+    }
+
+
+    return cleaned;
+
+}
+
+
+/* ================================================================
+   JAPANESE FALLBACK SPLITTER
+   ================================================================ */
+
+function japaneseFallbackSplit(text) {
+
+    if (
+        !text ||
+        text.length <= 1
+    ) {
+
+        return text
+            ? [text]
+            : [];
+
+    }
+
+
+    const result = [];
+
+    let current = "";
+
+
+    const boundaryParticles = [
+        "に",
+        "で",
+        "へ",
+        "と",
+        "から",
+        "まで"
+    ];
+
+
+    for (
+        let i = 0;
+        i < text.length;
+        i++
+    ) {
+
+        const char =
+            text[i];
+
+        current += char;
+
+
+        if (
+            boundaryParticles.includes(
+                char
+            ) &&
+            current.length >= 3
+        ) {
+
+            /*
+             * Don't split if the next character appears
+             * to be part of a common grammatical ending.
+             */
+
+            const next =
+                text[i + 1] || "";
+
+
+            if (
+                next &&
+                /[ぁ-ん]/.test(next)
+            ) {
+
+                continue;
+
+            }
+
+
+            result.push(
+                current
+            );
+
+            current = "";
+
+        }
+
+    }
+
+
+    if (
+        current
+    ) {
+
+        result.push(
+            current
+        );
+
+    }
+
+
+    return result.filter(
+        x => x.trim()
+    );
+
+}
+
+
+/* ================================================================
+   CONTEXTUAL PHRASE ALIGNMENT
+   ================================================================ */
+
+/*
+ * Phrase translations are much more useful when they are aligned against
+ * the two COMPLETE sentences rather than treated as mini-translations.
+ *
+ * We use the target-card back-translations only as semantic clues, then
+ * display the ACTUAL phrase from the opposite sentence whenever a confident
+ * one-to-one match can be found.
+ */
+
+function alignmentTokens(text) {
+    const stopWords =
+        new Set([
+            "a", "an", "the", "to", "of", "in", "on", "at",
+            "for", "with", "and", "or", "but"
+        ]);
+
+    return String(text || "")
+        .toLowerCase()
+        .normalize("NFKD")
+        .replace(/[^\p{L}\p{N}'’]+/gu, " ")
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean)
+        .map(token => ({
+            token,
+            weight:
+                stopWords.has(token)
+                    ? 0.35
+                    : 1
+        }));
+}
+
+
+function phraseSimilarity(a, b) {
+    const left =
+        alignmentTokens(a);
+
+    const right =
+        alignmentTokens(b);
+
+    if (
+        !left.length ||
+        !right.length
+    ) {
+        return 0;
+    }
+
+    const leftMap =
+        new Map();
+
+    left.forEach(
+        item =>
+            leftMap.set(
+                item.token,
+                Math.max(
+                    leftMap.get(item.token) || 0,
+                    item.weight
+                )
+            )
+    );
+
+    const rightMap =
+        new Map();
+
+    right.forEach(
+        item =>
+            rightMap.set(
+                item.token,
+                Math.max(
+                    rightMap.get(item.token) || 0,
+                    item.weight
+                )
+            )
+    );
+
+    const allTokens =
+        new Set([
+            ...leftMap.keys(),
+            ...rightMap.keys()
+        ]);
+
+    let intersection = 0;
+    let union = 0;
+
+    allTokens.forEach(
+        token => {
+            const l =
+                leftMap.get(token) || 0;
+
+            const r =
+                rightMap.get(token) || 0;
+
+            intersection +=
+                Math.min(l, r);
+
+            union +=
+                Math.max(l, r);
+        }
+    );
+
+    let score =
+        union
+            ? intersection / union
+            : 0;
+
+    /*
+     * Common paraphrase hints. These are intentionally small and generic;
+     * they do not replace the translator. They simply help alignment when
+     * a natural translation uses words such as "gladly" for "would like".
+     */
+    const aNorm =
+        String(a || "").toLowerCase();
+
+    const bNorm =
+        String(b || "").toLowerCase();
+
+    const preferenceA =
+        /\b(would like|would love|prefer|want)\b/.test(aNorm);
+
+    const preferenceB =
+        /\b(would like|would love|prefer|want|gladly|happy to|be happy to)\b/.test(bNorm);
+
+    if (
+        preferenceA &&
+        preferenceB
+    ) {
+        score += 0.18;
+    }
+
+    return Math.min(
+        1,
+        score
+    );
+}
+
+
+function applyContextualAlignment(
+    englishPhrases,
+    foreignPhrases,
+    foreignGlosses,
+    englishFallbacks
+) {
+    if (
+        !englishPhrases.length ||
+        !foreignPhrases.length
+    ) {
+        return;
+    }
+
+    const candidates = [];
+
+    foreignPhrases.forEach(
+        (foreignPhrase, foreignIndex) => {
+            const gloss =
+                foreignGlosses[foreignIndex]?.translation ||
+                "";
+
+            englishPhrases.forEach(
+                (englishPhrase, englishIndex) => {
+                    candidates.push({
+                        englishIndex,
+                        foreignIndex,
+                        score:
+                            phraseSimilarity(
+                                englishPhrase,
+                                gloss
+                            )
+                    });
+                }
+            );
+        }
+    );
+
+    candidates.sort(
+        (a, b) =>
+            b.score - a.score
+    );
+
+    const usedEnglish =
+        new Set();
+
+    const usedForeign =
+        new Set();
+
+    const matches = [];
+
+    candidates.forEach(
+        candidate => {
+            if (
+                candidate.score < 0.24 ||
+                usedEnglish.has(candidate.englishIndex) ||
+                usedForeign.has(candidate.foreignIndex)
+            ) {
+                return;
+            }
+
+            usedEnglish.add(
+                candidate.englishIndex
+            );
+
+            usedForeign.add(
+                candidate.foreignIndex
+            );
+
+            matches.push(
+                candidate
+            );
+        }
+    );
+
+    /*
+     * Start with the old card translations as safe fallbacks.
+     */
+    englishPhrases.forEach(
+        (_, index) => {
+            const element =
+                document.getElementById(
+                    `eng-p-${index}`
+                );
+
+            if (
+                element &&
+                englishFallbacks[index]?.translation
+            ) {
+                element.innerText =
+                    englishFallbacks[index].translation;
+            }
+        }
+    );
+
+    foreignPhrases.forEach(
+        (_, index) => {
+            const element =
+                document.getElementById(
+                    `for-p-${index}`
+                );
+
+            if (
+                element &&
+                foreignGlosses[index]?.translation
+            ) {
+                element.innerText =
+                    foreignGlosses[index].translation;
+            }
+        }
+    );
+
+    /*
+     * Confident matches are replaced with phrases taken directly from the
+     * complete source/target sentence pair.
+     */
+    matches.forEach(
+        match => {
+            const englishElement =
+                document.getElementById(
+                    `eng-p-${match.englishIndex}`
+                );
+
+            const foreignElement =
+                document.getElementById(
+                    `for-p-${match.foreignIndex}`
+                );
+
+            if (
+                englishElement
+            ) {
+                englishElement.innerText =
+                    foreignPhrases[
+                        match.foreignIndex
+                    ];
+            }
+
+            if (
+                foreignElement
+            ) {
+                foreignElement.innerText =
+                    englishPhrases[
+                        match.englishIndex
+                    ];
+            }
+        }
+    );
+}
+
+
+/* ================================================================
+   RENDER ENGLISH MAP
+   ================================================================ */
+
+function renderEnglishMap(
+    phrases
+) {
+
+    const grid =
+        document.getElementById(
+            "englishOutput"
+        );
+
+
+    if (
+        !phrases.length
+    ) {
+
+        grid.innerHTML = `
+            <div class="empty-message">
+                Enter an English sentence above.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    grid.innerHTML =
+        phrases
+            .map(
+                (phrase, index) => `
+
+                    <div
+                        class="word-card english-card"
+                    >
+
+                        <div
+                            class="phrase-text"
+                        >
+                            ${escapeHTML(
+                                phrase
+                            )}
+                        </div>
+
+                        <div
+                            class="phrase-translation"
+                            id="eng-p-${index}"
+                        >
+                            ...
+                        </div>
+
+                    </div>
+
+                `
+            )
+            .join("");
+
+}
+
+
+/* ================================================================
+   RENDER FOREIGN MAP
+   ================================================================ */
+
+function renderForeignMap(
+    phrases
+) {
+
+    const grid =
+        document.getElementById(
+            "foreignOutput"
+        );
+
+
+    const config =
+        LANG_CONFIG[currentLang];
+
+
+    if (
+        !phrases.length
+    ) {
+
+        grid.innerHTML = `
+            <div class="empty-message">
+                Translation will appear here.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    grid.innerHTML =
+        phrases
+            .map(
+                (phrase, index) => `
+
+                    <div
+                        class="word-card foreign-card ${config.theme}"
+                    >
+
+                        <div
+                            class="phrase-text"
+                            id="foreign-phrase-${index}"
+                        >
+                            ${escapeHTML(
+                                phrase
+                            )}
+                        </div>
+
+                        <div
+                            class="phrase-reading"
+                            id="for-r-${index}"
+                        ></div>
+
+                        <div
+                            class="phrase-romaji"
+                            id="for-rom-${index}"
+                        ></div>
+
+                        <div
+                            class="phrase-translation"
+                            id="for-p-${index}"
+                        ></div>
+
+                    </div>
+
+                `
+            )
+            .join("");
+
+}
+
+
+/* ================================================================
+   ROBUST COMPLETE-SENTENCE RETRANSLATION
+   ================================================================ */
+
+let lastSuccessfulRetranslation = "";
+
+async function robustRetranslate(text, sourceLang) {
+    if (!text || !text.trim()) {
+        return null;
+    }
+
+    /*
+     * Complete sentences may use every available provider.
+     * Phrase cards remain stricter because low-context MyMemory
+     * translations can be misleading.
+     */
+    const result =
+        await translateUnified(
+            text,
+            sourceLang,
+            "en",
+            {
+                allowBackup: true,
+                allowMyMemory: true
+            }
+        );
+
+    if (
+        result &&
+        result.translation
+    ) {
+        lastSuccessfulRetranslation =
+            result.translation;
+
+        return result;
+    }
+
+    /*
+     * One delayed retry for transient mobile/network failures.
+     */
+    await new Promise(
+        resolve =>
+            setTimeout(
+                resolve,
+                900
+            )
+    );
+
+    const retry =
+        await translateUnified(
+            text,
+            sourceLang,
+            "en",
+            {
+                allowBackup: true,
+                allowMyMemory: true
+            }
+        );
+
+    if (
+        retry &&
+        retry.translation
+    ) {
+        lastSuccessfulRetranslation =
+            retry.translation;
+
+        return retry;
+    }
+
+    return null;
+}
+
+
+function showRetranslation(result) {
+    const element =
+        document.getElementById(
+            "retranslationText"
+        );
+
+    if (!element) {
+        return;
+    }
+
+    if (
+        result &&
+        result.translation
+    ) {
+        element.innerText =
+            result.translation;
+
+        return;
+    }
+
+    /*
+     * Never erase a previously successful retranslation just
+     * because a later network request temporarily failed.
+     */
+    if (
+        lastSuccessfulRetranslation
+    ) {
+        element.innerText =
+            lastSuccessfulRetranslation;
+
+        return;
+    }
+
+    element.innerText =
+        "Re-translation temporarily unavailable";
+}
+
+
+/* ================================================================
+   PHRASE-CARD RETRY / RECOVERY
+   ================================================================ */
+
+async function translatePhraseCardStrict(
+    phrase,
+    sourceLang,
+    targetLang
+) {
+    let result =
+        await translateUnified(
+            phrase,
+            sourceLang,
+            targetLang,
+            {
+                allowBackup: false,
+                allowMyMemory: false
+            }
+        );
+
+    if (
+        result &&
+        result.translation
+    ) {
+        return result;
+    }
+
+    result =
+        await translateUnified(
+            phrase,
+            sourceLang,
+            targetLang,
+            {
+                allowBackup: true,
+                allowMyMemory: false
+            }
+        );
+
+    return result;
+}
+
+
+async function retryMissingPhraseCards(
+    phrases,
+    sourceLang,
+    targetLang,
+    generation,
+    delays = [2000, 5000]
+) {
+    for (
+        const delay of delays
+    ) {
+        await new Promise(
+            resolve =>
+                setTimeout(
+                    resolve,
+                    delay
+                )
+        );
+
+        if (
+            generation !==
+            updateGeneration
+        ) {
+            return;
+        }
+
+        const missingIndexes =
+            phrases
+                .map(
+                    (_, index) => index
+                )
+                .filter(
+                    index => {
+                        const element =
+                            document.getElementById(
+                                `for-p-${index}`
+                            );
+
+                        return (
+                            element &&
+                            (
+                                !element.innerText.trim() ||
+                                element.innerText.trim() === "—"
+                            )
+                        );
+                    }
+                );
+
+        if (
+            !missingIndexes.length
+        ) {
+            return;
+        }
+
+        const retryResults =
+            await mapWithConcurrency(
+                missingIndexes,
+                async index => ({
+                    index,
+                    result:
+                        await translatePhraseCardStrict(
+                            phrases[index],
+                            sourceLang,
+                            targetLang
+                        )
+                }),
+                isMobileMode()
+                    ? 1
+                    : 2
+            );
+
+        if (
+            generation !==
+            updateGeneration
+        ) {
+            return;
+        }
+
+        retryResults.forEach(
+            item => {
+                if (
+                    !item ||
+                    !item.result ||
+                    !item.result.translation
+                ) {
+                    return;
+                }
+
+                const element =
+                    document.getElementById(
+                        `for-p-${item.index}`
+                    );
+
+                if (
+                    element
+                ) {
+                    element.innerText =
+                        item.result.translation;
+                }
+            }
+        );
+    }
+}
+
+
+/* ================================================================
+   UPDATE PHRASE MAPS
+   ================================================================ */
+
+async function updatePhraseMaps() {
+
+    const generation =
+        ++updateGeneration;
+
+
+    const foreignText =
+        document
+            .getElementById(
+                "foreignInput"
+            )
+            .value
+            .trim();
+
+
+    /*
+     * The target sentence is now the single source of truth
+     * for phrase-card construction.
+     *
+     * English is deliberately NOT parsed. The English sentence is
+     * already visible above; the learning goal here is to expose
+     * meaningful structure in the translated language.
+     */
+    const foreignPhrases =
+        parseTargetPhrases(
+            foreignText,
+            currentLang
+        );
+
+
+    renderForeignMap(
+        foreignPhrases
+    );
+
+
+    if (
+        !foreignText
+    ) {
+        lastSuccessfulRetranslation = "";
+
+        document.getElementById(
+            "retranslationText"
+        ).innerHTML =
+            "<em>Re-translation will appear here...</em>";
+
+        return;
+    }
+
+
+    /*
+     * Translate each TARGET-LANGUAGE phrase back into English.
+     *
+     * Google is primary.
+     * Lingva may be used as the card backup.
+     * MyMemory remains disabled for cards because isolated fragments
+     * can produce unrelated or misleading translations.
+     */
+    const phraseTranslations =
+        await mapWithConcurrency(
+            foreignPhrases,
+            phrase =>
+                translatePhraseCardStrict(
+                    phrase,
+                    currentLang,
+                    "en"
+                )
+        );
+
+
+    if (
+        generation !==
+        updateGeneration
+    ) {
+        return;
+    }
+
+
+    foreignPhrases.forEach(
+        (phrase, index) => {
+
+            const result =
+                phraseTranslations[index] ||
+                {};
+
+
+            const translationElement =
+                document.getElementById(
+                    `for-p-${index}`
+                );
+
+
+            if (
+                translationElement
+            ) {
+                translationElement.innerText =
+                    result.translation ||
+                    "—";
+            }
+
+        }
+    );
+
+
+    const hasMissingCards =
+        foreignPhrases.some(
+            (_, index) => {
+                const element =
+                    document.getElementById(
+                        `for-p-${index}`
+                    );
+
+                return (
+                    element &&
+                    (
+                        !element.innerText.trim() ||
+                        element.innerText.trim() === "—"
+                    )
+                );
+            }
+        );
+
+    if (
+        hasMissingCards
+    ) {
+        retryMissingPhraseCards(
+            foreignPhrases,
+            currentLang,
+            "en",
+            generation,
+            [2000]
+        );
+    }
+
+
+    /*
+     * Japanese reading/romaji is independent of translation.
+     * Populate it after cards are rendered.
+     */
+    if (
+        currentLang === "ja"
+    ) {
+
+        await mapWithConcurrency(
+            foreignPhrases,
+            async (phrase, index) => {
+
+                const reading =
+                    await getJapaneseReading(
+                        phrase
+                    );
+
+
+                if (
+                    generation !==
+                    updateGeneration
+                ) {
+                    return null;
+                }
+
+
+                const readingElement =
+                    document.getElementById(
+                        `for-r-${index}`
+                    );
+
+
+                const romajiElement =
+                    document.getElementById(
+                        `for-rom-${index}`
+                    );
+
+
+                if (
+                    readingElement
+                ) {
+                    readingElement.innerText =
+                        reading?.hiragana ||
+                        "";
+                }
+
+
+                if (
+                    romajiElement
+                ) {
+                    romajiElement.innerText =
+                        reading?.romaji ||
+                        "";
+                }
+
+
+                return reading;
+            },
+            isMobileMode()
+                ? 1
+                : 2
+        );
+
+    }
+
+
+    if (
+        generation !==
+        updateGeneration
+    ) {
+        return;
+    }
+
+
+    /*
+     * Complete target sentence -> English quality check.
+     * This is deliberately separate from the card translations.
+     */
+    const retrans =
+        await robustRetranslate(
+            foreignText,
+            currentLang
+        );
+
+
+    if (
+        generation !==
+        updateGeneration
+    ) {
+        return;
+    }
+
+
+    showRetranslation(
+        retrans
+    );
+
+
+    if (
+        retrans &&
+        isEmergencyProvider(
+            retrans.provider
+        )
+    ) {
+        setTranslationProviderStatus(
+            "mymemory",
+            "⚠ Emergency backup used for the sentence — retrying phrase cards with Google/Lingva…"
+        );
+
+        retryMissingPhraseCards(
+            foreignPhrases,
+            currentLang,
+            "en",
+            generation,
+            [2000, 5000]
+        );
+    }
+
+}
+
+
+/* ================================================================
+   INPUT HANDLING
+   ================================================================ */
+
+function handleInput(lang) {
+
+    clearTimeout(
+        translationTimeout
+    );
+
+
+    if (
+        fullTranslationController
+    ) {
+
+        fullTranslationController.abort();
+
+        fullTranslationController =
+            null;
+
+    }
+
+
+    const delay =
+        isMobileMode()
+            ? 900
+            : 500;
+
+
+    translationTimeout =
+        setTimeout(
+            async () => {
+
+                const auto =
+                    document.getElementById(
+                        "autoTranslateToggle"
+                    ).checked;
+
+
+                const englishInput =
+                    document.getElementById(
+                        "englishInput"
+                    );
+
+
+                const foreignInput =
+                    document.getElementById(
+                        "foreignInput"
+                    );
+
+
+                fullTranslationController =
+                    new AbortController();
+
+
+                const signal =
+                    fullTranslationController.signal;
+
+
+                try {
+
+                    if (
+                        lang === "en" &&
+                        auto &&
+                        englishInput.value.trim()
+                    ) {
+
+                        setStatus(
+                            "Translating..."
+                        );
+
+
+                        const result =
+                            await translateUnified(
+                                englishInput.value.trim(),
+                                "en",
+                                currentLang,
+                                {
+                                    allowBackup: true,
+                                    allowMyMemory: true,
+                                    signal
+                                }
+                            );
+
+
+                        if (
+                            result &&
+                            !signal.aborted
+                        ) {
+
+                            foreignInput.value =
+                                result.translation;
+
+
+                            if (
+                                result.provider === "lingva"
+                            ) {
+
+                                setTranslationProviderStatus(
+                                    "lingva"
+                                );
+
+                            }
+
+                            else if (
+                                result.provider === "mymemory"
+                            ) {
+
+                                setTranslationProviderStatus(
+                                    "mymemory"
+                                );
+
+                            }
+
+                            else {
+
+                                setTranslationProviderStatus(
+                                    "google"
+                                );
+
+                            }
+
+                        }
+
+                        else if (
+                            !signal.aborted
+                        ) {
+
+                            setTranslationProviderStatus(
+                                "unavailable"
+                            );
+
+                        }
+
+                    }
+
+
+                    else if (
+                        lang === "foreign" &&
+                        auto &&
+                        foreignInput.value.trim()
+                    ) {
+
+                        setStatus(
+                            "Translating..."
+                        );
+
+
+                        const result =
+                            await translateUnified(
+                                foreignInput.value.trim(),
+                                currentLang,
+                                "en",
+                                {
+                                    allowBackup: true,
+                                    allowMyMemory: true,
+                                    signal
+                                }
+                            );
+
+
+                        if (
+                            result &&
+                            !signal.aborted
+                        ) {
+
+                            englishInput.value =
+                                result.translation;
+
+
+                            if (
+                                result.provider === "lingva"
+                            ) {
+
+                                setTranslationProviderStatus(
+                                    "lingva"
+                                );
+
+                            }
+
+                            else if (
+                                result.provider === "mymemory"
+                            ) {
+
+                                setTranslationProviderStatus(
+                                    "mymemory"
+                                );
+
+                            }
+
+                            else {
+
+                                setTranslationProviderStatus(
+                                    "google"
+                                );
+
+                            }
+
+                        }
+
+                        else if (
+                            !signal.aborted
+                        ) {
+
+                            setTranslationProviderStatus(
+                                "unavailable"
+                            );
+
+                        }
+
+                    }
+
+
+                    if (
+                        !signal.aborted
+                    ) {
+
+                        await updatePhraseMaps();
+
+                    }
+
+                }
+
+                catch (
+                    error
+                ) {
+
+                    if (
+                        !error ||
+                        error.name !== "AbortError"
+                    ) {
+
+                        console.error(
+                            "Input translation error:",
+                            error
+                        );
+
+                    }
+
+                }
+
+                finally {
+
+                    if (
+                        fullTranslationController &&
+                        fullTranslationController.signal === signal
+                    ) {
+
+                        fullTranslationController =
+                            null;
+
+                    }
+
+                }
+
+            },
+            delay
+        );
+
+}
+
+
+/* ================================================================
+   AI LANGUAGE TUTOR — CLOUDFLARE WORKERS AI
+   ================================================================ */
+
+function getCurrentPhraseCards() {
+    return Array.from(
+        document.querySelectorAll("#foreignOutput .word-card")
+    ).map(card => ({
+        phrase: card.querySelector(".phrase-text")?.innerText || "",
+        gloss: card.querySelector(".phrase-translation")?.innerText || "",
+        reading: card.querySelector(".phrase-reading")?.innerText || "",
+        romaji: card.querySelector(".phrase-romaji")?.innerText || ""
+    }));
+}
+
+async function askTutorQuick(question) {
+    const field = document.getElementById("aiQuestion");
+    field.value = question;
+    await askTutor();
+}
+
+async function askTutor() {
+    const questionField = document.getElementById("aiQuestion");
+    const responseBox = document.getElementById("aiResponse");
+    const question = questionField.value.trim();
+
+    if (!question) {
+        responseBox.innerText = "Type a question first.";
+        return;
+    }
+
+    const english = document.getElementById("englishInput").value.trim();
+    const foreign = document.getElementById("foreignInput").value.trim();
+    const config = LANG_CONFIG[currentLang];
+
+    responseBox.innerText = "Thinking…";
+
+    try {
+        const response = await fetch(
+            "/api/chat",
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    question,
+                    languageCode: currentLang,
+                    languageName: config?.name || currentLang,
+                    englishSentence: english,
+                    translatedSentence: foreign,
+                    phraseCards: getCurrentPhraseCards()
+                }),
+                cache: "no-store"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(`AI backend HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        responseBox.innerText =
+            data.answer ||
+            "No explanation was returned.";
+    }
+    catch (error) {
+        console.warn("AI tutor failed:", error);
+        responseBox.innerText =
+            "AI tutor is temporarily unavailable.";
+    }
+}
+
+
+/* ================================================================
+   LANGUAGE SWITCHING
+   ================================================================ */
+
+function setLanguage(lang) {
+    const languageMapTitle =
+        document.getElementById(
+            "foreignRowTitle"
+        );
+
+    if (languageMapTitle) {
+        languageMapTitle.textContent =
+            "Language Phrase Map";
+    }
+
+
+    const staticTitle =
+        document.getElementById(
+            "mainTitle"
+        );
+
+    if (staticTitle) {
+        staticTitle.textContent =
+            "🇺🇸 Ward's Phrase Mapper";
+    }
+
+
+    if (
+        !LANG_CONFIG[lang]
+    ) {
+
+        return;
+
+    }
+
+
+    currentLang =
+        lang;
+
+
+    const config =
+        LANG_CONFIG[lang];
+
+
+    /*
+     * Titles.
+     */
+
+    document.getElementById(
+        "mainTitle"
+    ).innerText =
+        "🇺🇸 Ward's Phrase Mapper";
+
+    const subtitle =
+        document.getElementById(
+            "subtitle"
+        );
+
+    if (subtitle) {
+        subtitle.innerText =
+            config.subtitle;
+    }
+
+    document.title =
+        `${config.name} — Ward's Phrase Mapper`;
+
+
+    document.getElementById(
+        "foreignLabel"
+    ).innerText =
+        `${config.name} Sentence`;
+
+
+    document.getElementById(
+        "foreignRowTitle"
+    ).innerText =
+        `${config.name} Phrase Map`;
+
+
+    /*
+     * Button states.
+     */
+
+    Object.keys(
+        LANG_CONFIG
+    ).forEach(
+        code => {
+
+            const button =
+                document.getElementById(
+                    "btn" +
+                    code.toUpperCase()
+                );
+
+
+            if (!button) {
+                return;
+            }
+
+
+            button.className =
+                "lang-btn";
+
+
+            if (
+                code === lang
+            ) {
+
+                button.classList.add(
+                    "active",
+                    config.theme
+                );
+
+            }
+
+        }
+    );
+
+
+    /*
+     * Re-run translation if English exists.
+     */
+
+    const english =
+        document.getElementById(
+            "englishInput"
+        ).value.trim();
+
+
+    if (
+        english
+    ) {
+
+        handleInput("en");
+
+    }
+
+    else {
+
+        updatePhraseMaps();
+
+    }
+
+}
+
+
+/* ================================================================
+   STATUS
+   ================================================================ */
+
+function setStatus(message) {
+
+    const element =
+        document.getElementById(
+            "statusText"
+        );
+
+
+    if (element) {
+
+        element.innerText =
+            message;
+
+    }
+
+}
+
+
+/* ================================================================
+   INITIALIZE
+   ================================================================ */
+
+setLanguage("de");
+
+</script>
+
+</body>
+</html>
