@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#f8fafc">
+
     <title>EN ➜ Target Phrase Mapper</title>
 
-    <!-- Client-side Japanese Transliteration Engine -->
+    <!-- Japanese transliteration -->
     <script src="https://cdn.jsdelivr.net/npm/wanakana@5.3.1/wanakana.min.js"></script>
 
     <style>
@@ -15,29 +16,50 @@
             --card-bg: #ffffff;
             --text-color: #1e293b;
             --border-color: #e2e8f0;
+
             --primary-blue: #0284c7;
             --blue-light: #f0f9ff;
+
             --primary-orange: #c2410c;
             --orange-light: #fff7ed;
+
             --primary-sakura: #db2777;
             --sakura-light: #fdf2f8;
+
             --primary-sangria: #dc2626;
             --sangria-light: #fef2f2;
+
             --primary-lavender: #6366f1;
             --lavender-light: #e0e7ff;
+
             --primary-emerald: #059669;
             --emerald-light: #ecfdf5;
+
             --primary-crimson: #be123c;
             --crimson-light: #fff1f2;
+
             --primary-gold: #ea580c;
             --gold-light: #fff7ed;
         }
 
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Helvetica,
+                Arial,
+                sans-serif;
+
             background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.5;
+
             padding: 2rem 1rem;
             margin: 0;
         }
@@ -45,19 +67,27 @@
         .container {
             max-width: 1000px;
             margin: 0 auto;
+
             background: var(--card-bg);
             padding: 2rem;
+
             border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+
+            box-shadow:
+                0 4px 6px -1px rgb(0 0 0 / 0.1);
+
             border: 1px solid var(--border-color);
         }
 
         h1 {
             margin-top: 0;
+
             font-size: 1.6rem;
             color: #0f172a;
+
             border-bottom: 2px solid var(--border-color);
             padding-bottom: 0.75rem;
+
             text-align: center;
         }
 
@@ -65,11 +95,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+
             flex-wrap: wrap;
             gap: 1rem;
+
             margin-bottom: 2rem;
+
             background-color: #f1f5f9;
             padding: 0.75rem 1.25rem;
+
             border-radius: 8px;
             border: 1px solid var(--border-color);
         }
@@ -78,472 +112,2421 @@
             display: flex;
             align-items: center;
             flex-wrap: wrap;
+
             gap: 0.35rem;
+
             font-weight: 600;
         }
 
         .lang-btn {
             background-color: #ffffff;
+
             border: 1px solid var(--border-color);
+
             padding: 0.35rem 0.6rem;
+
             border-radius: 16px;
+
             cursor: pointer;
+
             font-weight: 700;
             font-size: 0.85rem;
+
             display: inline-flex;
             align-items: center;
+
             gap: 0.35rem;
+
             white-space: nowrap;
+        }
+
+        .lang-btn:hover {
+            filter: brightness(0.97);
         }
 
         .flag-icon {
             width: 18px;
             height: 13px;
+
             object-fit: cover;
+
             border-radius: 2px;
-            box-shadow: 0 0 1px rgba(0,0,0,0.3);
+
+            box-shadow:
+                0 0 1px rgba(0,0,0,0.3);
         }
 
-        .lang-btn.active.orange-mode { background-color: var(--primary-orange); color: white; }
-        .lang-btn.active.sakura-mode { background-color: var(--primary-sakura); color: white; }
-        .lang-btn.active.sangria-mode { background-color: var(--primary-sangria); color: white; }
-        .lang-btn.active.lavender-mode { background-color: var(--primary-lavender); color: white; }
-        .lang-btn.active.emerald-mode { background-color: var(--primary-emerald); color: white; }
-        .lang-btn.active.crimson-mode { background-color: var(--primary-crimson); color: white; }
-        .lang-btn.active.gold-mode { background-color: var(--primary-gold); color: white; }
+        .lang-btn.active.orange-mode {
+            background-color: var(--primary-orange);
+            color: white;
+        }
+
+        .lang-btn.active.sakura-mode {
+            background-color: var(--primary-sakura);
+            color: white;
+        }
+
+        .lang-btn.active.sangria-mode {
+            background-color: var(--primary-sangria);
+            color: white;
+        }
+
+        .lang-btn.active.lavender-mode {
+            background-color: var(--primary-lavender);
+            color: white;
+        }
+
+        .lang-btn.active.emerald-mode {
+            background-color: var(--primary-emerald);
+            color: white;
+        }
+
+        .lang-btn.active.crimson-mode {
+            background-color: var(--primary-crimson);
+            color: white;
+        }
+
+        .lang-btn.active.gold-mode {
+            background-color: var(--primary-gold);
+            color: white;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .options label {
+            margin: 0 !important;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-transform: none;
+        }
 
         .grid-inputs {
             display: grid;
+
             grid-template-columns: 1fr 1fr;
+
             gap: 1.5rem;
+
             margin-bottom: 2rem;
         }
 
         @media (max-width: 768px) {
-            body { padding: 0.4rem; }
-            .container { padding: 0.75rem; }
-            .grid-inputs { grid-template-columns: 1fr; }
-            textarea { font-size: 16px; }
-            .lang-selector { gap: 0.25rem; }
-            .lang-btn { padding: 0.3rem 0.5rem; font-size: 0.8rem; }
+            body {
+                padding: 0.4rem;
+            }
+
+            .container {
+                padding: 0.75rem;
+            }
+
+            .grid-inputs {
+                grid-template-columns: 1fr;
+            }
+
+            textarea {
+                font-size: 16px;
+            }
+
+            .lang-selector {
+                gap: 0.25rem;
+            }
+
+            .lang-btn {
+                padding: 0.3rem 0.5rem;
+                font-size: 0.8rem;
+            }
+
+            .control-panel {
+                align-items: flex-start;
+            }
         }
 
         .input-group {
             display: flex;
             flex-direction: column;
+
             gap: 0.5rem;
         }
 
         label {
             font-weight: 600;
             font-size: 0.9rem;
+
             text-transform: uppercase;
+
             display: flex;
             justify-content: space-between;
         }
 
-        .input-wrapper { position: relative; width: 100%; }
+        .input-wrapper {
+            position: relative;
+            width: 100%;
+        }
 
         textarea {
             width: 100%;
+
             padding: 0.75rem;
             padding-right: 2.5rem;
+
             border: 1px solid var(--border-color);
             border-radius: 6px;
+
             font-size: 1rem;
+
             box-sizing: border-box;
+
             font-family: inherit;
+
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+
+            border-color: var(--primary-blue);
+
+            box-shadow:
+                0 0 0 2px rgba(2,132,199,0.1);
         }
 
         .play-btn {
-            position: absolute; right: 0.5rem; top: 0.5rem;
-            background: none; border: none; cursor: pointer; font-size: 1.2rem;
+            position: absolute;
+
+            right: 0.5rem;
+            top: 0.5rem;
+
+            background: none;
+            border: none;
+
+            cursor: pointer;
+
+            font-size: 1.2rem;
         }
 
         .retranslation-box {
             margin-top: 0.4rem;
+
             padding: 0.6rem;
+
             background: #f8fafc;
+
             border: 1px dashed var(--border-color);
+
             border-radius: 6px;
+
             font-size: 0.88rem;
+
             color: #334155;
         }
 
         .retranslation-title {
             font-weight: bold;
+
             font-size: 0.72rem;
+
             text-transform: uppercase;
+
             color: #64748b;
+
             margin-bottom: 0.2rem;
         }
 
-        .output-section { display: flex; flex-direction: column; gap: 1.5rem; }
-        .row-container { border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem; background-color: #fafafa; }
-        .row-title { font-size: 0.8rem; font-weight: bold; text-transform: uppercase; margin-bottom: 0.75rem; color: #64748b; }
-        .word-grid { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-        .word-card {
-            position: relative; display: flex; flex-direction: column; align-items: center;
-            padding: 0.8rem 1.2rem 0.6rem; border-radius: 8px; border: 1.5px solid; min-width: 110px; text-align: center;
-        }
-        .word-card.english-card { background-color: var(--blue-light); border-color: var(--primary-blue); color: #0369a1; }
-        .word-card.foreign-card.orange-mode { background-color: var(--orange-light); border-color: var(--primary-orange); }
-        .word-card.foreign-card.sakura-mode { background-color: var(--sakura-light); border-color: var(--primary-sakura); }
-        .word-card.foreign-card.sangria-mode { background-color: var(--sangria-light); border-color: var(--primary-sangria); }
-        .word-card.foreign-card.lavender-mode { background-color: var(--lavender-light); border-color: var(--primary-lavender); }
-        .word-card.foreign-card.emerald-mode { background-color: var(--emerald-light); border-color: var(--primary-emerald); }
-        .word-card.foreign-card.crimson-mode { background-color: var(--crimson-light); border-color: var(--primary-crimson); }
-        .word-card.foreign-card.gold-mode { background-color: var(--gold-light); border-color: var(--primary-gold); }
+        .output-section {
+            display: flex;
+            flex-direction: column;
 
-        .phrase-text { font-size: 1.05rem; font-weight: 600; }
-        .phrase-reading { font-size: 0.8rem; font-weight: 600; color: #be185d; margin-top: 0.15rem; }
-        .phrase-romaji { font-size: 0.75rem; font-style: italic; color: #475569; }
-        .phrase-translation { font-size: 0.82rem; font-style: italic; opacity: 0.9; margin-top: 0.25rem; }
+            gap: 1.5rem;
+        }
+
+        .row-container {
+            border: 1px solid var(--border-color);
+
+            border-radius: 8px;
+
+            padding: 1.25rem;
+
+            background-color: #fafafa;
+        }
+
+        .row-title {
+            font-size: 0.8rem;
+
+            font-weight: bold;
+
+            text-transform: uppercase;
+
+            margin-bottom: 0.75rem;
+
+            color: #64748b;
+        }
+
+        .word-grid {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 0.75rem;
+        }
+
+        .word-card {
+            position: relative;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding:
+                0.8rem
+                1.2rem
+                0.6rem;
+
+            border-radius: 8px;
+
+            border: 1.5px solid;
+
+            min-width: 110px;
+
+            max-width: 100%;
+
+            text-align: center;
+        }
+
+        .word-card.english-card {
+            background-color: var(--blue-light);
+
+            border-color: var(--primary-blue);
+
+            color: #0369a1;
+        }
+
+        .word-card.foreign-card.orange-mode {
+            background-color: var(--orange-light);
+            border-color: var(--primary-orange);
+        }
+
+        .word-card.foreign-card.sakura-mode {
+            background-color: var(--sakura-light);
+            border-color: var(--primary-sakura);
+        }
+
+        .word-card.foreign-card.sangria-mode {
+            background-color: var(--sangria-light);
+            border-color: var(--primary-sangria);
+        }
+
+        .word-card.foreign-card.lavender-mode {
+            background-color: var(--lavender-light);
+            border-color: var(--primary-lavender);
+        }
+
+        .word-card.foreign-card.emerald-mode {
+            background-color: var(--emerald-light);
+            border-color: var(--primary-emerald);
+        }
+
+        .word-card.foreign-card.crimson-mode {
+            background-color: var(--crimson-light);
+            border-color: var(--primary-crimson);
+        }
+
+        .word-card.foreign-card.gold-mode {
+            background-color: var(--gold-light);
+            border-color: var(--primary-gold);
+        }
+
+        .phrase-text {
+            font-size: 1.05rem;
+
+            font-weight: 600;
+
+            overflow-wrap: anywhere;
+        }
+
+        .phrase-reading {
+            font-size: 0.8rem;
+
+            font-weight: 600;
+
+            color: #be185d;
+
+            margin-top: 0.15rem;
+        }
+
+        .phrase-romaji {
+            font-size: 0.75rem;
+
+            font-style: italic;
+
+            color: #475569;
+        }
+
+        .phrase-translation {
+            font-size: 0.82rem;
+
+            font-style: italic;
+
+            opacity: 0.9;
+
+            margin-top: 0.25rem;
+
+            overflow-wrap: anywhere;
+        }
+
+        .empty-message {
+            color: #94a3b8;
+
+            font-style: italic;
+
+            font-size: 0.9rem;
+        }
+
+        .status {
+            margin-top: 1rem;
+
+            font-size: 0.75rem;
+
+            color: #64748b;
+
+            text-align: center;
+        }
     </style>
 </head>
+
 <body>
 
 <div class="container">
-    <h1 id="mainTitle">EN ➜ DE: Ward's Phrasen-Mapper</h1>
-    
+
+    <h1 id="mainTitle">
+        EN ➜ DE: Ward's Phrasen-Mapper
+    </h1>
+
     <div class="control-panel">
+
         <div class="lang-selector">
+
             <span>Target:</span>
-            <button class="lang-btn active orange-mode" id="btnDE" onclick="setLanguage('de')">
-                <img src="https://flagcdn.com/de.svg" class="flag-icon" alt="DE"> DE
+
+            <button
+                class="lang-btn active orange-mode"
+                id="btnDE"
+                onclick="setLanguage('de')"
+            >
+                <img
+                    src="https://flagcdn.com/de.svg"
+                    class="flag-icon"
+                    alt="DE"
+                >
+                DE
             </button>
-            <button class="lang-btn" id="btnJA" onclick="setLanguage('ja')">
-                <img src="https://flagcdn.com/jp.svg" class="flag-icon" alt="JA"> JA
+
+            <button
+                class="lang-btn"
+                id="btnJA"
+                onclick="setLanguage('ja')"
+            >
+                <img
+                    src="https://flagcdn.com/jp.svg"
+                    class="flag-icon"
+                    alt="JA"
+                >
+                JA
             </button>
-            <button class="lang-btn" id="btnES" onclick="setLanguage('es')">
-                <img src="https://flagcdn.com/es.svg" class="flag-icon" alt="ES"> ES
+
+            <button
+                class="lang-btn"
+                id="btnES"
+                onclick="setLanguage('es')"
+            >
+                <img
+                    src="https://flagcdn.com/es.svg"
+                    class="flag-icon"
+                    alt="ES"
+                >
+                ES
             </button>
-            <button class="lang-btn" id="btnFR" onclick="setLanguage('fr')">
-                <img src="https://flagcdn.com/fr.svg" class="flag-icon" alt="FR"> FR
+
+            <button
+                class="lang-btn"
+                id="btnFR"
+                onclick="setLanguage('fr')"
+            >
+                <img
+                    src="https://flagcdn.com/fr.svg"
+                    class="flag-icon"
+                    alt="FR"
+                >
+                FR
             </button>
-            <button class="lang-btn" id="btnIT" onclick="setLanguage('it')">
-                <img src="https://flagcdn.com/it.svg" class="flag-icon" alt="IT"> IT
+
+            <button
+                class="lang-btn"
+                id="btnIT"
+                onclick="setLanguage('it')"
+            >
+                <img
+                    src="https://flagcdn.com/it.svg"
+                    class="flag-icon"
+                    alt="IT"
+                >
+                IT
             </button>
-            <button class="lang-btn" id="btnRU" onclick="setLanguage('ru')">
-                <img src="https://flagcdn.com/ru.svg" class="flag-icon" alt="RU"> RU
+
+            <button
+                class="lang-btn"
+                id="btnRU"
+                onclick="setLanguage('ru')"
+            >
+                <img
+                    src="https://flagcdn.com/ru.svg"
+                    class="flag-icon"
+                    alt="RU"
+                >
+                RU
             </button>
-            <button class="lang-btn" id="btnZH" onclick="setLanguage('zh')">
-                <img src="https://flagcdn.com/cn.svg" class="flag-icon" alt="ZH"> ZH
+
+            <button
+                class="lang-btn"
+                id="btnZH"
+                onclick="setLanguage('zh')"
+            >
+                <img
+                    src="https://flagcdn.com/cn.svg"
+                    class="flag-icon"
+                    alt="ZH"
+                >
+                ZH
             </button>
+
         </div>
-        <div>
-            <label><input type="checkbox" id="autoTranslateToggle" checked> Auto-Translate</label>
-            <label style="margin-left: 0.5rem; font-size: 0.8rem; font-weight: normal;">
-                <input type="checkbox" id="allowBackupToggle" checked> Use backup if Google fails
+
+        <div class="options">
+
+            <label>
+                <span>
+                    <input
+                        type="checkbox"
+                        id="autoTranslateToggle"
+                        checked
+                    >
+                    Auto-Translate
+                </span>
             </label>
+
+            <label>
+                <span>
+                    <input
+                        type="checkbox"
+                        id="allowBackupToggle"
+                        checked
+                    >
+                    Use backup if Google fails
+                </span>
+            </label>
+
         </div>
+
     </div>
+
 
     <div class="grid-inputs">
-        <div class="input-group">
-            <label style="color:var(--primary-blue)">English Sentence</label>
-            <div class="input-wrapper">
-                <textarea id="englishInput" rows="2" placeholder="Type English sentence..." oninput="handleInput('en')"></textarea>
-                <button class="play-btn" onclick="speakText('englishInput', 'en')">🔊</button>
-            </div>
-        </div>
+
+        <!-- ENGLISH -->
 
         <div class="input-group">
-            <label id="foreignLabel">German Sentence</label>
+
+            <label style="color:var(--primary-blue)">
+                English Sentence
+            </label>
+
             <div class="input-wrapper">
-                <textarea id="foreignInput" rows="2" placeholder="Translation..." oninput="handleInput('foreign')"></textarea>
-                <button class="play-btn" onclick="speakText('foreignInput', currentLang)">🔊</button>
+
+                <textarea
+                    id="englishInput"
+                    rows="3"
+                    placeholder="Type English sentence..."
+                    oninput="handleInput('en')"
+                ></textarea>
+
+                <button
+                    class="play-btn"
+                    onclick="speakText('englishInput', 'en-US')"
+                    title="Listen"
+                >
+                    🔊
+                </button>
+
             </div>
-            <div class="retranslation-box">
-                <div class="retranslation-title">Re-translation (English)</div>
-                <div id="retranslationText"><em>Re-translation will appear here...</em></div>
-            </div>
+
         </div>
+
+
+        <!-- FOREIGN -->
+
+        <div class="input-group">
+
+            <label
+                id="foreignLabel"
+                style="color:var(--primary-orange)"
+            >
+                German Sentence
+            </label>
+
+            <div class="input-wrapper">
+
+                <textarea
+                    id="foreignInput"
+                    rows="3"
+                    placeholder="Translation..."
+                    oninput="handleInput('foreign')"
+                ></textarea>
+
+                <button
+                    class="play-btn"
+                    onclick="speakText('foreignInput', currentLang)"
+                    title="Listen"
+                >
+                    🔊
+                </button>
+
+            </div>
+
+            <div class="retranslation-box">
+
+                <div class="retranslation-title">
+                    Re-translation (English)
+                </div>
+
+                <div id="retranslationText">
+                    <em>
+                        Re-translation will appear here...
+                    </em>
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
+
+
+    <!-- OUTPUT -->
 
     <div class="output-section">
-        <div class="row-container">
-            <div class="row-title">English Phrase Map</div>
-            <div id="englishOutput" class="word-grid"></div>
-        </div>
 
         <div class="row-container">
-            <div class="row-title" id="foreignRowTitle">German Phrase Map</div>
-            <div id="foreignOutput" class="word-grid"></div>
+
+            <div class="row-title">
+                English Phrase Map
+            </div>
+
+            <div
+                id="englishOutput"
+                class="word-grid"
+            >
+                <div class="empty-message">
+                    Enter an English sentence above.
+                </div>
+            </div>
+
         </div>
+
+
+        <div class="row-container">
+
+            <div
+                class="row-title"
+                id="foreignRowTitle"
+            >
+                German Phrase Map
+            </div>
+
+            <div
+                id="foreignOutput"
+                class="word-grid"
+            >
+                <div class="empty-message">
+                    Translation will appear here.
+                </div>
+            </div>
+
+        </div>
+
     </div>
+
+    <div
+        class="status"
+        id="statusText"
+    ></div>
+
 </div>
 
+
 <script>
+
+    /* ============================================================
+       GLOBAL STATE
+       ============================================================ */
+
     let currentLang = 'de';
-    let translationTimeout;
-    const TRANSLATION_CACHE = "wardPhraseMapper:v16:";
+
+    let translationTimeout = null;
+
+    let updateGeneration = 0;
+
+    const TRANSLATION_CACHE =
+        "wardPhraseMapper:v17:";
+
+
+    /* ============================================================
+       LANGUAGE CONFIG
+       ============================================================ */
 
     const LANG_CONFIG = {
-        de: { name: 'German', theme: 'orange-mode' },
-        ja: { name: 'Japanese', theme: 'sakura-mode' },
-        es: { name: 'Spanish', theme: 'sangria-mode' },
-        fr: { name: 'French', theme: 'lavender-mode' },
-        it: { name: 'Italian', theme: 'emerald-mode' },
-        ru: { name: 'Russian', theme: 'crimson-mode' },
-        zh: { name: 'Chinese', theme: 'gold-mode' }
+
+        de: {
+            name: 'German',
+            theme: 'orange-mode'
+        },
+
+        ja: {
+            name: 'Japanese',
+            theme: 'sakura-mode'
+        },
+
+        es: {
+            name: 'Spanish',
+            theme: 'sangria-mode'
+        },
+
+        fr: {
+            name: 'French',
+            theme: 'lavender-mode'
+        },
+
+        it: {
+            name: 'Italian',
+            theme: 'emerald-mode'
+        },
+
+        ru: {
+            name: 'Russian',
+            theme: 'crimson-mode'
+        },
+
+        zh: {
+            name: 'Chinese',
+            theme: 'gold-mode'
+        }
+
     };
 
+
+    /* ============================================================
+       HTML ESCAPING
+       ============================================================ */
+
+    function escapeHTML(value) {
+
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+
+    }
+
+
+    /* ============================================================
+       SPEECH
+       ============================================================ */
+
     function speakText(inputId, langCode) {
-        const text = document.getElementById(inputId).value;
-        if (!text || !window.speechSynthesis) return;
+
+        const input =
+            document.getElementById(inputId);
+
+        if (!input) return;
+
+        const text = input.value.trim();
+
+        if (!text || !window.speechSynthesis) {
+            return;
+        }
+
         window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
+
+        const utterance =
+            new SpeechSynthesisUtterance(text);
+
         utterance.lang = langCode;
+
         window.speechSynthesis.speak(utterance);
     }
 
-    async function translateUnified(text, sourceLang, targetLang) {
-        if (!text.trim()) return { translation: "", translit: "" };
 
-        const cacheKey = TRANSLATION_CACHE + `${sourceLang}>${targetLang}:${text}`;
-        const cached = localStorage.getItem(cacheKey);
-        if (cached) return JSON.parse(cached);
+    /* ============================================================
+       TRANSLATION
+       ============================================================ */
+
+    async function translateUnified(
+        text,
+        sourceLang,
+        targetLang
+    ) {
+
+        if (!text || !text.trim()) {
+            return {
+                translation: "",
+                translit: ""
+            };
+        }
+
+        const cacheKey =
+            TRANSLATION_CACHE +
+            `${sourceLang}>${targetLang}:${text}`;
 
         try {
-            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&dt=rm&q=` + encodeURIComponent(text);
-            const resp = await fetch(url);
-            if (!resp.ok) throw new Error("Google throttled");
-            const data = await resp.json();
-            
-            let trans = "";
+
+            const cached =
+                localStorage.getItem(cacheKey);
+
+            if (cached) {
+                return JSON.parse(cached);
+            }
+
+        } catch (e) {
+            console.warn(
+                "Cache read failed:",
+                e
+            );
+        }
+
+
+        /* --------------------------------------------------------
+           GOOGLE TRANSLATE
+           -------------------------------------------------------- */
+
+        try {
+
+            const url =
+                `https://translate.googleapis.com/translate_a/single` +
+                `?client=gtx` +
+                `&sl=${encodeURIComponent(sourceLang)}` +
+                `&tl=${encodeURIComponent(targetLang)}` +
+                `&dt=t` +
+                `&dt=rm` +
+                `&q=${encodeURIComponent(text)}`;
+
+            const resp =
+                await fetch(url);
+
+            if (!resp.ok) {
+                throw new Error(
+                    "Google translation request failed"
+                );
+            }
+
+            const data =
+                await resp.json();
+
+            let translation = "";
             let translit = "";
 
             if (data && data[0]) {
-                data[0].forEach(seg => {
-                    if (seg[0]) trans += seg[0];
-                    if (seg[2]) translit += seg[2];
-                    else if (seg[3]) translit += seg[3];
+
+                data[0].forEach(segment => {
+
+                    if (segment && segment[0]) {
+                        translation += segment[0];
+                    }
+
+                    if (segment && segment[2]) {
+                        translit += segment[2];
+                    }
+
+                    else if (segment && segment[3]) {
+                        translit += segment[3];
+                    }
+
                 });
+
             }
 
-            if (trans.trim()) {
-                const result = { translation: trans.trim(), translit: translit.trim() };
-                localStorage.setItem(cacheKey, JSON.stringify(result));
+
+            if (translation.trim()) {
+
+                const result = {
+                    translation:
+                        translation.trim(),
+
+                    translit:
+                        translit.trim()
+                };
+
+                try {
+
+                    localStorage.setItem(
+                        cacheKey,
+                        JSON.stringify(result)
+                    );
+
+                } catch (e) {
+                    console.warn(
+                        "Cache write failed:",
+                        e
+                    );
+                }
+
                 return result;
             }
-        } catch(e) {
-            console.warn("Primary API failed.");
+
+        } catch (e) {
+
+            console.warn(
+                "Primary translation failed:",
+                e
+            );
+
         }
 
-        if (document.getElementById("allowBackupToggle").checked) {
+
+        /* --------------------------------------------------------
+           BACKUP TRANSLATOR
+           -------------------------------------------------------- */
+
+        const backupToggle =
+            document.getElementById(
+                "allowBackupToggle"
+            );
+
+        if (
+            backupToggle &&
+            backupToggle.checked
+        ) {
+
             try {
-                const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`;
-                const resp = await fetch(url);
+
+                const url =
+                    `https://api.mymemory.translated.net/get` +
+                    `?q=${encodeURIComponent(text)}` +
+                    `&langpair=${encodeURIComponent(sourceLang)}` +
+                    `|${encodeURIComponent(targetLang)}`;
+
+                const resp =
+                    await fetch(url);
+
                 if (resp.ok) {
-                    const data = await resp.json();
-                    if (data?.responseData?.translatedText) {
-                        return { translation: data.responseData.translatedText.trim(), translit: "" };
+
+                    const data =
+                        await resp.json();
+
+                    const translated =
+                        data?.responseData?.translatedText;
+
+                    if (translated) {
+
+                        return {
+                            translation:
+                                translated.trim(),
+
+                            translit: ""
+                        };
+
                     }
+
                 }
-            } catch(e) {
-                console.error("Backup engine failed:", e);
+
+            } catch (e) {
+
+                console.warn(
+                    "Backup translation failed:",
+                    e
+                );
+
             }
+
         }
+
         return null;
     }
 
-    async function translateBatchFast(phrases, sourceLang, targetLang) {
-        if (!phrases.length) return [];
-        const delimiter = " ||| ";
-        const joinedText = phrases.join(delimiter);
-        
-        const res = await translateUnified(joinedText, sourceLang, targetLang);
-        if (res && res.translation) {
-            const splitTrans = res.translation.split(/\s*\|\|\|\s*/);
-            const splitTranslit = res.translit ? res.translit.split(/\s*\|\|\|\s*/) : [];
-            
-            return phrases.map((_, i) => ({
-                translation: splitTrans[i] || "",
-                translit: splitTranslit[i] || ""
+
+    /* ============================================================
+       BATCH TRANSLATION
+       ============================================================ */
+
+    async function translateBatchFast(
+        phrases,
+        sourceLang,
+        targetLang
+    ) {
+
+        if (!phrases.length) {
+            return [];
+        }
+
+        /*
+         * Use a delimiter that is very unlikely to occur
+         * naturally in a sentence.
+         */
+
+        const delimiter =
+            " ###WARD_PHRASE### ";
+
+        const joinedText =
+            phrases.join(delimiter);
+
+        const result =
+            await translateUnified(
+                joinedText,
+                sourceLang,
+                targetLang
+            );
+
+        if (!result || !result.translation) {
+
+            return phrases.map(() => ({
+                translation: "",
+                translit: ""
             }));
+
         }
-        return phrases.map(() => ({ translation: "", translit: "" }));
+
+
+        /*
+         * Google normally preserves the delimiter.
+         */
+
+        let translations =
+            result.translation.split(
+                /\s*###WARD_PHRASE###\s*/i
+            );
+
+        let transliterations =
+            result.translit
+                ? result.translit.split(
+                    /\s*###WARD_PHRASE###\s*/i
+                )
+                : [];
+
+
+        /*
+         * If the translation engine altered the delimiter,
+         * fall back to individual requests.
+         */
+
+        if (
+            phrases.length > 1 &&
+            translations.length !== phrases.length
+        ) {
+
+            const individual =
+                await Promise.all(
+                    phrases.map(phrase =>
+                        translateUnified(
+                            phrase,
+                            sourceLang,
+                            targetLang
+                        )
+                    )
+                );
+
+            return individual.map(result => ({
+                translation:
+                    result?.translation || "",
+
+                translit:
+                    result?.translit || ""
+            }));
+
+        }
+
+
+        return phrases.map((phrase, index) => ({
+
+            translation:
+                translations[index]?.trim() || "",
+
+            translit:
+                transliterations[index]?.trim() || ""
+
+        }));
+
     }
 
-    function handleInput(lang) {
-        clearTimeout(translationTimeout);
-        translationTimeout = setTimeout(async () => {
-            const auto = document.getElementById("autoTranslateToggle").checked;
-            const engInput = document.getElementById("englishInput");
-            const foreignInput = document.getElementById("foreignInput");
 
-            if (lang === 'en' && auto && engInput.value.trim()) {
-                const res = await translateUnified(engInput.value.trim(), 'en', currentLang);
-                if (res) foreignInput.value = res.translation;
-            } else if (lang === 'foreign' && auto && foreignInput.value.trim()) {
-                const res = await translateUnified(foreignInput.value.trim(), currentLang, 'en');
-                if (res) engInput.value = res.translation;
-            }
+    /* ============================================================
+       ENGLISH PHRASE PARSER
+       ============================================================ */
 
-            if (foreignInput.value.trim()) {
-                const retrans = await translateUnified(foreignInput.value.trim(), currentLang, 'en');
-                document.getElementById("retranslationText").innerText = retrans ? retrans.translation : "Re-translation failed";
-            } else {
-                document.getElementById("retranslationText").innerHTML = "<em>Re-translation will appear here...</em>";
-            }
-
-            updatePhraseMaps();
-        }, 300);
-    }
-
-    // Direct Grammatical Phrase & Clause Parser
     function parseEnglishPhrases(text) {
-        if (!text.trim()) return [];
 
-        const words = text.trim().split(/\s+/);
-        const prepositions = new Set(["in","on","at","to","for","with","about","against","between","into","through","during","before","after","above","below","from","up","down","off","over","under","by"]);
-        const conjunctions = new Set(["and","but","or","because","although","since","while","if","when","that","which","who",",",";"]);
-
-        let chunks = [];
-        let currentChunk = [];
-
-        for (let i = 0; i < words.length; i++) {
-            let word = words[i];
-            let cleanWord = word.toLowerCase().replace(/[^a-z]/g, '');
-
-            // Punctuation or Clause boundary
-            if (conjunctions.has(cleanWord) || word.includes(',') || word.includes(';')) {
-                if (currentChunk.length > 0) {
-                    chunks.push(currentChunk.join(' '));
-                    currentChunk = [];
-                }
-                currentChunk.push(word);
-                chunks.push(currentChunk.join(' '));
-                currentChunk = [];
-                continue;
-            }
-
-            // Infinitive Start: "to verb"
-            if (cleanWord === "to" && i + 1 < words.length) {
-                if (currentChunk.length > 0) {
-                    chunks.push(currentChunk.join(' '));
-                    currentChunk = [];
-                }
-                currentChunk.push(word);
-                continue;
-            }
-
-            // Prepositional Phrase Start
-            if (prepositions.has(cleanWord) && currentChunk.length >= 2) {
-                chunks.push(currentChunk.join(' '));
-                currentChunk = [word];
-                continue;
-            }
-
-            currentChunk.push(word);
+        if (!text || !text.trim()) {
+            return [];
         }
 
-        if (currentChunk.length > 0) {
-            chunks.push(currentChunk.join(' '));
+        text =
+            text.trim()
+                .replace(/\s+/g, ' ');
+
+
+        const words =
+            text.split(' ');
+
+        const phrases = [];
+
+        let current = [];
+
+
+        /* --------------------------------------------------------
+           WORD GROUPS
+           -------------------------------------------------------- */
+
+        const conjunctions = new Set([
+
+            "and",
+            "but",
+            "or",
+            "nor",
+            "yet",
+
+            "because",
+            "although",
+            "though",
+
+            "since",
+            "while",
+            "whereas",
+
+            "if",
+            "unless",
+            "until",
+
+            "when",
+            "whenever",
+
+            "that",
+            "which",
+            "who",
+            "whom",
+
+            "where",
+
+            "so"
+
+        ]);
+
+
+        const prepositions = new Set([
+
+            "in",
+            "on",
+            "at",
+            "to",
+            "for",
+            "with",
+
+            "about",
+            "against",
+            "between",
+            "into",
+
+            "through",
+            "during",
+            "before",
+            "after",
+
+            "above",
+            "below",
+            "from",
+
+            "up",
+            "down",
+            "off",
+            "over",
+            "under",
+
+            "by",
+            "without",
+
+            "within",
+            "around",
+            "among",
+
+            "behind",
+            "beside",
+            "near",
+
+            "toward",
+            "towards",
+
+            "upon",
+            "across",
+            "along",
+
+            "inside",
+            "outside",
+
+            "past",
+            "despite",
+            "except"
+
+        ]);
+
+
+        const auxiliaryVerbs = new Set([
+
+            "am",
+            "is",
+            "are",
+            "was",
+            "were",
+
+            "be",
+            "been",
+            "being",
+
+            "have",
+            "has",
+            "had",
+
+            "do",
+            "does",
+            "did",
+
+            "can",
+            "could",
+
+            "will",
+            "would",
+
+            "shall",
+            "should",
+
+            "may",
+            "might",
+
+            "must"
+
+        ]);
+
+
+        const pronouns = new Set([
+
+            "i",
+            "you",
+            "he",
+            "she",
+            "it",
+            "we",
+            "they",
+
+            "me",
+            "him",
+            "her",
+            "us",
+            "them"
+
+        ]);
+
+
+        const determiners = new Set([
+
+            "a",
+            "an",
+            "the",
+
+            "this",
+            "that",
+            "these",
+            "those",
+
+            "my",
+            "your",
+            "his",
+            "her",
+            "our",
+            "their",
+
+            "some",
+            "any",
+
+            "each",
+            "every",
+
+            "no"
+
+        ]);
+
+
+        /* --------------------------------------------------------
+           HELPERS
+           -------------------------------------------------------- */
+
+        function clean(word) {
+
+            return word
+                .toLowerCase()
+                .replace(
+                    /^[^a-z']+|[^a-z']+$/g,
+                    ''
+                );
+
         }
 
-        return chunks.filter(c => c.trim().length > 0);
+
+        function pushCurrent() {
+
+            if (current.length) {
+
+                phrases.push(
+                    current.join(' ')
+                );
+
+                current = [];
+
+            }
+
+        }
+
+
+        function addPhrase(wordsArray) {
+
+            if (wordsArray.length) {
+
+                phrases.push(
+                    wordsArray.join(' ')
+                );
+
+            }
+
+        }
+
+
+        function isPunctuation(word) {
+
+            return /[,;:!?]$/.test(word);
+
+        }
+
+
+        function isSentenceEnd(word) {
+
+            return /[.!?]$/.test(word);
+
+        }
+
+
+        function nextWord(index) {
+
+            if (
+                index + 1 <
+                words.length
+            ) {
+
+                return clean(
+                    words[index + 1]
+                );
+
+            }
+
+            return "";
+
+        }
+
+
+        /* --------------------------------------------------------
+           MAIN PARSER
+           -------------------------------------------------------- */
+
+        let i = 0;
+
+        while (i < words.length) {
+
+            const word =
+                words[i];
+
+            const w =
+                clean(word);
+
+            const next =
+                nextWord(i);
+
+
+            /* ----------------------------------------------------
+               PUNCTUATION
+               ---------------------------------------------------- */
+
+            if (isPunctuation(word)) {
+
+                current.push(word);
+
+                pushCurrent();
+
+                i++;
+
+                continue;
+
+            }
+
+
+            /* ----------------------------------------------------
+               CONJUNCTION
+               ---------------------------------------------------- */
+
+            if (conjunctions.has(w)) {
+
+                pushCurrent();
+
+                phrases.push(word);
+
+                i++;
+
+                continue;
+
+            }
+
+
+            /* ----------------------------------------------------
+               INFINITIVE
+               
+               "to go"
+               "to eat"
+               "to see"
+               ---------------------------------------------------- */
+
+            if (
+                w === "to" &&
+                next &&
+                !prepositions.has(next)
+            ) {
+
+                pushCurrent();
+
+                current.push(word);
+
+                current.push(
+                    words[i + 1]
+                );
+
+                i += 2;
+
+                pushCurrent();
+
+                continue;
+
+            }
+
+
+            /* ----------------------------------------------------
+               PREPOSITIONAL PHRASE
+               
+               "to the store"
+               "with my friend"
+               "at the station"
+               ---------------------------------------------------- */
+
+            if (prepositions.has(w)) {
+
+                pushCurrent();
+
+                const phrase = [word];
+
+                let j = i + 1;
+
+                while (
+                    j < words.length
+                ) {
+
+                    const candidate =
+                        words[j];
+
+                    const cw =
+                        clean(candidate);
+
+
+                    if (
+                        conjunctions.has(cw) ||
+                        prepositions.has(cw)
+                    ) {
+
+                        break;
+
+                    }
+
+
+                    phrase.push(candidate);
+
+
+                    if (
+                        isPunctuation(
+                            candidate
+                        )
+                    ) {
+
+                        break;
+
+                    }
+
+
+                    /*
+                     * Prevent very long cards.
+                     */
+
+                    if (
+                        phrase.length >= 5
+                    ) {
+
+                        break;
+
+                    }
+
+                    j++;
+
+                }
+
+
+                addPhrase(phrase);
+
+                i = j;
+
+                continue;
+
+            }
+
+
+            /* ----------------------------------------------------
+               AUXILIARY + VERB
+               
+               "is going"
+               "will go"
+               "has finished"
+               ---------------------------------------------------- */
+
+            if (
+                auxiliaryVerbs.has(w) &&
+                next &&
+                !conjunctions.has(next)
+            ) {
+
+                pushCurrent();
+
+                const phrase = [
+                    word,
+                    words[i + 1]
+                ];
+
+                let j = i + 2;
+
+
+                /*
+                 * Handle:
+                 *
+                 * "has been"
+                 * "will be"
+                 * "is being"
+                 */
+
+                if (
+                    j < words.length &&
+                    auxiliaryVerbs.has(
+                        clean(words[j])
+                    )
+                ) {
+
+                    phrase.push(
+                        words[j]
+                    );
+
+                    j++;
+
+                }
+
+
+                addPhrase(phrase);
+
+                i = j;
+
+                continue;
+
+            }
+
+
+            /* ----------------------------------------------------
+               PRONOUN + VERB
+               
+               "I went"
+               "she works"
+               "they arrived"
+               ---------------------------------------------------- */
+
+            if (
+                pronouns.has(w) &&
+                next &&
+                !conjunctions.has(next) &&
+                !prepositions.has(next)
+            ) {
+
+                pushCurrent();
+
+                current.push(word);
+
+                current.push(
+                    words[i + 1]
+                );
+
+                i += 2;
+
+                continue;
+
+            }
+
+
+            /* ----------------------------------------------------
+               DETERMINER + NOUN PHRASE
+               
+               "the car"
+               "my friend"
+               "some milk"
+               ---------------------------------------------------- */
+
+            if (determiners.has(w)) {
+
+                pushCurrent();
+
+                const phrase = [word];
+
+                let j = i + 1;
+
+                while (
+                    j < words.length
+                ) {
+
+                    const candidate =
+                        words[j];
+
+                    const cw =
+                        clean(candidate);
+
+
+                    if (
+                        conjunctions.has(cw) ||
+                        prepositions.has(cw)
+                    ) {
+
+                        break;
+
+                    }
+
+
+                    phrase.push(candidate);
+
+
+                    if (
+                        phrase.length >= 4
+                    ) {
+
+                        break;
+
+                    }
+
+
+                    if (
+                        isPunctuation(candidate)
+                    ) {
+
+                        break;
+
+                    }
+
+                    j++;
+
+                }
+
+
+                addPhrase(phrase);
+
+                i = j;
+
+                continue;
+
+            }
+
+
+            /* ----------------------------------------------------
+               DEFAULT WORD HANDLING
+               ---------------------------------------------------- */
+
+            current.push(word);
+
+
+            /*
+             * Prevent giant cards.
+             */
+
+            if (
+                current.length >= 4
+            ) {
+
+                pushCurrent();
+
+            }
+
+
+            if (
+                isSentenceEnd(word)
+            ) {
+
+                pushCurrent();
+
+            }
+
+
+            i++;
+
+        }
+
+
+        pushCurrent();
+
+
+        return phrases.filter(
+            phrase =>
+                phrase &&
+                phrase.trim().length > 0
+        );
+
     }
+
+
+    /* ============================================================
+       FOREIGN PHRASE PARSER
+       ============================================================ */
 
     function parseForeignPhrases(text) {
-        if (!text) return [];
-        // Group target into syntactic chunks of 2-3 words for multi-word phrase card alignment
-        const words = text.trim().split(/\s+/);
-        const chunks = [];
-        for (let i = 0; i < words.length; i += 2) {
-            if (i + 1 < words.length) {
-                chunks.push(words[i] + " " + words[i+1]);
-            } else {
-                chunks.push(words[i]);
-            }
+
+        if (!text || !text.trim()) {
+            return [];
         }
+
+        const words =
+            text.trim()
+                .split(/\s+/);
+
+
+        if (words.length <= 1) {
+            return words;
+        }
+
+
+        const chunks = [];
+
+        let current = [];
+
+
+        for (
+            let i = 0;
+            i < words.length;
+            i++
+        ) {
+
+            current.push(
+                words[i]
+            );
+
+
+            /*
+             * Target-language display chunks.
+             *
+             * This remains intentionally simple because
+             * German/French/Spanish/Italian/Russian/Chinese/
+             * Japanese have different word-order systems.
+             */
+
+            if (
+                current.length >= 2
+            ) {
+
+                chunks.push(
+                    current.join(" ")
+                );
+
+                current = [];
+
+            }
+
+        }
+
+
+        if (current.length) {
+
+            chunks.push(
+                current.join(" ")
+            );
+
+        }
+
+
         return chunks;
+
     }
+
+
+    /* ============================================================
+       RENDER ENGLISH MAP
+       ============================================================ */
+
+    function renderEnglishMap(
+        phrases
+    ) {
+
+        const grid =
+            document.getElementById(
+                "englishOutput"
+            );
+
+
+        if (!phrases.length) {
+
+            grid.innerHTML = `
+                <div class="empty-message">
+                    Enter an English sentence above.
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        grid.innerHTML =
+            phrases.map(
+                (phrase, index) => `
+
+                    <div class="word-card english-card">
+
+                        <div class="phrase-text">
+                            ${escapeHTML(phrase)}
+                        </div>
+
+                        <div
+                            class="phrase-translation"
+                            id="eng-p-${index}"
+                        >
+                            ...
+                        </div>
+
+                    </div>
+
+                `
+            ).join('');
+
+    }
+
+
+    /* ============================================================
+       RENDER FOREIGN MAP
+       ============================================================ */
+
+    function renderForeignMap(
+        phrases
+    ) {
+
+        const grid =
+            document.getElementById(
+                "foreignOutput"
+            );
+
+        const config =
+            LANG_CONFIG[currentLang];
+
+
+        if (!phrases.length) {
+
+            grid.innerHTML = `
+                <div class="empty-message">
+                    Translation will appear here.
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        grid.innerHTML =
+            phrases.map(
+                (phrase, index) => `
+
+                    <div
+                        class="word-card foreign-card ${config.theme}"
+                    >
+
+                        <div class="phrase-text">
+                            ${escapeHTML(phrase)}
+                        </div>
+
+                        <div
+                            class="phrase-reading"
+                            id="for-r-${index}"
+                        ></div>
+
+                        <div
+                            class="phrase-romaji"
+                            id="for-rom-${index}"
+                        ></div>
+
+                        <div
+                            class="phrase-translation"
+                            id="for-p-${index}"
+                        >
+                            ...
+                        </div>
+
+                    </div>
+
+                `
+            ).join('');
+
+    }
+
+
+    /* ============================================================
+       UPDATE PHRASE MAPS
+       ============================================================ */
 
     async function updatePhraseMaps() {
-        const engText = document.getElementById("englishInput").value;
-        const foreignText = document.getElementById("foreignInput").value;
-        const config = LANG_CONFIG[currentLang];
 
-        const engPhrases = parseEnglishPhrases(engText);
-        const foreignPhrases = parseForeignPhrases(foreignText);
+        const generation =
+            ++updateGeneration;
 
-        const engGrid = document.getElementById("englishOutput");
-        const foreignGrid = document.getElementById("foreignOutput");
 
-        engGrid.innerHTML = engPhrases.map((p, i) => `
-            <div class="word-card english-card">
-                <div class="phrase-text">${p}</div>
-                <div class="phrase-translation" id="eng-p-${i}">...</div>
-            </div>
-        `).join("");
+        const engText =
+            document.getElementById(
+                "englishInput"
+            ).value;
 
-        foreignGrid.innerHTML = foreignPhrases.map((p, i) => `
-            <div class="word-card foreign-card ${config.theme}">
-                <div class="phrase-text">${p}</div>
-                <div class="phrase-reading" id="for-r-${i}"></div>
-                <div class="phrase-romaji" id="for-rom-${i}"></div>
-                <div class="phrase-translation" id="for-p-${i}">...</div>
-            </div>
-        `).join("");
+        const foreignText =
+            document.getElementById(
+                "foreignInput"
+            ).value;
+
+
+        const engPhrases =
+            parseEnglishPhrases(
+                engText
+            );
+
+        const foreignPhrases =
+            parseForeignPhrases(
+                foreignText
+            );
+
+
+        renderEnglishMap(
+            engPhrases
+        );
+
+        renderForeignMap(
+            foreignPhrases
+        );
+
+
+        /* --------------------------------------------------------
+           ENGLISH → TARGET
+           -------------------------------------------------------- */
 
         if (engPhrases.length) {
-            const translatedEng = await translateBatchFast(engPhrases, 'en', currentLang);
-            translatedEng.forEach((res, i) => {
-                const el = document.getElementById(`eng-p-${i}`);
-                if (el) el.innerText = res.translation || "";
-            });
+
+            const translatedEnglish =
+                await translateBatchFast(
+                    engPhrases,
+                    'en',
+                    currentLang
+                );
+
+
+            /*
+             * Ignore an old request if the user has already
+             * typed something new.
+             */
+
+            if (
+                generation !==
+                updateGeneration
+            ) {
+
+                return;
+
+            }
+
+
+            translatedEnglish.forEach(
+                (result, index) => {
+
+                    const element =
+                        document.getElementById(
+                            `eng-p-${index}`
+                        );
+
+                    if (element) {
+
+                        element.innerText =
+                            result.translation ||
+                            "";
+
+                    }
+
+                }
+            );
+
         }
+
+
+        /* --------------------------------------------------------
+           TARGET → ENGLISH
+           -------------------------------------------------------- */
 
         if (foreignPhrases.length) {
-            const translatedForeign = await translateBatchFast(foreignPhrases, currentLang, 'en');
 
-            foreignPhrases.forEach((phrase, i) => {
-                const transEl = document.getElementById(`for-p-${i}`);
-                const readEl = document.getElementById(`for-r-${i}`);
-                const romEl = document.getElementById(`for-rom-${i}`);
+            const translatedForeign =
+                await translateBatchFast(
+                    foreignPhrases,
+                    currentLang,
+                    'en'
+                );
 
-                if (transEl) transEl.innerText = translatedForeign[i]?.translation || "";
 
-                if (currentLang === 'ja' && window.wanakana) {
-                    const hiragana = wanakana.toHiragana(phrase);
-                    const romaji = wanakana.toRomaji(phrase);
-                    
-                    if (readEl) readEl.innerText = hiragana !== phrase ? hiragana : "";
-                    if (romEl) romEl.innerText = romaji;
-                } else if (translatedForeign[i]?.translit) {
-                    if (readEl) readEl.innerText = translatedForeign[i].translit;
+            if (
+                generation !==
+                updateGeneration
+            ) {
+
+                return;
+
+            }
+
+
+            foreignPhrases.forEach(
+                (phrase, index) => {
+
+                    const result =
+                        translatedForeign[index] ||
+                        {};
+
+                    const transEl =
+                        document.getElementById(
+                            `for-p-${index}`
+                        );
+
+                    const readEl =
+                        document.getElementById(
+                            `for-r-${index}`
+                        );
+
+                    const romEl =
+                        document.getElementById(
+                            `for-rom-${index}`
+                        );
+
+
+                    if (transEl) {
+
+                        transEl.innerText =
+                            result.translation ||
+                            "";
+
+                    }
+
+
+                    /* --------------------------------------------
+                       JAPANESE READING
+                       -------------------------------------------- */
+
+                    if (
+                        currentLang === 'ja' &&
+                        window.wanakana
+                    ) {
+
+                        const hiragana =
+                            wanakana.toHiragana(
+                                phrase
+                            );
+
+                        const romaji =
+                            wanakana.toRomaji(
+                                phrase
+                            );
+
+
+                        if (readEl) {
+
+                            readEl.innerText =
+                                hiragana !== phrase
+                                    ? hiragana
+                                    : "";
+
+                        }
+
+
+                        if (romEl) {
+
+                            romEl.innerText =
+                                romaji;
+
+                        }
+
+                    }
+
+
+                    /* --------------------------------------------
+                       OTHER LANGUAGE TRANSLITERATION
+                       -------------------------------------------- */
+
+                    else if (
+                        result.translit &&
+                        readEl
+                    ) {
+
+                        readEl.innerText =
+                            result.translit;
+
+                    }
+
                 }
-            });
+            );
+
         }
+
+
+        setStatus(
+            `${engPhrases.length} English phrase${
+                engPhrases.length === 1
+                    ? ''
+                    : 's'
+            } detected`
+        );
+
     }
+
+
+    /* ============================================================
+       INPUT HANDLING
+       ============================================================ */
+
+    function handleInput(lang) {
+
+        clearTimeout(
+            translationTimeout
+        );
+
+
+        translationTimeout =
+            setTimeout(
+                async () => {
+
+                    const auto =
+                        document.getElementById(
+                            "autoTranslateToggle"
+                        ).checked;
+
+                    const engInput =
+                        document.getElementById(
+                            "englishInput"
+                        );
+
+                    const foreignInput =
+                        document.getElementById(
+                            "foreignInput"
+                        );
+
+
+                    /* --------------------------------------------
+                       ENGLISH → FOREIGN
+                       -------------------------------------------- */
+
+                    if (
+                        lang === 'en' &&
+                        auto &&
+                        engInput.value.trim()
+                    ) {
+
+                        setStatus(
+                            "Translating..."
+                        );
+
+
+                        const result =
+                            await translateUnified(
+                                engInput.value.trim(),
+                                'en',
+                                currentLang
+                            );
+
+
+                        if (result) {
+
+                            foreignInput.value =
+                                result.translation;
+
+                        }
+
+                    }
+
+
+                    /* --------------------------------------------
+                       FOREIGN → ENGLISH
+                       -------------------------------------------- */
+
+                    else if (
+                        lang === 'foreign' &&
+                        auto &&
+                        foreignInput.value.trim()
+                    ) {
+
+                        setStatus(
+                            "Translating..."
+                        );
+
+
+                        const result =
+                            await translateUnified(
+                                foreignInput.value.trim(),
+                                currentLang,
+                                'en'
+                            );
+
+
+                        if (result) {
+
+                            engInput.value =
+                                result.translation;
+
+                        }
+
+                    }
+
+
+                    /* --------------------------------------------
+                       RE-TRANSLATION
+                       -------------------------------------------- */
+
+                    if (
+                        foreignInput.value.trim()
+                    ) {
+
+                        const retrans =
+                            await translateUnified(
+                                foreignInput.value.trim(),
+                                currentLang,
+                                'en'
+                            );
+
+
+                        const retransElement =
+                            document.getElementById(
+                                "retranslationText"
+                            );
+
+
+                        if (retransElement) {
+
+                            retransElement.innerText =
+                                retrans
+                                    ? retrans.translation
+                                    : "Re-translation failed";
+
+                        }
+
+                    }
+
+                    else {
+
+                        document.getElementById(
+                            "retranslationText"
+                        ).innerHTML =
+                            "<em>Re-translation will appear here...</em>";
+
+                    }
+
+
+                    await updatePhraseMaps();
+
+                },
+                350
+            );
+
+    }
+
+
+    /* ============================================================
+       LANGUAGE SWITCHING
+       ============================================================ */
 
     function setLanguage(lang) {
+
+        if (!LANG_CONFIG[lang]) {
+            return;
+        }
+
+
         currentLang = lang;
-        const config = LANG_CONFIG[lang];
 
-        // Update UI Labels
-        document.getElementById('mainTitle').innerText = `EN ➜ ${lang.toUpperCase()}: Ward's Phrasen-Mapper`;
-        document.getElementById('foreignLabel').innerText = `${config.name} Sentence`;
-        document.getElementById('foreignRowTitle').innerText = `${config.name} Phrase Map`;
 
-        // Update Active States on Buttons
-        Object.keys(LANG_CONFIG).forEach(code => {
-            const btn = document.getElementById('btn' + code.toUpperCase());
-            if (btn) {
-                btn.className = "lang-btn";
-                if (code === lang) {
-                    btn.classList.add("active", config.theme);
-                }
+        const config =
+            LANG_CONFIG[lang];
+
+
+        /* --------------------------------------------
+           UI LABELS
+           -------------------------------------------- */
+
+        document.getElementById(
+            'mainTitle'
+        ).innerText =
+            `EN ➜ ${lang.toUpperCase()}: Ward's Phrasen-Mapper`;
+
+
+        document.getElementById(
+            'foreignLabel'
+        ).innerText =
+            `${config.name} Sentence`;
+
+
+        document.getElementById(
+            'foreignRowTitle'
+        ).innerText =
+            `${config.name} Phrase Map`;
+
+
+        document.getElementById(
+            'foreignLabel'
+        ).style.color =
+            `var(--primary-${getThemeColorName(config.theme)})`;
+
+
+        /* --------------------------------------------
+           BUTTONS
+           -------------------------------------------- */
+
+        Object.keys(
+            LANG_CONFIG
+        ).forEach(code => {
+
+            const button =
+                document.getElementById(
+                    'btn' +
+                    code.toUpperCase()
+                );
+
+
+            if (!button) {
+                return;
             }
+
+
+            button.className =
+                "lang-btn";
+
+
+            if (code === lang) {
+
+                button.classList.add(
+                    "active",
+                    config.theme
+                );
+
+            }
+
         });
 
-        handleInput('en');
+
+        /* --------------------------------------------
+           RE-TRANSLATE EXISTING SENTENCE
+           -------------------------------------------- */
+
+        const english =
+            document.getElementById(
+                "englishInput"
+            ).value.trim();
+
+
+        if (english) {
+
+            handleInput('en');
+
+        }
+
+        else {
+
+            updatePhraseMaps();
+
+        }
+
     }
 
-    // Initialize state on load
+
+    /* ============================================================
+       THEME COLOR HELPER
+       ============================================================ */
+
+    function getThemeColorName(theme) {
+
+        const map = {
+
+            "orange-mode": "orange",
+            "sakura-mode": "sakura",
+            "sangria-mode": "sangria",
+            "lavender-mode": "lavender",
+            "emerald-mode": "emerald",
+            "crimson-mode": "crimson",
+            "gold-mode": "gold"
+
+        };
+
+        return map[theme] || "orange";
+
+    }
+
+
+    /* ============================================================
+       STATUS
+       ============================================================ */
+
+    function setStatus(message) {
+
+        const status =
+            document.getElementById(
+                "statusText"
+            );
+
+        if (status) {
+
+            status.innerText =
+                message;
+
+        }
+
+    }
+
+
+    /* ============================================================
+       INITIALIZE
+       ============================================================ */
+
     setLanguage('de');
+
 </script>
+
 </body>
 </html>
