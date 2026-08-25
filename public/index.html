@@ -1084,19 +1084,21 @@ function setTranslationProviderStatus(provider, detail = "") {
     if (!status) return;
 
 
-    if (provider === "google") {
+    if (provider === "cloudflare") {
 
-        status.innerText =
-            detail ||
-            "✓ Google Translate available";
+    status.innerText =
+        detail ||
+        "✓ Cloudflare AI translation available";
 
-    }
+}
 
-    else if (provider === "lingva") {
+else if (provider === "google") {
 
-        status.innerText =
-            detail ||
-            "✓ Backup translation in use — target phrase cards will fill progressively";
+    status.innerText =
+        detail ||
+        "✓ Google Translate available";
+
+}
 
     }
 
