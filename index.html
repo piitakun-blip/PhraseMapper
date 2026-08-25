@@ -38,10 +38,6 @@
             
             --primary-gold: #ea580c;
             --gold-light: #fff7ed;
-
-            /* Dynamic Theme Variables managed by JS */
-            --theme-color: var(--primary-blue);
-            --theme-light: var(--blue-light);
         }
 
         body {
@@ -113,10 +109,52 @@
             gap: 0.35rem;
         }
 
-        .lang-btn.active {
-            background-color: var(--theme-color);
+        .lang-btn.active.blue-mode {
+            background-color: var(--primary-blue);
             color: white;
-            border-color: var(--theme-color);
+            border-color: var(--primary-blue);
+        }
+
+        .lang-btn.active.orange-mode {
+            background-color: var(--primary-orange);
+            color: white;
+            border-color: var(--primary-orange);
+        }
+
+        .lang-btn.active.sakura-mode {
+            background-color: var(--primary-sakura);
+            color: white;
+            border-color: var(--primary-sakura);
+        }
+
+        .lang-btn.active.sangria-mode {
+            background-color: var(--primary-sangria);
+            color: white;
+            border-color: var(--primary-sangria);
+        }
+
+        .lang-btn.active.lavender-mode {
+            background-color: var(--primary-lavender);
+            color: white;
+            border-color: var(--primary-lavender);
+        }
+
+        .lang-btn.active.emerald-mode {
+            background-color: var(--primary-emerald);
+            color: white;
+            border-color: var(--primary-emerald);
+        }
+
+        .lang-btn.active.crimson-mode {
+            background-color: var(--primary-crimson);
+            color: white;
+            border-color: var(--primary-crimson);
+        }
+
+        .lang-btn.active.gold-mode {
+            background-color: var(--primary-gold);
+            color: white;
+            border-color: var(--primary-gold);
         }
 
         .lang-btn:hover:not(.active) {
@@ -170,7 +208,35 @@
         }
 
         input:checked + .slider {
-            background-color: var(--theme-color);
+            background-color: var(--primary-blue);
+        }
+
+        .orange-theme input:checked + .slider {
+            background-color: var(--primary-orange);
+        }
+
+        .sakura-theme input:checked + .slider {
+            background-color: var(--primary-sakura);
+        }
+
+        .sangria-theme input:checked + .slider {
+            background-color: var(--primary-sangria);
+        }
+
+        .lavender-theme input:checked + .slider {
+            background-color: var(--primary-lavender);
+        }
+
+        .emerald-theme input:checked + .slider {
+            background-color: var(--primary-emerald);
+        }
+
+        .crimson-theme input:checked + .slider {
+            background-color: var(--primary-crimson);
+        }
+
+        .gold-theme input:checked + .slider {
+            background-color: var(--primary-gold);
         }
 
         input:checked + .slider:before {
@@ -182,111 +248,6 @@
             grid-template-columns: 1fr 1fr;
             gap: 1.5rem;
             margin-bottom: 2rem;
-        }
-
-        .input-card {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .input-card label {
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: #475569;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .text-area-wrapper {
-            position: relative;
-            width: 100%;
-        }
-
-        textarea {
-            width: 100%;
-            height: 120px;
-            padding: 0.75rem;
-            padding-right: 2.5rem;
-            box-sizing: border-box;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            resize: none;
-            font-size: 1rem;
-            font-family: inherit;
-            color: var(--text-color);
-        }
-
-        textarea:focus {
-            outline: none;
-            border-color: var(--theme-color);
-            box-shadow: 0 0 0 3px var(--theme-light);
-        }
-
-        .audio-btn {
-            position: absolute;
-            bottom: 12px;
-            right: 12px;
-            background: #f1f5f9;
-            border: 1px solid var(--border-color);
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            padding: 0;
-        }
-
-        .audio-btn:hover {
-            background: var(--theme-light);
-            border-color: var(--theme-color);
-        }
-
-        .map-section {
-            margin-top: 1.5rem;
-        }
-
-        .map-title {
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: 0.75rem;
-            color: #0f172a;
-        }
-
-        .phrase-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            padding: 1rem;
-            background: #f8fafc;
-            border: 1px dashed var(--border-color);
-            border-radius: 8px;
-            min-height: 60px;
-            align-items: center;
-            color: #64748b;
-        }
-
-        .phrase-badge {
-            padding: 0.4rem 0.75rem;
-            border-radius: 6px;
-            background: #ffffff;
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-            user-select: none;
-            font-size: 0.9rem;
-            color: var(--text-color);
-            transition: all 0.2s;
-        }
-
-        .phrase-badge.active {
-            background: var(--theme-color);
-            color: white;
-            border-color: var(--theme-color);
-            transform: scale(1.05);
         }
 
         @media (max-width: 768px) {
@@ -333,26 +294,1428 @@
             .toggle-container {
                 width: 100%;
                 justify-content: space-between;
+                font-size: 0.82rem;
             }
 
             .grid-inputs {
                 grid-template-columns: 1fr;
                 gap: 1rem;
+                margin-bottom: 1.2rem;
             }
+
+            textarea {
+                font-size: 16px; /* prevents iOS zoom-on-focus */
+                min-height: 74px;
+            }
+
+            .output-section {
+                gap: 1rem;
+            }
+
+            .row-container {
+                padding: 0.85rem;
+            }
+
+            .word-grid {
+                gap: 0.5rem;
+            }
+
+            .word-card {
+                flex: 1 1 120px;
+                min-width: 0;
+                padding: 0.7rem 0.8rem 0.55rem;
+            }
+
+            .phrase-text {
+                font-size: 0.98rem;
+                overflow-wrap: anywhere;
+            }
+        }
+
+        @media (max-width: 380px) {
+            h1 {
+                font-size: 1.08rem;
+            }
+
+            .lang-selector {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .word-card {
+                flex-basis: 100%;
+            }
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        label.english { color: var(--primary-blue); }
+        label.foreign.blue-mode { color: var(--primary-blue); }
+        label.foreign.orange-mode { color: var(--primary-orange); }
+        label.foreign.sakura-mode { color: var(--primary-sakura); }
+        label.foreign.sangria-mode { color: var(--primary-sangria); }
+        label.foreign.lavender-mode { color: var(--primary-lavender); }
+        label.foreign.emerald-mode { color: var(--primary-emerald); }
+        label.foreign.crimson-mode { color: var(--primary-crimson); }
+        label.foreign.gold-mode { color: var(--primary-gold); }
+
+        .status-badge {
+            font-size: 0.75rem;
+            text-transform: none;
+            font-weight: normal;
+            color: #64748b;
+            font-style: italic;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            padding-right: 2.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            resize: vertical;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        textarea:focus {
+            outline: 2px solid #cbd5e1;
+        }
+
+        .play-sentence-btn {
+            position: absolute;
+            right: 0.5rem;
+            top: 0.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #64748b;
+            transition: color 0.15s ease, transform 0.1s ease;
+            padding: 0.25rem;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .play-sentence-btn:hover {
+            color: var(--primary-blue);
+            transform: scale(1.1);
+            background-color: #f1f5f9;
+        }
+
+        .blue-mode-theme .play-sentence-btn:hover { color: var(--primary-blue); }
+        .orange-mode-theme .play-sentence-btn:hover { color: var(--primary-orange); }
+        .sakura-mode-theme .play-sentence-btn:hover { color: var(--primary-sakura); }
+        .sangria-mode-theme .play-sentence-btn:hover { color: var(--primary-sangria); }
+        .lavender-mode-theme .play-sentence-btn:hover { color: var(--primary-lavender); }
+        .emerald-mode-theme .play-sentence-btn:hover { color: var(--primary-emerald); }
+        .crimson-mode-theme .play-sentence-btn:hover { color: var(--primary-crimson); }
+        .gold-mode-theme .play-sentence-btn:hover { color: var(--primary-gold); }
+
+        .output-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .row-container {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.25rem;
+            background-color: #fafafa;
+        }
+
+        .row-title {
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+            color: #64748b;
+        }
+
+        .word-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .word-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.8rem 1.2rem 0.6rem 1.2rem;
+            border-radius: 8px;
+            border: 1.5px solid;
+            box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .word-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.08);
+        }
+
+        .word-card.english-card {
+            background-color: var(--blue-light);
+            border-color: var(--primary-blue);
+            color: #0369a1;
+        }
+
+        .word-card.foreign-card.blue-mode {
+            background-color: var(--blue-light);
+            border-color: var(--primary-blue);
+            color: #0369a1;
+        }
+
+        .word-card.foreign-card.orange-mode {
+            background-color: var(--orange-light);
+            border-color: var(--primary-orange);
+            color: #7c2d12;
+        }
+
+        .word-card.foreign-card.sakura-mode {
+            background-color: var(--sakura-light);
+            border-color: var(--primary-sakura);
+            color: #9d174d;
+        }
+
+        .word-card.foreign-card.sangria-mode {
+            background-color: var(--sangria-light);
+            border-color: var(--primary-sangria);
+            color: #991b1b;
+        }
+
+        .word-card.foreign-card.lavender-mode {
+            background-color: var(--lavender-light);
+            border-color: var(--primary-lavender);
+            color: #3730a3;
+        }
+
+        .word-card.foreign-card.emerald-mode {
+            background-color: var(--emerald-light);
+            border-color: var(--primary-emerald);
+            color: #065f46;
+        }
+
+        .word-card.foreign-card.crimson-mode {
+            background-color: var(--crimson-light);
+            border-color: var(--primary-crimson);
+            color: #9f1239;
+        }
+
+        .word-card.foreign-card.gold-mode {
+            background-color: var(--gold-light);
+            border-color: var(--primary-gold);
+            color: #9a3412;
+        }
+
+        /* Mini TTS Speak Button on Cards */
+        .card-speak-btn {
+            position: absolute;
+            top: 2px;
+            right: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.75rem;
+            padding: 2px;
+            color: inherit;
+            opacity: 0.4;
+            transition: opacity 0.15s ease, transform 0.1s ease;
+        }
+
+        .word-card:hover .card-speak-btn {
+            opacity: 0.85;
+        }
+
+        .card-speak-btn:hover {
+            transform: scale(1.2);
+            opacity: 1 !important;
+        }
+
+        .phrase-text {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-top: 0.2rem;
+        }
+
+        .phrase-hiragana {
+            font-size: 0.82rem;
+            font-weight: bold;
+            color: #4f46e5;
+            margin-top: 0.1rem;
+        }
+
+        .phrase-romaji {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-top: 0.15rem;
+        }
+
+        .phrase-translation {
+            font-size: 0.8rem;
+            font-weight: normal;
+            font-style: italic;
+            opacity: 0.85;
+            margin-top: 0.2rem;
+        }
+
+        .empty-state {
+            color: #94a3b8;
+            font-style: italic;
+            font-size: 0.95rem;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1 id="app-title">EN ➜ DE: Ward's Phrasen-Mapper</h1>
-
-    <!-- Control Panel Elements -->
-    <div class="control-panel">
+    <h1 id="mainTitle">EN ➜ DE: Ward's Phrasen-Mapper</h1>
+    
+    <div class="control-panel" id="controlPanel">
         <div class="lang-selector">
-            <span>Target Language:</span>
-            <button class="lang-btn active" data-lang="de" data-theme="blue" data-label="German">🇩🇪 DE</button>
-            <button class="lang-btn" data-lang="ja" data-theme="sakura" data-label="Japanese">🇯🇵 JA</button>
-            <button class="lang-btn" data-lang="es" data-theme="orange" data-label="Spanish">🇪🇸 ES</button>
-            <button class="lang-btn" data-lang="fr" data-theme="lavender" data-label="French">🇫🇷 FR</button>
-            <button class="lang-btn" data-lang="it" data-theme="emerald" data-label="Italian">🇮🇹 IT</button>
+            <span style="color: #64748b;">Target Language:</span>
+            <button class="lang-btn active orange-mode" id="btnDE" onclick="setLanguage('de')">German</button>
+            <button class="lang-btn" id="btnJA" onclick="setLanguage('ja')">Japanese</button>
+            <button class="lang-btn" id="btnES" onclick="setLanguage('es')">Spanish</button>
+            <button class="lang-btn" id="btnFR" onclick="setLanguage('fr')">French</button>
+            <button class="lang-btn" id="btnIT" onclick="setLanguage('it')">Italian</button>
+            <button class="lang-btn" id="btnRU" onclick="setLanguage('ru')">Russian</button>
+            <button class="lang-btn" id="btnZH" onclick="setLanguage('zh')">Chinese</button>
+        </div>
+        
+        <div class="toggle-container">
+            <span>🔌 Smart Two-Way Auto-Translation</span>
+            <label class="switch">
+                <input type="checkbox" id="autoTranslateToggle" checked onchange="handleToggleChange()">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="grid-inputs">
+        <div class="input-group">
+            <label class="english" for="englishInput">
+                English Sentence
+                <span id="translationStatus" class="status-badge"></span>
+            </label>
+            <div class="input-wrapper">
+                <textarea id="englishInput" rows="2" placeholder="Type an English sentence here..." oninput="handleInput('en')"></textarea>
+                <button class="play-sentence-btn" onclick="speakText('englishInput', 'en')" title="Speak English sentence">🔊</button>
+            </div>
+        </div>
+        <div class="input-group">
+            <label class="foreign orange-mode" id="foreignLabel" for="foreignInput">German Sentence</label>
+            <div class="input-wrapper">
+                <textarea id="foreignInput" rows="2" placeholder="German translation will appear here (or type manually)..." oninput="handleInput('foreign')"></textarea>
+                <button class="play-sentence-btn" onclick="speakText('foreignInput', currentLang)" title="Speak translated sentence">🔊</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="output-section">
+        <div class="row-container">
+            <div class="row-title">English Phrase Map</div>
+            <div id="englishOutput" class="word-grid">
+                <span class="empty-state">Type a sentence above to map phrases...</span>
+            </div>
+        </div>
+
+        <div class="row-container">
+            <div class="row-title" id="foreignRowTitle">German Phrase Map</div>
+            <div id="foreignOutput" class="word-grid">
+                <span class="empty-state">Type a sentence above to map phrases...</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentLang = 'de'; 
+    let translationTimeout;
+    let mappingTimeout;
+
+    // Translation request manager
+    let fullSentenceController = null;
+    let mappingGeneration = 0;
+    const MAX_CONCURRENT_PHRASE_REQUESTS = 3;
+    let activePhraseRequests = 0;
+    const phraseRequestQueue = [];
+    const activePhraseControllers = new Set();
+    const inFlightPhraseTranslations = new Map();
+
+    // Romaji to Hiragana Map
+    const romajiToHiraganaMap = {
+        'kya': 'きゃ', 'kyu': 'きゅ', 'kyo': 'きょ',
+        'sha': 'しゃ', 'shu': 'しゅ', 'sho': 'しょ',
+        'cha': 'ちゃ', 'chu': 'ちゅ', 'cho': 'ちょ',
+        'nya': 'にゃ', 'nyu': 'にゅ', 'nyo': 'にょ',
+        'hya': 'ひゃ', 'hyu': 'ひゅ', 'hyo': 'ひょ',
+        'mya': 'みゃ', 'myu': 'みゅ', 'myo': 'みょ',
+        'rya': 'りゃ', 'ryu': 'りゅ', 'ryo': 'りょ',
+        'gya': 'ぎゃ', 'gyu': 'ぎゅ', 'gyo': 'ぎょ',
+        'ja': 'じゃ', 'ju': 'じゅ', 'jo': 'じょ',
+        'bya': 'びゃ', 'byu': 'びゅ', 'byo': 'びょ',
+        'pya': 'ぴゃ', 'pyu': 'ぴゅ', 'pyo': 'ぴょ',
+        'shi': 'し', 'chi': 'ち', 'tsu': 'つ',
+        'ka': 'か', 'ki': 'き', 'ku': 'く', 'ke': 'け', 'ko': 'こ',
+        'sa': 'さ', 'su': 'す', 'se': 'せ', 'so': 'そ',
+        'ta': 'た', 'te': 'て', 'to': 'と',
+        'na': 'な', 'ni': 'に', 'nu': 'ぬ', 'ne': 'ね', 'no': 'の',
+        'ha': 'は', 'hi': 'ひ', 'fu': 'ふ', 'he': 'へ', 'ho': 'ほ',
+        'ma': 'ま', 'mi': 'み', 'mu': 'む', 'me': 'め', 'mo': 'も',
+        'ya': 'や', 'yu': 'ゆ', 'yo': 'よ',
+        'ra': 'ら', 'ri': 'り', 'ru': 'る', 're': 'れ', 'ro': 'ろ',
+        'wa': 'わ', 'wo': 'を',
+        'ga': 'が', 'gi': 'ぎ', 'gu': 'ぐ', 'ge': 'げ', 'go': 'ご',
+        'za': 'ざ', 'ji': 'じ', 'zu': 'づ', 'ze': 'ぜ', 'zo': 'ぞ',
+        'da': 'だ', 'di': 'ぢ', 'du': 'づ', 'de': 'で', 'do': 'ど',
+        'ba': 'ば', 'bi': 'び', 'bu': 'ぶ', 'be': 'べ', 'bo': 'ぼ',
+        'pa': 'ぱ', 'pi': 'ぴ', 'pu': 'ぷ', 'pe': 'ぺ', 'po': 'ぽ',
+        'a': 'あ', 'i': 'い', 'u': 'う', 'e': 'え', 'o': 'お',
+        'n': 'ん'
+    };
+
+    function convertRomajiToHiragana(romaji) {
+        if (!romaji) return "";
+        let text = romaji.toLowerCase()
+            .replace(/ā/g, 'aa')
+            .replace(/ī/g, 'ii')
+            .replace(/ū/g, 'uu')
+            .replace(/ē/g, 'ee') 
+            .replace(/ō/g, 'ou') 
+            .replace(/ē/g, 'ee')
+            .replace(/ō/g, 'ou');
+        
+        text = text.replace(/([bcdfghjklmpqrstvwxyz])\1/g, 'っ$1');
+        
+        const keys = Object.keys(romajiToHiraganaMap).sort((a, b) => b.length - a.length);
+        let i = 0;
+        let result = "";
+        while (i < text.length) {
+            let matched = false;
+            for (let key of keys) {
+                if (text.substr(i, key.length) === key) {
+                    result += romajiToHiraganaMap[key];
+                    i += key.length;
+                    matched = true;
+                    break;
+                }
+            }
+            if (!matched) {
+                result += text[i];
+                i++;
+            }
+        }
+        return result;
+    }
+
+    // Dynamic color theme selector
+    function getThemeClass(lang) {
+        if (lang === 'de') return 'orange-mode';
+        if (lang === 'ja') return 'sakura-mode';
+        if (lang === 'es') return 'sangria-mode';
+        if (lang === 'fr') return 'lavender-mode';
+        if (lang === 'it') return 'emerald-mode';
+        if (lang === 'ru') return 'crimson-mode';
+        if (lang === 'zh') return 'gold-mode';
+        return 'blue-mode';
+    }
+
+    // Browser Speech Synthesis Voice routing
+    function speak(text, langCode) {
+        if (!text || !window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        if (langCode === 'en') utterance.lang = 'en-US';
+        else if (langCode === 'de') utterance.lang = 'de-DE';
+        else if (langCode === 'ja') utterance.lang = 'ja-JP';
+        else if (langCode === 'es') utterance.lang = 'es-ES';
+        else if (langCode === 'fr') utterance.lang = 'fr-FR';
+        else if (langCode === 'it') utterance.lang = 'it-IT';
+        else if (langCode === 'ru') utterance.lang = 'ru-RU';
+        else if (langCode === 'zh') utterance.lang = 'zh-CN';
+        
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function speakText(inputId, langCode) {
+        const val = document.getElementById(inputId).value;
+        speak(val, langCode);
+    }
+
+    function setLanguage(lang) {
+        currentLang = lang;
+        
+        const buttons = ['btnDE', 'btnJA', 'btnES', 'btnFR', 'btnIT', 'btnRU', 'btnZH'];
+        buttons.forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) btn.className = "lang-btn";
+        });
+
+        const activeBtn = document.getElementById('btn' + lang.toUpperCase());
+        const themeClass = getThemeClass(lang);
+        if (activeBtn) {
+            activeBtn.classList.add("active", themeClass);
+        }
+
+        const mainTitle = document.getElementById("mainTitle");
+        const foreignLabel = document.getElementById("foreignLabel");
+        const foreignRowTitle = document.getElementById("foreignRowTitle");
+        const controlPanel = document.getElementById("controlPanel");
+        const docTitle = document.querySelector("title");
+
+        document.getElementById("foreignInput").value = "";
+        document.getElementById("translationStatus").innerText = "";
+        controlPanel.className = "control-panel " + themeClass + "-theme";
+
+        let langTitle = "";
+        let langLabel = "";
+        let langPlaceholder = "";
+
+        if (lang === 'de') {
+            langTitle = "EN ➜ DE: Ward's Phrasen-Mapper";
+            langLabel = "German Sentence";
+            langPlaceholder = "German translation will appear here (or type manually)...";
+        } else if (lang === 'ja') {
+            langTitle = "EN ➜ JA: Ward's フレーズ・マッパー";
+            langLabel = "Japanese Sentence (日本語)";
+            langPlaceholder = "日本語の翻訳が自動的に表示されます (または手入力)...";
+        } else if (lang === 'es') {
+            langTitle = "EN ➜ ES: Ward's Mapeador de Frases";
+            langLabel = "Spanish Sentence (Español)";
+            langPlaceholder = "La traducción al español aparecerá aquí (o escribe manualmente)...";
+        } else if (lang === 'fr') {
+            langTitle = "EN ➜ FR: Ward's Mapeur de Phrases";
+            langLabel = "French Sentence (Français)";
+            langPlaceholder = "La traduction en français apparaîtra ici (ou saisie manuelle)...";
+        } else if (lang === 'it') {
+            langTitle = "EN ➜ IT: Ward's Mapeatore di Frasi";
+            langLabel = "Italian Sentence (Italiano)";
+            langPlaceholder = "La traduzione in italiano apparirà qui (o digita manualmente)...";
+        } else if (lang === 'ru') {
+            langTitle = "EN ➜ RU: Ward's Фраз-Маппер";
+            langLabel = "Russian Sentence (Русский)";
+            langPlaceholder = "Русский перевод появится здесь (или введите вручную)...";
+        } else if (lang === 'zh') {
+            langTitle = "EN ➜ ZH: Ward's 短语映射器";
+            langLabel = "Chinese Sentence (中文)";
+            langPlaceholder = "中文翻译将自动显示（或手动输入）...";
+        }
+
+        mainTitle.innerHTML = langTitle;
+        docTitle.innerText = langTitle;
+        foreignLabel.innerText = langLabel;
+        foreignLabel.className = "foreign " + themeClass;
+        
+        // Dynamic map header label update
+        foreignRowTitle.innerText = langLabel.replace(/\s*\(.*\)\s*/g, "") + " Phrase Map";
+        document.getElementById("foreignInput").placeholder = langPlaceholder;
+
+        const engText = document.getElementById("englishInput").value.trim();
+        if (engText) {
+            handleInput('en');
+        } else {
+            updateMapping();
+        }
+    }
+
+    // Resilient + efficient translation layer:
+    // - Google remains primary.
+    // - Backup is allowed ONLY for whole-sentence translation.
+    // - Phrase-card requests are deduplicated and limited to 3 at a time.
+    // - Stale phrase requests are cancelled when the sentence changes.
+    // - Only successful Google results are cached.
+    const TRANSLATION_CACHE_PREFIX = "wardPhraseMapper:v6:";
+
+    function getTranslationKey(text, sourceLang, targetLang) {
+        return sourceLang + ">" + targetLang + ":" + text.trim();
+    }
+
+    function getCachedTranslation(text, sourceLang, targetLang) {
+        try {
+            const key = TRANSLATION_CACHE_PREFIX + getTranslationKey(text, sourceLang, targetLang);
+            const raw = localStorage.getItem(key);
+            return raw ? JSON.parse(raw) : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function setCachedTranslation(text, sourceLang, targetLang, value) {
+        try {
+            const key = TRANSLATION_CACHE_PREFIX + getTranslationKey(text, sourceLang, targetLang);
+            localStorage.setItem(key, JSON.stringify(value));
+        } catch (e) {}
+    }
+
+    async function fetchWithTimeout(url, timeoutMs = 7000, externalSignal = null) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+        const abortFromExternal = () => controller.abort();
+        if (externalSignal) {
+            if (externalSignal.aborted) {
+                controller.abort();
+            } else {
+                externalSignal.addEventListener("abort", abortFromExternal, { once: true });
+            }
+        }
+
+        try {
+            return await fetch(url, {
+                signal: controller.signal,
+                cache: "no-store"
+            });
+        } finally {
+            clearTimeout(timeoutId);
+            if (externalSignal) {
+                externalSignal.removeEventListener("abort", abortFromExternal);
+            }
+        }
+    }
+
+    async function googleTranslate(text, sourceLang, targetLang, signal = null) {
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&dt=rm&q=` + encodeURIComponent(text);
+        const response = await fetchWithTimeout(url, 7000, signal);
+        if (!response.ok) throw new Error("Google translation request failed");
+
+        const data = await response.json();
+        let translation = "";
+        let transliteration = "";
+
+        if (data && Array.isArray(data[0])) {
+            data[0].forEach(segment => {
+                if (!Array.isArray(segment)) return;
+
+                if (segment[0]) {
+                    translation += segment[0];
+                }
+
+                if (!segment[0]) {
+                    if (segment[2] && typeof segment[2] === "string") {
+                        transliteration = segment[2];
+                    } else if (segment[3] && typeof segment[3] === "string") {
+                        transliteration = segment[3];
+                    }
+                }
+            });
+        }
+
+        if (!translation.trim()) {
+            throw new Error("Google returned no translation");
+        }
+
+        return {
+            translation: translation.trim(),
+            transliteration: transliteration.trim(),
+            provider: "google"
+        };
+    }
+
+    async function backupTranslate(text, sourceLang, targetLang, signal = null) {
+        const languageMap = {
+            en: "en", de: "de", ja: "ja", es: "es",
+            fr: "fr", it: "it", ru: "ru", zh: "zh-CN"
+        };
+
+        const source = languageMap[sourceLang] || sourceLang;
+        const target = languageMap[targetLang] || targetLang;
+        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${encodeURIComponent(source + "|" + target)}`;
+
+        const response = await fetchWithTimeout(url, 8000, signal);
+        if (!response.ok) throw new Error("Backup translation request failed");
+
+        const data = await response.json();
+        const translated =
+            data && data.responseData && data.responseData.translatedText
+                ? data.responseData.translatedText
+                : "";
+
+        if (!translated.trim()) throw new Error("Backup returned no translation");
+
+        return {
+            translation: translated.trim(),
+            transliteration: "",
+            provider: "backup"
+        };
+    }
+
+    async function translateText(text, sourceLang, targetLang, options = {}) {
+        if (!text.trim()) {
+            return { translation: "", transliteration: "", provider: "none" };
+        }
+
+        const allowBackup = options.allowBackup === true;
+        const signal = options.signal || null;
+
+        const cached = getCachedTranslation(text, sourceLang, targetLang);
+        if (cached && cached.translation) {
+            return {
+                translation: cached.translation,
+                transliteration: cached.transliteration || "",
+                provider: "google"
+            };
+        }
+
+        for (let attempt = 0; attempt < 2; attempt++) {
+            if (signal && signal.aborted) {
+                throw new DOMException("Aborted", "AbortError");
+            }
+
+            try {
+                const result = await googleTranslate(text, sourceLang, targetLang, signal);
+
+                setCachedTranslation(text, sourceLang, targetLang, {
+                    translation: result.translation,
+                    transliteration: result.transliteration
+                });
+
+                return result;
+            } catch (e) {
+                if (e && e.name === "AbortError") throw e;
+
+                console.warn(`Google translation attempt ${attempt + 1} failed:`, e);
+
+                if (attempt === 0) {
+                    await new Promise((resolve, reject) => {
+                        const timer = setTimeout(resolve, 650);
+
+                        if (signal) {
+                            const onAbort = () => {
+                                clearTimeout(timer);
+                                reject(new DOMException("Aborted", "AbortError"));
+                            };
+                            signal.addEventListener("abort", onAbort, { once: true });
+                        }
+                    });
+                }
+            }
+        }
+
+        // Backup is intentionally limited to complete-sentence translation.
+        if (allowBackup) {
+            try {
+                return await backupTranslate(text, sourceLang, targetLang, signal);
+            } catch (e) {
+                if (e && e.name === "AbortError") throw e;
+                console.error("Backup translation failed:", e);
+            }
+        }
+
+        return null;
+    }
+
+    function abortPhraseRequests() {
+        activePhraseControllers.forEach(controller => controller.abort());
+        activePhraseControllers.clear();
+
+        // Clear queued jobs that have not started.
+        while (phraseRequestQueue.length) {
+            const job = phraseRequestQueue.shift();
+            job.resolve(null);
+        }
+
+        inFlightPhraseTranslations.clear();
+    }
+
+    function pumpPhraseQueue() {
+        while (
+            activePhraseRequests < MAX_CONCURRENT_PHRASE_REQUESTS &&
+            phraseRequestQueue.length > 0
+        ) {
+            const job = phraseRequestQueue.shift();
+
+            if (job.generation !== mappingGeneration) {
+                job.resolve(null);
+                inFlightPhraseTranslations.delete(job.key);
+                continue;
+            }
+
+            activePhraseRequests++;
+            const controller = new AbortController();
+            activePhraseControllers.add(controller);
+
+            googleTranslate(job.text, job.sourceLang, job.targetLang, controller.signal)
+                .then(result => {
+                    if (job.generation !== mappingGeneration) {
+                        job.resolve(null);
+                        return;
+                    }
+
+                    setCachedTranslation(job.text, job.sourceLang, job.targetLang, {
+                        translation: result.translation,
+                        transliteration: result.transliteration
+                    });
+
+                    job.resolve(result);
+                })
+                .catch(error => {
+                    if (error && error.name !== "AbortError") {
+                        console.warn("Phrase translation failed:", error);
+                    }
+                    job.resolve(null);
+                })
+                .finally(() => {
+                    activePhraseControllers.delete(controller);
+                    activePhraseRequests--;
+                    inFlightPhraseTranslations.delete(job.key);
+                    pumpPhraseQueue();
+                });
+        }
+    }
+
+    function translatePhraseText(text, sourceLang, targetLang, generation) {
+        if (!text.trim()) {
+            return Promise.resolve({
+                translation: "",
+                transliteration: "",
+                provider: "none"
+            });
+        }
+
+        const cached = getCachedTranslation(text, sourceLang, targetLang);
+        if (cached && cached.translation) {
+            return Promise.resolve({
+                translation: cached.translation,
+                transliteration: cached.transliteration || "",
+                provider: "google"
+            });
+        }
+
+        const key = getTranslationKey(text, sourceLang, targetLang);
+
+        // Reuse identical in-flight phrase requests.
+        if (inFlightPhraseTranslations.has(key)) {
+            return inFlightPhraseTranslations.get(key);
+        }
+
+        const promise = new Promise(resolve => {
+            phraseRequestQueue.push({
+                key,
+                text,
+                sourceLang,
+                targetLang,
+                generation,
+                resolve
+            });
+            pumpPhraseQueue();
+        });
+
+        inFlightPhraseTranslations.set(key, promise);
+        return promise;
+    }
+
+    function handleToggleChange() {
+        const checked = document.getElementById("autoTranslateToggle").checked;
+        const statusSpan = document.getElementById("translationStatus");
+        if (checked) {
+            statusSpan.innerText = "Two-way translation active";
+            const engText = document.getElementById("englishInput").value.trim();
+            const foreignText = document.getElementById("foreignInput").value.trim();
+            if (engText && !foreignText) {
+                handleInput('en');
+            } else if (foreignText && !engText) {
+                handleInput('foreign');
+            }
+        } else {
+            statusSpan.innerText = "Auto-translation paused";
+        }
+    }
+
+    function scheduleMappingUpdate(delay = 750) {
+        clearTimeout(mappingTimeout);
+        mappingTimeout = setTimeout(() => updateMapping(), delay);
+    }
+
+    function handleInput(lang) {
+        scheduleMappingUpdate();
+
+        // New typing makes the previous full-sentence request stale.
+        if (fullSentenceController) {
+            fullSentenceController.abort();
+            fullSentenceController = null;
+        }
+        
+        const autoTranslate = document.getElementById("autoTranslateToggle").checked;
+        if (!autoTranslate) return;
+
+        const statusSpan = document.getElementById("translationStatus");
+        const engInput = document.getElementById("englishInput");
+        const foreignInput = document.getElementById("foreignInput");
+
+        if (lang === 'en') {
+            const text = engInput.value.trim();
+            if (!text) {
+                foreignInput.value = "";
+                statusSpan.innerText = "";
+                updateMapping();
+                return;
+            }
+
+            statusSpan.innerText = `Translating English ➜ ${currentLang === 'de' ? 'German' : currentLang === 'ja' ? 'Japanese' : currentLang === 'es' ? 'Spanish' : currentLang === 'fr' ? 'French' : currentLang === 'it' ? 'Italian' : currentLang === 'ru' ? 'Russian' : 'Chinese'}...`;
+
+            clearTimeout(translationTimeout);
+            translationTimeout = setTimeout(async () => {
+                fullSentenceController = new AbortController();
+
+                // Full-sentence translation gets priority over phrase-card work.
+                abortPhraseRequests();
+
+                let res;
+                try {
+                    res = await translateText(text, 'en', currentLang, {
+                        allowBackup: true,
+                        signal: fullSentenceController.signal
+                    });
+                } catch (e) {
+                    if (e && e.name === "AbortError") return;
+                    res = null;
+                }
+
+                fullSentenceController = null;
+                if (res === null) {
+                    statusSpan.innerText = navigator.onLine ? "⚠️ Translation unavailable right now. Please try again." : "⚠️ Your device appears to be offline.";
+                } else if (res) {
+                    foreignInput.value = res.translation;
+                    statusSpan.innerText = res.provider === "backup" ? "Backup translation used" : "Translation synced!";
+                    updateMapping();
+                } else {
+                    statusSpan.innerText = "";
+                }
+            }, 800);
+        } else if (lang === 'foreign') {
+            const text = foreignInput.value.trim();
+            if (!text) {
+                engInput.value = "";
+                statusSpan.innerText = "";
+                updateMapping();
+                return;
+            }
+
+            statusSpan.innerText = `Translating ${currentLang === 'de' ? 'German' : currentLang === 'ja' ? 'Japanese' : currentLang === 'es' ? 'Spanish' : currentLang === 'fr' ? 'French' : currentLang === 'it' ? 'Italian' : currentLang === 'ru' ? 'Russian' : 'Chinese'} ➜ English...`;
+
+            clearTimeout(translationTimeout);
+            translationTimeout = setTimeout(async () => {
+                fullSentenceController = new AbortController();
+
+                // Full-sentence translation gets priority over phrase-card work.
+                abortPhraseRequests();
+
+                let res;
+                try {
+                    res = await translateText(text, currentLang, 'en', {
+                        allowBackup: true,
+                        signal: fullSentenceController.signal
+                    });
+                } catch (e) {
+                    if (e && e.name === "AbortError") return;
+                    res = null;
+                }
+
+                fullSentenceController = null;
+                if (res === null) {
+                    statusSpan.innerText = navigator.onLine ? "⚠️ Translation unavailable right now. Please try again." : "⚠️ Your device appears to be offline.";
+                } else if (res) {
+                    engInput.value = res.translation;
+                    statusSpan.innerText = res.provider === "backup" ? "Backup translation used" : "Translation synced!";
+                    updateMapping();
+                } else {
+                    statusSpan.innerText = "";
+                }
+            }, 800);
+        }
+    }
+
+    function splitEnglishGrouped(sentence) {
+        if (!sentence) return [];
+        const words = sentence.trim().split(/\s+/);
+        const result = [];
+        
+        const articles = new Set(["the", "a", "an"]);
+        const prepositions = new Set([
+            "with", "to", "for", "from", "at", "in", "on", "by", "of", 
+            "about", "through", "without", "before", "after", "behind", 
+            "under", "over", "between", "into"
+        ]);
+        // Common auxiliary/modal structures that pair with "to" + infinitive verb
+        const helpers = new Set(["want", "wants", "like", "likes", "need", "needs", "have", "has", "hope", "hopes", "try", "tries", "love", "loves", "going", "gone"]);
+
+        for (let i = 0; i < words.length; i++) {
+            const word = words[i];
+            const cleanWord = word.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+            const nextWord = i < words.length - 1 ? words[i + 1] : null;
+            const cleanNextWord = nextWord ? nextWord.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "") : null;
+            const thirdWord = i < words.length - 2 ? words[i + 2] : null;
+            const cleanThirdWord = thirdWord ? thirdWord.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "") : null;
+            
+            // Lookahead helper structures: e.g., "want to go", "need to speak"
+            if (helpers.has(cleanWord) && cleanNextWord === "to" && thirdWord) {
+                result.push(word + " " + nextWord + " " + thirdWord);
+                i += 2;
+            }
+            // Case: prep + article + noun (e.g. "to the store")
+            else if (prepositions.has(cleanWord) && nextWord && articles.has(cleanNextWord) && thirdWord) {
+                result.push(word + " " + nextWord + " " + thirdWord);
+                i += 2;
+            }
+            // Case: prep + noun (e.g. "with you")
+            else if (prepositions.has(cleanWord) && nextWord) {
+                result.push(word + " " + nextWord);
+                i++;
+            }
+            // Case: article + noun (e.g. "a dog")
+            else if (articles.has(cleanWord) && nextWord) {
+                result.push(word + " " + nextWord);
+                i++;
+            } 
+            else {
+                result.push(word);
+            }
+        }
+        return result;
+    }
+
+    function splitGermanGrouped(sentence) {
+        if (!sentence) return [];
+        let words = sentence.trim().split(/\s+/);
+        
+        const separablePrefixes = new Set(["vor", "an", "auf", "ab", "aus", "mit", "zu", "ein", "weg", "zurück", "nach", "her", "hin", "fest", "los", "durch"]);
+        const verbBases = new Set([
+            "lese", "liest", "lest", "lesen",
+            "sehe", "siehst", "sieht", "sehen", "seht",
+            "schaue", "schaust", "schaut", "schauen",
+            "rufe", "rufst", "ruft", "rufen",
+            "fange", "fängst", "fängt", "fangen", "fangt",
+            "mache", "machst", "macht", "machen",
+            "bereite", "bereitest", "bereitet", "bereiten",
+            "gehe", "gehst", "geht", "gehen",
+            "komme", "kommst", "kommt", "kommen",
+            "höre", "hörst", "hört", "hören"
+        ]);
+        
+        if (words.length > 2) {
+            const lastIndex = words.length - 1;
+            const lastWordClean = words[lastIndex].toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+            
+            if (separablePrefixes.has(lastWordClean)) {
+                for (let j = 0; j < lastIndex; j++) {
+                    const verbClean = words[j].toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+                    if (verbBases.has(verbClean)) {
+                        const punctuation = words[lastIndex].slice(lastWordClean.length);
+                        words[j] = words[j] + " (" + lastWordClean + ")";
+                        if (punctuation) {
+                            words[j] += punctuation;
+                        }
+                        words.splice(lastIndex, 1);
+                        break;
+                    }
+                }
+            }
+        }
+        
+        const result = [];
+        const articles = new Set(["der", "die", "das", "des", "dem", "den", "ein", "eine", "eines", "einer", "einem", "einen"]);
+        const prepositions = new Set(["mit", "zu", "für", "von", "bei", "in", "an", "auf", "nach", "aus", "über", "unter", "vor", "hinter", "neben", "between", "wegen", "ohne", "gegen", "um", "durch"]);
+        const contractions = new Set(["zur", "zum", "im", "am", "ins", "ans", "vom", "beim", "aufs", "durchs", "fürs", "hinters", "nebens", "unters", "vors"]);
+
+        for (let i = 0; i < words.length; i++) {
+            const word = words[i];
+            const cleanWord = word.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+            const nextWord = i < words.length - 1 ? words[i + 1] : null;
+            const cleanNextWord = nextWord ? nextWord.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "") : null;
+            const thirdWord = i < words.length - 2 ? words[i + 2] : null;
+            const cleanThirdWord = thirdWord ? thirdWord.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "") : null;
+            
+            if (prepositions.has(cleanWord) && nextWord && articles.has(cleanNextWord) && thirdWord) {
+                result.push(word + " " + nextWord + " " + thirdWord);
+                i += 2;
+            }
+            else if (prepositions.has(cleanWord) && nextWord) {
+                result.push(word + " " + nextWord);
+                i++;
+            }
+            else if (contractions.has(cleanWord) && nextWord) {
+                result.push(word + " " + nextWord);
+                i++;
+            }
+            else if (articles.has(cleanWord) && nextWord) {
+                result.push(word + " " + nextWord);
+                i++;
+            }
+            else {
+                result.push(word);
+            }
+        }
+        return result;
+    }
+
+    // Surgical Japanese parser: extracts Kanji/Kana grouped units cleanly
+    function splitJapaneseGrouped(sentence) {
+        if (!sentence) return [];
+        const cleanSentence = sentence.trim();
+        const regex = /([^はがをにでとへものからまでやよねか、。！？\s]+(?:です|でした|ます|ました|ください)?(?:[はがをにでとへものからまでやよねか、。！？](?!す))?)/g;
+        
+        const result = [];
+        let match;
+        while ((match = regex.exec(cleanSentence)) !== null) {
+            if (match && match[0]) {
+                result.push(match[0].trim());
+            }
+        }
+        
+        if (result.length === 0 && cleanSentence) {
+            return [cleanSentence];
+        }
+        return result;
+    }
+
+    function splitSpanishGrouped(sentence) {
+        if (!sentence) return [];
+        const words = sentence.trim().split(/\s+/);
+        const result = [];
+
+        const articles = new Set(["el", "la", "los", "las", "un", "una", "unos", "unas", "este", "esta", "estos", "estas", "mi", "mis", "tu", "tus", "su", "sus"]);
+        const prepositions = new Set(["con", "a", "de", "para", "por", "en", "sin", "sobre", "entre", "hacia", "hasta", "desde", "bajo", "ante", "contra"]);
+        const contractions = new Set(["al", "del"]);
+
+        for (let i = 0; i < words.length; i++) {
+            const word = words[i];
+            const cleanWord = word.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()¡¿]/g, "");
+            const nextWord = i < words.length - 1 ? words[i + 1] : null;
+            const cleanNextWord = nextWord ? nextWord.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()¡¿]/g, "") : null;
+            const thirdWord = i < words.length - 2 ? words[i + 2] : null;
+            const cleanThirdWord = thirdWord ? thirdWord.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()¡¿]/g, "") : null;
+
+            if (prepositions.has(cleanWord) && nextWord && articles.has(cleanNextWord) && thirdWord) {
+                result.push(word + " " + nextWord + " " + thirdWord);
+                i += 2;
+            }
+            else if (prepositions.has(cleanWord) && nextWord) {
+                result.push(word + " " + nextWord);
+                i++;
+            }
+            else if (contractions.has(cleanWord) && nextWord) {
+                result.push(word + " " + nextWord);
+                i++;
+            }
+            else if (articles.has(cleanWord) && nextWord) {
+                result.push(word + " " + nextWord);
+                i++;
+            }
+            else {
+                result.push(word);
+            }
+        }
+        return result;
+    }
+
+    function splitFrenchGrouped(sentence) {
+        if (!sentence) return [];
+        const words = sentence.trim().split(/\s+/);
+        const result = [];
+
+        const articles = new Set(["le", "la", "les", "un", "une", "des", "ce", "cette", "ces", "mon", "ma", "mes", "ton", "ta", "tes", "son", "sa", "ses", "notre", "nos", "votre", "vos", "leur", "leurs"]);
+        const prepositions = new Set(["avec", "à", "de", "pour", "dans", "sur", "sans", "chez", "sous", "par", "vers", "après", "avant", "entre", "pendant"]);
+        const contractions = new Set(["du", "des", "au", "aux"]);
+
+        for (let i = 0; i < words.length; i++) {
+            const word = words[i];
+            const cleanWord = word.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+            const nextWord = i < words.length - 1 ? words[i + 1] : null;
+            const cleanNextWord = nextWord ? nextWord.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "") : null;
+            const thirdWord = i < words.length - 2 ? words[i + 2] : null;
+            const cleanThirdWord = thirdWord ? thirdWord.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "") : null;
+
+            if (word.includes("'") && i < words.length - 1) {
+                result.push(word + " " + nextWord);
+                i++;
+            }
+            else if (prepositions.has(cleanWord) && nextWord && articles.has(cleanNextWord) && thirdWord) {
+                result.push(word + " " + nextWord + " " + thirdWord);
+                i += 2;
+            }
+            else if (prepositions.has(cleanWord) && nextWord) {
+                result.push(word + " " + nextWord);
+                i++;
+            }
+            else if (contractions.has(cleanWord) && nextWord) {
+                result.push(word + " " + nextWord);
+                i++;
+            }
+            else if (articles.has(cleanWord) && nextWord) {
+                result.push(word + " " + nextWord);
+                i++;
+            }
+            else {
+                result.push(word);
+            }
+        }
+        return result;
+    }
+
+    function splitItalianGrouped(sentence) {
+        if (!sentence) return [];
+        const words = sentence.trim().split(/\s+/);
+        const result = [];
+
+        const articles = new Set(["il", "lo", "la", "i", "gli", "le", "un", "uno", "una", "questo", "questa", "questi", "queste", "mio", "mia", "miei", "mie", "tuo", "tua", "suo", "sua"]);
+        const prepositions = new Set(["con", "a", "da", "di", "in", "su", "per", "tra", "fra", "senza", "sotto", "sopra", "dietro", "dopo", "prima"]);
+        const articulatedPrepositions = new Set(["del", "dello", "della", "dei", "degli", "delle", "al", "allo", "alla", "ai", "agli", "alle", "dal", "dallo", "dalla", "dai", "dagli", "dalle", "nel", "nello", "nella", "nei", "negli", "nelle", "sul", "sullo", "sulla", "sui", "sugli", "sulle"]);
+
+        for (let i = 0; i < words.length; i++) {
+            const word = words[i];
+            const cleanWord = word.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+            const nextWord = i < words.length - 1 ? words[i + 1] : null;
+            const cleanNextWord = nextWord ? nextWord.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "") : null;
+            const thirdWord = i < words.length - 2 ? words[i + 2] : null;
+            const cleanThirdWord = thirdWord ? thirdWord.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "") : null;
+
+            if (word.includes("'") && i < words.length - 1) {
+                result.push(word + " " + nextWord);
+                i++;
+            }
+            else if (prepositions.has(cleanWord) && nextWord && articles.has(cleanNextWord) && thirdWord) {
+                result.push(word + " " + nextWord + " " + thirdWord);
+                i += 2;
+            }
+            else if (prepositions.has(cleanWord) && nextWord) {
+                result.push(word + " " + nextWord);
+                i++;
+            }
+            else if (articulatedPrepositions.has(cleanWord) && nextWord) {
+                result.push(word + " " + nextWord);
+                i++;
+            }
+            else if (articles.has(cleanWord) && nextWord) {
+                result.push(word + " " + nextWord);
+                i++;
+            }
+            else {
+                result.push(word);
+            }
+        }
+        return result;
+    }
+
+    function splitRussianGrouped(sentence) {
+        if (!sentence) return [];
+        const words = sentence.trim().split(/\s+/);
+        const result = [];
+
+        const prepositions = new Set(["в", "на", "с", "у", "к", "о", "об", "по", "из", "от", "до", "без", "при", "через", "над", "под", "для", "со", "во", "обо"]);
+
+        for (let i = 0; i < words.length; i++) {
+            const word = words[i];
+            const cleanWord = word.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+            const nextWord = i < words.length - 1 ? words[i + 1] : null;
+
+            if (prepositions.has(cleanWord) && nextWord) {
+                result.push(word + " " + nextWord);
+                i++;
+            }
+            else {
+                result.push(word);
+            }
+        }
+        return result;
+    }
+
+    function splitChineseGrouped(sentence) {
+        if (!sentence) return [];
+        const cleanSentence = sentence.trim();
+        const regex = /([\u4e00-\u9fa5]{1,3}(?:的|了|着|过|们)?|[a-zA-Z0-9]+)/g;
+        
+        const result = [];
+        let match;
+        while ((match = regex.exec(cleanSentence)) !== null) {
+            if (match && match[0]) {
+                result.push(match[0].trim());
+            }
+        }
+        
+        if (result.length === 0 && cleanSentence) {
+            return [cleanSentence];
+        }
+        return result;
+    }
+
+    function updateMapping() {
+        mappingGeneration++;
+        const generation = mappingGeneration;
+        abortPhraseRequests();
+        const engVal = document.getElementById("englishInput").value;
+        const foreignVal = document.getElementById("foreignInput").value;
+
+        const engOutputDiv = document.getElementById("englishOutput");
+        const foreignOutputDiv = document.getElementById("foreignOutput");
+        const themeClass = getThemeClass(currentLang);
+
+        // --- RENDER ENGLISH PHRASE MAP ---
+        if (engVal.trim() === "") {
+            engOutputDiv.innerHTML = '<span class="empty-state">Type a sentence above to map phrases...</span>';
+        } else {
+            const cleanEng = engVal.replace(/[?.!,"“”:;()\[\]/*+<>=~^$%&#@\_¿¡]/g, "");
+            const engPhrases = splitEnglishGrouped(cleanEng);
+            
+            engOutputDiv.innerHTML = engPhrases.map((phrase, idx) => `
+                <div class="word-card english-card">
+                    <button class="card-speak-btn" onclick="speak('${phrase.replace(/'/g, "\\'")}', 'en')" title="Listen to this phrase">🔊</button>
+                    <div class="phrase-text">${phrase}</div>
+                    <div class="phrase-translation" id="eng-trans-${idx}">...</div>
+                    <div class="phrase-hiragana" id="eng-hira-${idx}" style="display:none;"></div>
+                    <div class="phrase-romaji" id="eng-romaji-${idx}" style="display:none;"></div>
+                </div>
+            `).join("");
+
+            engPhrases.forEach(async (phrase, idx) => {
+                const res = await translatePhraseText(phrase, 'en', currentLang, generation);
+                const elTrans = document.getElementById(`eng-trans-${idx}`);
+                const elRomaji = document.getElementById(`eng-romaji-${idx}`);
+                const elHira = document.getElementById(`eng-hira-${idx}`);
+                
+                if (elTrans) {
+                    if (res && res.translation) {
+                        elTrans.innerText = res.translation;
+                        elTrans.style.display = 'block';
+                        
+                        if (currentLang === 'ja') {
+                            if (res.transliteration) {
+                                elRomaji.innerText = res.transliteration;
+                                elRomaji.style.display = 'block';
+                                
+                                const hira = convertRomajiToHiragana(res.transliteration);
+                                if (hira) {
+                                    elHira.innerText = hira;
+                                    elHira.style.display = 'block';
+                                }
+                            }
+                        } else if (currentLang === 'zh' || currentLang === 'ru') {
+                            if (res.transliteration) {
+                                elRomaji.innerText = res.transliteration;
+                                elRomaji.style.display = 'block';
+                            } else {
+                                elRomaji.style.display = 'none';
+                            }
+                            elHira.style.display = 'none';
+                        } else {
+                            if (elRomaji) elRomaji.style.display = 'none';
+                            if (elHira) elHira.style.display = 'none';
+                        }
+                    } else {
+                        elTrans.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // --- RENDER FOREIGN PHRASE MAP ---
+        if (foreignVal.trim() === "") {
+            foreignOutputDiv.innerHTML = '<span class="empty-state">Type a sentence above to map phrases...</span>';
+        } else {
+            let phrases = [];
+            const cleanForeign = foreignVal.replace(/[?.!,"“”:;()\[\]/*+<>=~^$%&#@\_¿¡、。！？]/g, "");
+            
+            if (currentLang === 'de') {
+                phrases = splitGermanGrouped(cleanForeign);
+            } else if (currentLang === 'ja') {
+                phrases = splitJapaneseGrouped(cleanForeign);
+            } else if (currentLang === 'es') {
+                phrases = splitSpanishGrouped(cleanForeign);
+            } else if (currentLang === 'fr') {
+                phrases = splitFrenchGrouped(cleanForeign);
+            } else if (currentLang === 'it') {
+                phrases = splitItalianGrouped(cleanForeign);
+            } else if (currentLang === 'ru') {
+                phrases = splitRussianGrouped(cleanForeign);
+            } else if (currentLang === 'zh') {
+                phrases = splitChineseGrouped(cleanForeign);
+            }
+
+            foreignOutputDiv.innerHTML = phrases.map((phrase, idx) => `
+                <div class="word-card foreign-card ${themeClass}">
+                    <button class="card-speak-btn" onclick="speak('${phrase.replace(/'/g, "\\'")}', currentLang)" title="Listen to this phrase">🔊</button>
+                    <div class="phrase-text">${phrase}</div>
+                    <div class="phrase-hiragana" id="foreign-hira-${idx}" style="display:none;"></div>
+                    <div class="phrase-romaji" id="foreign-romaji-${idx}" style="display:none;"></div>
+                    <div class="phrase-translation" id="foreign-trans-${idx}">...</div>
+                </div>
+            `).join("");
+
+            phrases.forEach(async (phrase, idx) => {
+                const cleanPhraseForTrans = phrase.replace(/\(([^)]+)\)/g, '$1');
+                const res = await translatePhraseText(cleanPhraseForTrans, currentLang, 'en', generation);
+                const elTrans = document.getElementById(`foreign-trans-${idx}`);
+                const elRomaji = document.getElementById(`foreign-romaji-${idx}`);
+                const elHira = document.getElementById(`foreign-hira-${idx}`);
+
+                if (elTrans) {
+                    if (res && res.translation) {
+                        elTrans.innerText = res.translation;
+                        elTrans.style.display = 'block';
+                    } else {
+                        elTrans.style.display = 'none';
+                    }
+                }
+
+                if ((currentLang === 'ja' || currentLang === 'zh' || currentLang === 'ru') && elRomaji) {
+                    const selfRes = await translatePhraseText(phrase, currentLang, currentLang, generation);
+                    if (selfRes && selfRes.transliteration) {
+                        elRomaji.innerText = selfRes.transliteration;
+                        elRomaji.style.display = 'block';
+                        
+                        if (currentLang === 'ja') {
+                            const hira = convertRomajiToHiragana(selfRes.transliteration);
+                            if (hira) {
+                                elHira.innerText = hira;
+                                elHira.style.display = 'block';
+                            }
+                        } else {
+                            elHira.style.display = 'none';
+                        }
+                    } else {
+                        elRomaji.style.display = 'none';
+                        elHira.style.display = 'none';
+                    }
+                } else {
+                    if (elRomaji) elRomaji.style.display = 'none';
+                    if (elHira) elHira.style.display = 'none';
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>
