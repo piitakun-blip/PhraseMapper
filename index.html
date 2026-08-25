@@ -95,6 +95,23 @@
             text-align: center;
         }
 
+        .subtitle {
+            margin-top: -0.35rem;
+            margin-bottom: 1.2rem;
+            text-align: center;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        @media (max-width: 768px) {
+            .subtitle {
+                margin-top: -0.2rem;
+                margin-bottom: 0.8rem;
+                font-size: 0.82rem;
+            }
+        }
+
         .control-panel {
             display: flex;
 
@@ -562,8 +579,12 @@
 <div class="container">
 
     <h1 id="mainTitle">
-        Phrase Mapper
+        🇺🇸 Ward's Phrase Mapper
     </h1>
+
+    <div id="subtitle" class="subtitle">
+        🇩🇪 Wards Phrasen-Mapper
+    </div>
 
 
     <!-- =========================================================
@@ -874,42 +895,49 @@ const LANG_CONFIG = {
     de: {
         name: "German",
         flag: "🇩🇪",
+        subtitle: "🇩🇪 Wards Phrasen-Mapper",
         theme: "orange-mode"
     },
 
     ja: {
         name: "Japanese",
         flag: "🇯🇵",
+        subtitle: "🇯🇵 Wardのフレーズ・マッパー",
         theme: "sakura-mode"
     },
 
     es: {
         name: "Spanish",
         flag: "🇪🇸",
+        subtitle: "🇪🇸 Mapeador de Frases de Ward",
         theme: "sangria-mode"
     },
 
     fr: {
         name: "French",
         flag: "🇫🇷",
+        subtitle: "🇫🇷 Mappeur de phrases de Ward",
         theme: "lavender-mode"
     },
 
     it: {
         name: "Italian",
         flag: "🇮🇹",
+        subtitle: "🇮🇹 Mappatore di frasi di Ward",
         theme: "emerald-mode"
     },
 
     ru: {
         name: "Russian",
         flag: "🇷🇺",
+        subtitle: "🇷🇺 Фразовый картограф Уорда",
         theme: "crimson-mode"
     },
 
     zh: {
         name: "Chinese",
         flag: "🇨🇳",
+        subtitle: "🇨🇳 Ward 的短语映射器",
         theme: "gold-mode"
     }
 
@@ -5114,7 +5142,7 @@ function setLanguage(lang) {
 
     if (staticTitle) {
         staticTitle.textContent =
-            "Phrase Mapper";
+            "🇺🇸 Ward's Phrase Mapper";
     }
 
 
@@ -5139,13 +5167,20 @@ function setLanguage(lang) {
      * Titles.
      */
 
-    const titleText =
-        `🇺🇸 ➜ ${config.flag} Ward's Phrase Mapper`;
-
     document.getElementById(
         "mainTitle"
     ).innerText =
-        titleText;
+        "🇺🇸 Ward's Phrase Mapper";
+
+    const subtitle =
+        document.getElementById(
+            "subtitle"
+        );
+
+    if (subtitle) {
+        subtitle.innerText =
+            config.subtitle;
+    }
 
     document.title =
         `${config.name} — Ward's Phrase Mapper`;
