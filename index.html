@@ -690,7 +690,7 @@
                         id="allowBackupToggle"
                         checked
                     >
-                    Use backup if Google fails (proxy first; emergency backup may be less reliable)
+                    Use backup if Google fails (emergency results may be less reliable)
                 </span>
             </label>
 
@@ -862,7 +862,7 @@ function isMobileMode() {
 }
 
 const TRANSLATION_CACHE =
-    "wardPhraseMapper:v29:";
+    "wardPhraseMapper:v30:";
 
 
 /* ================================================================
@@ -1612,6 +1612,206 @@ async function translateUnified(
  * transliteration from the response. This request is kept separate
  * from normal translation caching and from the backup translator.
  */
+
+let kuroshiroReaderPromise = null;
+
+
+async function getLocalJapaneseReader() {
+
+    if (
+        kuroshiroReaderPromise
+    ) {
+
+        return kuroshiroReaderPromise;
+
+    }
+
+
+    kuroshiroReaderPromise =
+        (async () => {
+
+            try {
+
+                /*
+                 * Load only when Japanese kanji readings are actually needed.
+                 * This avoids making every page load download a Japanese
+                 * dictionary.
+                 */
+                const [
+                    kuroshiroModule,
+                    analyzerModule
+                ] =
+                    await Promise.all([
+                        import(
+                            "https://esm.sh/kuroshiro@1.2.0"
+                        ),
+                        import(
+                            "https://esm.sh/kuroshiro-analyzer-kuromoji@1.1.0"
+                        )
+                    ]);
+
+
+                const Kuroshiro =
+                    kuroshiroModule.default;
+
+
+                const KuromojiAnalyzer =
+                    analyzerModule.default;
+
+
+                const reader =
+                    new Kuroshiro();
+
+
+                await reader.init(
+                    new KuromojiAnalyzer({
+                        dictPath:
+                            "https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/dict/"
+                    })
+                );
+
+
+                return reader;
+
+            }
+
+            catch (
+                error
+            ) {
+
+                /*
+                 * Allow a later retry if initialization failed because the
+                 * phone temporarily lost connectivity.
+                 */
+                kuroshiroReaderPromise =
+                    null;
+
+
+                console.warn(
+                    "Local Japanese reading engine failed to initialize:",
+                    error
+                );
+
+
+                return null;
+
+            }
+
+        })();
+
+
+    return kuroshiroReaderPromise;
+
+}
+
+
+async function getLocalJapaneseReading(
+    phrase
+) {
+
+    try {
+
+        const reader =
+            await getLocalJapaneseReader();
+
+
+        if (
+            !reader
+        ) {
+
+            return null;
+
+        }
+
+
+        const hiragana =
+            await reader.convert(
+                phrase,
+                {
+                    to:
+                        "hiragana",
+
+                    mode:
+                        "normal"
+                }
+            );
+
+
+        if (
+            !hiragana ||
+            !hiragana.trim()
+        ) {
+
+            return null;
+
+        }
+
+
+        let romaji = "";
+
+
+        /*
+         * Once kanji have been resolved to hiragana, Wanakana is excellent
+         * for producing consistent romaji without another network request.
+         */
+        if (
+            window.wanakana
+        ) {
+
+            romaji =
+                wanakana.toRomaji(
+                    hiragana
+                );
+
+        }
+
+        else {
+
+            romaji =
+                await reader.convert(
+                    phrase,
+                    {
+                        to:
+                            "romaji",
+
+                        mode:
+                            "normal"
+                    }
+                );
+
+        }
+
+
+        return {
+            hiragana:
+                hiragana.trim(),
+
+            romaji:
+                String(romaji || "").trim(),
+
+            provider:
+                "local"
+        };
+
+    }
+
+    catch (
+        error
+    ) {
+
+        console.warn(
+            "Local Japanese reading failed:",
+            error
+        );
+
+
+        return null;
+
+    }
+
+}
+
+
 async function getJapaneseReading(
     phrase
 ) {
@@ -1802,9 +2002,33 @@ async function getJapaneseReading(
 
 
     /*
-     * Kana-only fallback:
-     * wanakana can safely convert kana, but it cannot determine
-     * readings for kanji.
+     * If direct Google reading is unavailable (common on iPhone),
+     * fall back to a local Japanese morphological analyzer.
+     *
+     * Unlike Wanakana alone, Kuroshiro/Kuromoji can determine readings
+     * for kanji from the Japanese phrase itself.
+     */
+    const localReading =
+        await getLocalJapaneseReading(
+            phrase
+        );
+
+
+    if (
+        localReading &&
+        (
+            localReading.hiragana ||
+            localReading.romaji
+        )
+    ) {
+
+        return localReading;
+
+    }
+
+
+    /*
+     * Final kana-only fallback.
      */
     if (
         window.wanakana &&
@@ -1824,7 +2048,9 @@ async function getJapaneseReading(
             romaji:
                 wanakana.toRomaji(
                     hiragana
-                )
+                ),
+            provider:
+                "wanakana"
         };
 
     }
@@ -1832,7 +2058,8 @@ async function getJapaneseReading(
 
     return {
         romaji: "",
-        hiragana: ""
+        hiragana: "",
+        provider: "unavailable"
     };
 
 }
