@@ -852,7 +852,7 @@ let translationTimeout = null;
 let updateGeneration = 0;
 
 const TRANSLATION_CACHE =
-    "wardPhraseMapper:v18:";
+    "wardPhraseMapper:v19:";
 
 
 /* ================================================================
@@ -2775,27 +2775,55 @@ function parseJapanesePhrases(text) {
            PARTICLES
            -------------------------------------------------------- */
 
+        /*
+         * Important Japanese guard:
+         * Do not treat the first character of a grammatical ending
+         * as a standalone particle.
+         *
+         * Without this, endings such as:
+         *   です
+         *   でした
+         *   でしょう
+         *
+         * can be split at で, leaving an isolated す. Google may then
+         * interpret that standalone す as 酢 ("vinegar").
+         */
+        const beginsSentenceEnding =
+            sentenceEndings.some(
+                ending =>
+                    source.startsWith(
+                        ending,
+                        i
+                    )
+            );
+
         let matchedParticle =
             null;
 
 
-        for (
-            const particle
-            of particles
+        if (
+            !beginsSentenceEnding
         ) {
 
-            if (
-                startsWithAt(
-                    source,
-                    i,
-                    particle
-                )
+            for (
+                const particle
+                of particles
             ) {
 
-                matchedParticle =
-                    particle;
+                if (
+                    startsWithAt(
+                        source,
+                        i,
+                        particle
+                    )
+                ) {
 
-                break;
+                    matchedParticle =
+                        particle;
+
+                    break;
+
+                }
 
             }
 
@@ -3015,6 +3043,41 @@ function parseJapanesePhrases(text) {
                         .trim()
             )
             .filter(Boolean);
+
+    /*
+     * Safety cleanup:
+     * A bare す should never be a useful phrase card in this mapper.
+     * If one somehow survives parsing, attach it to the previous phrase
+     * instead of sending "す" alone to translation.
+     */
+    cleaned =
+        cleaned.reduce(
+            (result, phrase) => {
+
+                if (
+                    phrase === "す" &&
+                    result.length
+                ) {
+
+                    result[
+                        result.length - 1
+                    ] += phrase;
+
+                }
+
+                else {
+
+                    result.push(
+                        phrase
+                    );
+
+                }
+
+                return result;
+
+            },
+            []
+        );
 
 
     /*
